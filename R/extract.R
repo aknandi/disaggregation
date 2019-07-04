@@ -1,0 +1,147 @@
+#' Parallel extraction of raster stack by shape file.
+#' 
+#' Parallelisation is performed across rasters, not shapes. 
+#' So this function is only useful if you are extracting 
+#' data from many raster layers.
+#' As the overhead for parallel computation in windows is high
+#' it only makes sense to parallelise in this way.
+#'
+#' 
+#' @param raster A raster brick or stack
+#' @param shape A shape object 
+#' @param fun The function used to aggregate the pixel data. If NULL, raw pixel data is returned.
+#' @param id Name of column in shape object to be used to bind an ID column to output.
+#' @param ... Other arguments to raster::extract
+#' 
+#' @importFrom foreach %dopar%
+#' @importFrom parallel stopCluster
+#' @importFrom parallel makeCluster
+#' @importFrom doParallel registerDoParallel
+#'
+#' @export
+#' @examples 
+#' 
+#' cds1 <- rbind(c(-180,-20), c(-160,5), c(-60, 0), c(-160,-60), c(-180,-20))
+#' cds2 <- rbind(c(80,0), c(100,60), c(120,0), c(120,-55), c(80,0))
+#' cds3 <- rbind(c(30,20), c(30,50), c(-40,40), c(-10,-30), c(50,10))
+#' polys <- raster::spPolygons(cds1, cds2, cds3)
+#' 
+#' response_df <- data.frame(area_id = c('A', 'B', 'C'), response = c(4, 7, 2))
+#' 
+#' spdf <- sp::SpatialPolygonsDataFrame(polys, response_df)
+#' 
+#' # Create raster stack
+#' r <- raster::raster(ncol=36, nrow=18)
+#' r[] <- 1:raster::ncell(r)
+#' r <- raster::stack(r, r)
+#' 
+#' cl <- parallel::makeCluster(2)
+#' doParallel::registerDoParallel(cl)
+#' parallel::stopCluster(cl)
+#' foreach::registerDoSEQ()
+
+parallelExtract <- function(raster, shape, fun = mean, id = 'OBJECTID',  ...){
+  
+  if (!requireNamespace("foreach", quietly = TRUE)) {
+    stop("foreach needed for this function to work. Please install it.",
+         call. = FALSE)
+  }
+  
+  shape@data[, id] <- as.character(shape@data[, id])
+  
+  i <- NULL
+  # Run extract in parallel.
+  values <- foreach::foreach(i = seq_along(shape)) %dopar% {  
+    raster::extract(raster, shape[i, ], fun = fun, na.rm = TRUE, cellnumbers = TRUE, ...)
+  } 
+  if(!is.null(fun)){
+    # If a summary function was given, just bind everything together and add ID column
+    df <- data.frame(do.call(rbind, values))
+    if(class(shape) == 'SpatialPolygonsDataFrame'){
+      df <- cbind(ID = as.data.frame(shape)[, id], df)
+    } else{
+      df <- cbind(ID = names(shape), df)
+      id <- 'id'
+    }
+    
+    names(df) <- c(id, names(raster))
+    
+    return(df)
+  } else {
+    # If no summary was given we get a list of length n.shapes
+    #   each entry in the list is a dataframe with n.covariates columns
+    #   Want to make covariates columns, rbind shapes, and add shape and cell id columns.
+    
+    # list of vectors, one for each covariate
+    values_id <- lapply(seq_along(values), function(x) cbind(shape@data[, id][x], values[[x]][[1]]))
+    
+    
+    df <- data.frame(do.call(rbind, values_id))
+    names(df) <- c(id, 'cellid', names(raster))
+    
+    return(df)
+  }
+  
+}
+
+
+#' Extract data from a SpatialPolygonsDataFrame into data.frame of correct structure
+#' 
+#' @param shape A shape object containing response data
+#' @param id_var Name of column in shape object with the polygon id
+#' @param response_var Name of column in shape object with the response data
+#' 
+#' @export
+#' @examples {
+#' # Create SpatialPolygonDataFrame
+#' cds1 <- rbind(c(-180,-20), c(-160,5), c(-60, 0), c(-160,-60), c(-180,-20))
+#' cds2 <- rbind(c(80,0), c(100,60), c(120,0), c(120,-55), c(80,0))
+#' cds3 <- rbind(c(30,20), c(30,50), c(-40,40), c(-10,-30), c(50,10))
+#' polys <- raster::spPolygons(cds1, cds2, cds3)
+#' 
+#' response_df <- data.frame(area_id = c('A', 'B', 'C'), response = c(4, 7, 2))
+#'
+#' spdf <- sp::SpatialPolygonsDataFrame(polys, response_df)
+#' 
+#' getPolygonData(spdf, id_var = 'area_id', response_var = 'response')
+#' }
+#' 
+#' 
+
+getPolygonData <- function(shape, id_var = 'area_id', response_var = 'response') {
+  
+  polygon_df <- shape@data[, c(id_var, response_var)]
+  
+  return(polygon_df)
+}
+
+
+#' Get all covariate rasters in folder and stack them, and crop to polygon data
+#' 
+#' @param directory filepath containing the rasters
+#' @param file_pattern Pattern the filenames must match 
+#' @param shape A shape object containing response data
+#' 
+#' @import raster
+#' 
+#' @export
+#' @examples 
+#' \dontrun{
+#'   getCovariateRasters('/home/rasters', '.tif$', shape)
+#'  }
+#' 
+
+getCovariateRasters <- function(directory, file_pattern = '.tif$', shape) {
+  
+  stopifnot(dir.exists(directory))
+  
+  covariate_files <- list.files(directory, pattern = file_pattern, full.names = TRUE)
+  stopifnot(length(covariate_files) != 0)
+  
+  covariate_rasters <- lapply(covariate_files, function(x) raster(x))
+  covariate_stack <- stack(covariate_rasters)
+  
+  covariate_stack <- crop(covariate_stack, shape)
+  
+  return(covariate_stack)
+}

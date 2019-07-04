@@ -13,6 +13,10 @@ RoxygenNote: 6.1.1
 Imports: 
     maptools,
     INLA,
-    raster
+    raster,
+    foreach,
+    sp,
+    parallel,
+    doParallel
 Suggests: 
     testthat
