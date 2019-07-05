@@ -3,8 +3,6 @@
 #' @param shapes shapefile covering the region under investigation
 #'
 #' @importFrom maptools unionSpatialPolygons
-#' @importFrom INLA inla.nonconvex.hull
-#' @importFrom INLA inla.mesh.2d
 #'
 #' @name build_mesh
 #'
@@ -26,8 +24,8 @@ build_mesh <- function(shapes) {
   }
   coords <- do.call(rbind, coords)
 
-  outline.hull <- inla.nonconvex.hull(coords, convex = -0.01, concave = -0.5, resolution = 300)
-  mesh <- inla.mesh.2d(boundary = outline.hull, max.edge = c(3, 8), cutoff = 0.4, offset = c(1, 15))
+  outline.hull <- INLA::inla.nonconvex.hull(coords, convex = -0.01, concave = -0.5, resolution = 300)
+  mesh <- INLA::inla.mesh.2d(boundary = outline.hull, max.edge = c(3, 8), cutoff = 0.4, offset = c(1, 15))
 
   return(mesh)
 }

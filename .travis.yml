@@ -1,0 +1,25 @@
+    
+# Continuous integration with travis
+language: r
+sudo: required
+
+
+
+# cache packages to speed up builds
+#cache: packages
+
+r_packages:
+ - covr
+ - testthat
+ - raster
+ - sp 
+ - devtools
+
+after_success:
+ - Rscript -e 'library(covr);codecov()'
+
+
+matrix:
+  include:
+    - r: release
+      r_github_packages: andrewzm/INLA

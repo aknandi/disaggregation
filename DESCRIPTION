@@ -12,11 +12,12 @@ LazyData: true
 RoxygenNote: 6.1.1
 Imports: 
     maptools,
-    INLA,
     raster,
     foreach,
     sp,
     parallel,
     doParallel
+Additional_repositories: https://inla.r-inla-download.org/R/stable
 Suggests: 
-    testthat
+    testthat,
+    INLA
