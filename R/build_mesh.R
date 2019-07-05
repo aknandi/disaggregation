@@ -2,8 +2,6 @@
 #'
 #' @param shapes shapefile covering the region under investigation
 #'
-#' @importFrom maptools unionSpatialPolygons
-#'
 #' @name build_mesh
 #'
 #' @examples
@@ -16,7 +14,9 @@
 
 build_mesh <- function(shapes) {
 
-  outline <- unionSpatialPolygons(shapes, IDs = rep(1, length(shapes)))
+  stopifnot(inherits(shapes, 'SpatialPolygons'))
+  
+  outline <- maptools::unionSpatialPolygons(shapes, IDs = rep(1, length(shapes)))
 
   coords <- list()
   for(i in seq_len(length(outline@polygons[[1]]@Polygons))){

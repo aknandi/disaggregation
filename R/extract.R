@@ -122,8 +122,6 @@ getPolygonData <- function(shape, id_var = 'area_id', response_var = 'response')
 #' @param file_pattern Pattern the filenames must match 
 #' @param shape A shape object containing response data
 #' 
-#' @import raster
-#' 
 #' @export
 #' @examples 
 #' \dontrun{
@@ -138,10 +136,10 @@ getCovariateRasters <- function(directory, file_pattern = '.tif$', shape) {
   covariate_files <- list.files(directory, pattern = file_pattern, full.names = TRUE)
   stopifnot(length(covariate_files) != 0)
   
-  covariate_rasters <- lapply(covariate_files, function(x) raster(x))
-  covariate_stack <- stack(covariate_rasters)
+  covariate_rasters <- lapply(covariate_files, function(x) raster::raster(x))
+  covariate_stack <- raster::stack(covariate_rasters)
   
-  covariate_stack <- crop(covariate_stack, shape)
+  covariate_stack <- raster::crop(covariate_stack, shape)
   
   return(covariate_stack)
 }
