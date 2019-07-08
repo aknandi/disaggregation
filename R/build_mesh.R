@@ -1,6 +1,7 @@
 #' Build mesh for disaggregaton model
 #'
 #' @param shapes shapefile covering the region under investigation
+#' @param mesh.args list of parameters that control the mesh structure with the same names as used by INLA
 #'
 #' @name build_mesh
 #'
@@ -12,10 +13,20 @@
 #'
 #' @export
 
-build_mesh <- function(shapes) {
+build_mesh <- function(shapes, mesh.args = NULL) {
 
   stopifnot(inherits(shapes, 'SpatialPolygons'))
+  if(!is.null(mesh.args)) stopifnot(inherits(mesh.args, 'list'))
   
+  pars <- list(convex = -0.01,
+               concave = -0.5,
+               resolution = 300,
+               max.edge = c(3.0, 8), 
+               cut = 0.4, 
+               offset = c(1, 15))
+  
+  pars[names(mesh.args)] <- mesh.args
+
   outline <- maptools::unionSpatialPolygons(shapes, IDs = rep(1, length(shapes)))
 
   coords <- list()
@@ -24,8 +35,17 @@ build_mesh <- function(shapes) {
   }
   coords <- do.call(rbind, coords)
 
-  outline.hull <- INLA::inla.nonconvex.hull(coords, convex = -0.01, concave = -0.5, resolution = 300)
-  mesh <- INLA::inla.mesh.2d(boundary = outline.hull, max.edge = c(3, 8), cutoff = 0.4, offset = c(1, 15))
-
+  outline.hull <- INLA::inla.nonconvex.hull(coords, 
+                                            convex = pars$convex, 
+                                            concave = pars$concave,
+                                            resolution = pars$resolution)
+  
+  mesh <- INLA::inla.mesh.2d( 
+    boundary = outline.hull,
+    max.edge = pars$max.edge, 
+    cut = pars$cut, 
+    offset = pars$offset)
+  
+  
   return(mesh)
 }

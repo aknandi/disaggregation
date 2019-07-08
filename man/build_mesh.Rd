@@ -4,10 +4,12 @@
 \alias{build_mesh}
 \title{Build mesh for disaggregaton model}
 \usage{
-build_mesh(shapes)
+build_mesh(shapes, mesh.args = NULL)
 }
 \arguments{
 \item{shapes}{shapefile covering the region under investigation}
+
+\item{mesh.args}{list of parameters that control the mesh structure with the same names as used by INLA}
 }
 \description{
 Build mesh for disaggregaton model

@@ -13,6 +13,8 @@ test_that("build_mesh behaves as expected", {
   spdf <- sp::SpatialPolygonsDataFrame(polys, response_df)
   
   expect_error(build_mesh(response_df))
+  expect_error(build_mesh(spdf, mesh.args = c(4, 8)))
   expect_is(build_mesh(spdf), 'inla.mesh')
+  expect_is(build_mesh(spdf, mesh.args = list(max.edge = c(4.0, 8.0))), 'inla.mesh')
   
 })
