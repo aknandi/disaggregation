@@ -22,7 +22,8 @@ Imports:
     parallel,
     doParallel,
     rgeos,
-    splancs
+    splancs,
+    rgdal
 Additional_repositories: https://inla.r-inla-download.org/R/stable
 Suggests: 
     testthat,
