@@ -62,6 +62,9 @@ test_that("parallelExtract give the right for of output", {
   expect_equal(names(r), names(result2)[-c(1)])
   expect_equal(length(unique(result2$area_id)), length(spdf))
   
+  # Save in tempdir() to be use in later test
+  write.csv(result1, file = paste0(tempdir(), '/cov_data.csv'))
+  
 })
 
 test_that("getPolygonData function", {
@@ -102,6 +105,28 @@ test_that("getCovariateData function gives errors when it should", {
   spdf <- sp::SpatialPolygonsDataFrame(polys, response_df)
   
   expect_error(getCovariateRasters('/home/rasters', '.tif$', spdf))
-  expect_error(getCovariateRasters('Z:/users', '.tif$', spdf))
+  expect_error(getCovariateRasters(tempdir(), '.tif$', spdf))
   
+  # Save .tif files in tempdir()
+  r <- raster::raster(ncol=36, nrow=18)
+  r[] <- 1:raster::ncell(r)
+  raster::writeRaster(r, paste0(tempdir(), '/cov1.tif'))
+  raster::writeRaster(r, paste0(tempdir(), '/cov2.tif'))
+  
+  expect_is(getCovariateRasters(tempdir(), '.tif$', spdf), 'RasterBrick')
+  
+})
+
+test_that("extractCoordsForMesh function behaves as it should", {
+
+  # Create raster stack
+  r <- raster::raster(ncol=36, nrow=18)
+  r[] <- 1:raster::ncell(r)
+  r <- raster::stack(r, r)
+  
+  cov_data <- read.csv(paste0(tempdir(), '/cov_data.csv'))
+
+  expect_error(extractCoordsForMesh(cov_data, r))
+  expect_is(extractCoordsForMesh(r, cov_data), 'matrix')
+
 })
