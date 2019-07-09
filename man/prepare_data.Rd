@@ -23,7 +23,7 @@ Function to collect all data together for disaggregation model
 }
 \examples{
  \dontrun{
-  prepare_data(my_shapefile, cov_path)
+  prepare_data(my_shapefile, cov_raster_stack)
  }
 
 }

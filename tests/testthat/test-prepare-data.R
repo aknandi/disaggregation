@@ -22,7 +22,7 @@ test_that("Check prepare_data function works as expected", {
                          covariate_rasters = cov_rasters, 
                          mesh.args = list(max.edge = c(4.0, 8.0)))
   
-  expect_is(result, 'list')
+  expect_is(result, 'disag.data')
   expect_equal(length(result), 5)
   expect_equal(names(result), c('polygon_data', 'covariate_data', 'coords', 'startendindex', 'mesh'))
   expect_is(result$polygon_data, 'data.frame')
