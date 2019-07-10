@@ -1,0 +1,7 @@
+all: disaggregation.dll
+
+disaggregation.dll: disaggregation.cpp
+	Rscript --vanilla -e "TMB::compile('disaggregation.cpp', safeunload=FALSE)"
+
+clean:
+	rm -rf *o
