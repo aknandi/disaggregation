@@ -35,3 +35,4 @@ Suggests:
 LinkingTo: 
     TMB,
     RcppEigen
+SystemRequirements: GNU make
