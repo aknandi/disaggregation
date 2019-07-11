@@ -25,23 +25,25 @@ As the overhead for parallel computation in windows is high
 it only makes sense to parallelise in this way.
 }
 \examples{
+ \dontrun{
+  cds1 <- rbind(c(-180,-20), c(-160,5), c(-60, 0), c(-160,-60), c(-180,-20))
+  cds2 <- rbind(c(80,0), c(100,60), c(120,0), c(120,-55), c(80,0))
+  cds3 <- rbind(c(30,20), c(30,50), c(-40,40), c(-10,-30), c(50,10))
+  polys <- raster::spPolygons(cds1, cds2, cds3)
 
-cds1 <- rbind(c(-180,-20), c(-160,5), c(-60, 0), c(-160,-60), c(-180,-20))
-cds2 <- rbind(c(80,0), c(100,60), c(120,0), c(120,-55), c(80,0))
-cds3 <- rbind(c(30,20), c(30,50), c(-40,40), c(-10,-30), c(50,10))
-polys <- raster::spPolygons(cds1, cds2, cds3)
+  response_df <- data.frame(area_id = c('A', 'B', 'C'), response = c(4, 7, 2))
 
-response_df <- data.frame(area_id = c('A', 'B', 'C'), response = c(4, 7, 2))
+  spdf <- sp::SpatialPolygonsDataFrame(polys, response_df)
 
-spdf <- sp::SpatialPolygonsDataFrame(polys, response_df)
+  # Create raster stack
+  r <- raster::raster(ncol=36, nrow=18)
+  r[] <- 1:raster::ncell(r)
+  r <- raster::stack(r, r)
 
-# Create raster stack
-r <- raster::raster(ncol=36, nrow=18)
-r[] <- 1:raster::ncell(r)
-r <- raster::stack(r, r)
-
-cl <- parallel::makeCluster(2)
-doParallel::registerDoParallel(cl)
-parallel::stopCluster(cl)
-foreach::registerDoSEQ()
+  cl <- parallel::makeCluster(2)
+  doParallel::registerDoParallel(cl)
+  result <- parallelExtract(r, spdf, fun = NULL, id = 'area_id')
+  parallel::stopCluster(cl)
+  foreach::registerDoSEQ()
+ }
 }
