@@ -160,7 +160,7 @@ getCovariateRasters <- function(directory, file_pattern = '.tif$', shape) {
 
 extractCoordsForMesh <- function(cov_rasters, covariate_data) {
   
-  stopifnot(inherits(cov_rasters, 'RasterStack'))
+  stopifnot(inherits(cov_rasters, c('RasterStack', 'RasterBrick')))
   stopifnot(inherits(covariate_data, 'data.frame'))
   
   cov_rasters[[1]][raster::values(cov_rasters[[1]]) == NA] <- -9999

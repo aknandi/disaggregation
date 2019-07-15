@@ -16,7 +16,8 @@ test_that("Getting start and end index returns the right object", {
   response <- data.frame(area_id = c(1, 2, 3), response = c(4, 7, 2))
 
   result <- getStartendindex(covs, response, 'area_id')
-
+  save(result, file = paste0(tempdir(), '/test_startendindex.RData'))
+  
   expect_is(result, "matrix")
   expect_equal(nrow(result), nrow(response))
   expect_equal(ncol(result), 2)

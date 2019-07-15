@@ -29,7 +29,11 @@ prepare_data <- function(polygon_shapefile,
   
   polygon_data <- getPolygonData(polygon_shapefile, id_var = id_var, response_var = response_var)
   
+  cl <- parallel::makeCluster(raster::nlayers(covariate_rasters))
+  doParallel::registerDoParallel(cl)
   covariate_data <- parallelExtract(covariate_rasters, polygon_shapefile, fun = NULL, id = id_var)
+  parallel::stopCluster(cl)
+  foreach::registerDoSEQ()
   
   coords <- extractCoordsForMesh(covariate_rasters, covariate_data)
   
