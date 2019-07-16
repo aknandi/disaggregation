@@ -4,10 +4,12 @@
 \alias{fit_model}
 \title{Function to fit the disaggregation model}
 \usage{
-fit_model(data)
+fit_model(data, its = 10)
 }
 \arguments{
 \item{data}{disag.data object returned by prepare_data function that contains all the necessary objects for the model fitting}
+
+\item{its}{number of iterations to run the optimisation for}
 }
 \description{
 Function to fit the disaggregation model

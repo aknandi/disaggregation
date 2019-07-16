@@ -28,5 +28,7 @@ Function to build INLA mesh
 
 Function takes in SpatialPolygonDataFrame (response) and RasterStack (covariates) to produce a data structure required for the disaggregation modelling. Calls functions from extract, matching and build_mesh
 
+### Fit model
 
+Function takes data structure returned by prepare_data and fits a TMB disaggregation model
 

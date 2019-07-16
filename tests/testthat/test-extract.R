@@ -3,14 +3,20 @@ context("Extract covariates and polygon data")
 
 test_that("parallelExtract gives errors when it should", {
   
-  spdf <- rgdal::readOGR(paste0(tempdir(), '/test_spdf.shp'))
+  cds1 <- rbind(c(-120,-20), c(-100,5), c(-60, 0), c(-100,-60), c(-120,-20))
+  cds2 <- rbind(c(30,0), c(50,60), c(70,0), c(70,-55), c(30,0))
+  cds3 <- rbind(c(10,20), c(10,50), c(-60,40), c(-30,-30), c(30,10))
+  polys <- raster::spPolygons(cds1, cds2, cds3)
+  
+  response_df <- data.frame(area_id = c('1', '2', '3'), response = c(4, 7, 2))
+  
+  spdf <- sp::SpatialPolygonsDataFrame(polys, response_df)
   
   # Create raster stack
   r <- raster::raster(ncol=36, nrow=18)
   r[] <- 1:raster::ncell(r)
   r <- raster::stack(r, r)
-  raster::writeRaster(r, paste0(tempdir(), '/test_cov_stack.tif'))
-  
+
   cl <- parallel::makeCluster(2)
   doParallel::registerDoParallel(cl)
   
@@ -23,9 +29,18 @@ test_that("parallelExtract gives errors when it should", {
 
 test_that("parallelExtract give the right for of output", {
   
-  spdf <- rgdal::readOGR(paste0(tempdir(), '/test_spdf.shp'))
+  cds1 <- rbind(c(-120,-20), c(-100,5), c(-60, 0), c(-100,-60), c(-120,-20))
+  cds2 <- rbind(c(30,0), c(50,60), c(70,0), c(70,-55), c(30,0))
+  cds3 <- rbind(c(10,20), c(10,50), c(-60,40), c(-30,-30), c(30,10))
+  polys <- raster::spPolygons(cds1, cds2, cds3)
   
-  r <- raster::stack(paste0(tempdir(), '/test_cov_stack.tif'))
+  response_df <- data.frame(area_id = c('1', '2', '3'), response = c(4, 7, 2))
+  
+  spdf <- sp::SpatialPolygonsDataFrame(polys, response_df)
+  
+  r <- raster::raster(ncol=36, nrow=18)
+  r[] <- 1:raster::ncell(r)
+  r <- raster::stack(r, r)
 
   cl <- parallel::makeCluster(2)
   doParallel::registerDoParallel(cl)
@@ -46,21 +61,23 @@ test_that("parallelExtract give the right for of output", {
   expect_equal(names(r), names(result2)[-c(1)])
   expect_equal(length(unique(result2$area_id)), length(spdf))
   
-  # Save in tempdir() to be use in later test
-  write.csv(result1, file = paste0(tempdir(), '/test_cov_data.csv'))
-  
 })
 
 test_that("getPolygonData function", {
   
-  spdf <- rgdal::readOGR(paste0(tempdir(), '/test_spdf.shp'))
+  cds1 <- rbind(c(-120,-20), c(-100,5), c(-60, 0), c(-100,-60), c(-120,-20))
+  cds2 <- rbind(c(30,0), c(50,60), c(70,0), c(70,-55), c(30,0))
+  cds3 <- rbind(c(10,20), c(10,50), c(-60,40), c(-30,-30), c(30,10))
+  polys <- raster::spPolygons(cds1, cds2, cds3)
+  
+  response_df <- data.frame(area_id = c('1', '2', '3'), response = c(4, 7, 2))
+  
+  spdf <- sp::SpatialPolygonsDataFrame(polys, response_df)
 
   expect_error(getPolygonData(spdf, id_var = 'id', response_var = 'response'))
   expect_error(getPolygonData(spdf, id_var = 'area_id', response_var = 'data'))
   
   result <- getPolygonData(spdf, id_var = 'area_id', response_var = 'response')
-  
-  write.csv(result, file = paste0(tempdir(), '/test_polygon_data.csv'))
   
   expect_is(result, 'data.frame')
   expect_equal(ncol(result), 2)
@@ -72,7 +89,14 @@ test_that("getPolygonData function", {
 
 test_that("getCovariateData function gives errors when it should", {
   
-  spdf <- rgdal::readOGR(paste0(tempdir(), '/test_spdf.shp'))
+  cds1 <- rbind(c(-120,-20), c(-100,5), c(-60, 0), c(-100,-60), c(-120,-20))
+  cds2 <- rbind(c(30,0), c(50,60), c(70,0), c(70,-55), c(30,0))
+  cds3 <- rbind(c(10,20), c(10,50), c(-60,40), c(-30,-30), c(30,10))
+  polys <- raster::spPolygons(cds1, cds2, cds3)
+  
+  response_df <- data.frame(area_id = c('1', '2', '3'), response = c(4, 7, 2))
+  
+  spdf <- sp::SpatialPolygonsDataFrame(polys, response_df)
   
   expect_error(getCovariateRasters('/home/rasters', '.tif$', spdf))
   
@@ -88,12 +112,27 @@ test_that("getCovariateData function gives errors when it should", {
 
 test_that("extractCoordsForMesh function behaves as it should", {
 
-  r <- raster::stack(paste0(tempdir(), '/test_cov_stack.tif'))
-  cov_data <- read.csv(paste0(tempdir(), '/test_cov_data.csv'))
-
-  result <- extractCoordsForMesh(r, cov_data)
-  save(result, file = paste0(tempdir(), '/test_coords.RData'))
+  cds1 <- rbind(c(-120,-20), c(-100,5), c(-60, 0), c(-100,-60), c(-120,-20))
+  cds2 <- rbind(c(30,0), c(50,60), c(70,0), c(70,-55), c(30,0))
+  cds3 <- rbind(c(10,20), c(10,50), c(-60,40), c(-30,-30), c(30,10))
+  polys <- raster::spPolygons(cds1, cds2, cds3)
   
+  response_df <- data.frame(area_id = c('1', '2', '3'), response = c(4, 7, 2))
+  
+  spdf <- sp::SpatialPolygonsDataFrame(polys, response_df)
+  
+  r <- raster::raster(ncol=36, nrow=18)
+  r[] <- 1:raster::ncell(r)
+  r <- raster::stack(r, r)
+
+  cl <- parallel::makeCluster(2)
+  doParallel::registerDoParallel(cl)
+  cov_data <- parallelExtract(r, spdf, fun = NULL, id = 'area_id')
+  parallel::stopCluster(cl)
+  foreach::registerDoSEQ()
+  
+  result <- extractCoordsForMesh(r, cov_data)
+
   expect_error(extractCoordsForMesh(cov_data, r))
   expect_is(result, 'matrix')
 

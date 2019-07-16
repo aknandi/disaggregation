@@ -1,17 +1,18 @@
 #' Function to fit the disaggregation model
 #'
 #' @param data disag.data object returned by prepare_data function that contains all the necessary objects for the model fitting
-#'
+#' @param its number of iterations to run the optimisation for
+#' 
 #' @name fit_model
 #'
-#' @examples
+#' @examples 
 #'  \dontrun{
 #'   fit_model(my_data)
 #'  }
 #'
 #' @export
 
-fit_model <- function(data) {
+fit_model <- function(data, its = 10) {
   
   stopifnot(inherits(data, 'disag.data'))
   
@@ -22,9 +23,7 @@ fit_model <- function(data) {
   
   cov_matrix <- as.matrix(data$covariate_data[, -c(1:2)])
   cov_matrix <- t(apply(cov_matrix, 1,as.numeric))
-  
-  its <- 10
-  
+
   parameters <- list(intercept = -5,
                      slope = rep(0, ncol(cov_matrix)),
                      polygon_sd_coverage = 0.1,
