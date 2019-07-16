@@ -7,9 +7,9 @@
 #' @name getStartendindex
 #'
 #' @examples {
-#' covs <- data.frame(area_id = c(1, 1, 1, 2, 2, 3, 3, 3, 3), response = c(3, 9, 5, 2, 3, 6, 7, 3, 5))
-#' response <- data.frame(area_id = c(1, 2, 3), response = c(4, 7, 2))
-#' getStartendindex(covs, response, 'area_id')
+#'  covs <- data.frame(area_id = c(1, 1, 1, 2, 2, 3, 3, 3, 3), response = c(3, 9, 5, 2, 3, 6, 7, 3, 5))
+#'  response <- data.frame(area_id = c(1, 2, 3), response = c(4, 7, 2))
+#'  getStartendindex(covs, response, 'area_id')
 #' }
 #'
 #'
