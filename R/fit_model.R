@@ -5,7 +5,8 @@
 #' 
 #' @name fit_model
 #'
-#' @examples {
+#' @examples 
+#' \dontrun {
 #'  cds1 <- rbind(c(-120,-20), c(-100,5), c(-60, 0), c(-100,-60), c(-120,-20))
 #'  cds2 <- rbind(c(30,0), c(50,60), c(70,0), c(70,-55), c(30,0))
 #'  cds3 <- rbind(c(10,20), c(10,50), c(-60,40), c(-30,-30), c(30,10))
@@ -21,11 +22,11 @@
 #'  cov_rasters <- raster::stack(r, r)
 #' 
 #'  test_data <- prepare_data(polygon_shapefile = spdf, 
-#'                           covariate_rasters = cov_rasters,
-#'                           mesh.args = list(max.edge = c(50, 100)))
+#'                            covariate_rasters = cov_rasters,
+#'                            mesh.args = list(max.edge = c(50, 100)))
 #'                          
 #'  result <- fit_model(test_data, its = 2)
-#' }
+#'  }
 #' 
 #' @export
 
