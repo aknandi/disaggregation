@@ -30,7 +30,7 @@ Function to fit the disaggregation model
 Function to fit the disaggregation model
 }
 \examples{
-{
+\dontrun{
  cds1 <- rbind(c(-120,-20), c(-100,5), c(-60, 0), c(-100,-60), c(-120,-20))
  cds2 <- rbind(c(30,0), c(50,60), c(70,0), c(70,-55), c(30,0))
  cds3 <- rbind(c(10,20), c(10,50), c(-60,40), c(-30,-30), c(30,10))
@@ -50,7 +50,7 @@ Function to fit the disaggregation model
                            mesh.args = list(max.edge = c(50, 100)))
                          
  result <- fit_model(test_data, its = 2)
-}
+ }
 
 \dontrun{
   as.disag.data(polygon_data, covariate_data, coords, startendindex, mesh)
