@@ -33,6 +33,7 @@
 fit_model <- function(data, its = 10) {
   
   stopifnot(inherits(data, 'disag.data'))
+  stopifnot(inherits(its, 'numeric'))
   
   # Sort out mesh bits
   spde <- (INLA::inla.spde2.matern(data$mesh, alpha = 2)$param.inla)[c("M0", "M1", "M2")]	
@@ -54,7 +55,6 @@ fit_model <- function(data, its = 10) {
                      spde = spde,
                      startendindex = data$startendindex,
                      polygon_coverage_data = data$polygon_data$response)
-  
   
   obj <- TMB::MakeADFun(
     data = input_data, 

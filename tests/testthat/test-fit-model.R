@@ -23,6 +23,8 @@ test_that("fit_model produces errors whe expected", {
   
   result <- fit_model(test_data, its = 2)
   
+  expect_error(fit_model(list()))
+  expect_error(fit_model(test_data, its = 'its'))
   expect_is(result, 'list')
   expect_equal(length(result), 2)
   
