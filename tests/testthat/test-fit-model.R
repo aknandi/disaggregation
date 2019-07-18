@@ -25,7 +25,7 @@ test_that("fit_model produces errors whe expected", {
   
   expect_error(fit_model(list()))
   expect_error(fit_model(test_data, its = 'its'))
-  expect_is(result, 'list')
+  expect_is(result, 'fit.result')
   expect_equal(length(result), 3)
   
 })

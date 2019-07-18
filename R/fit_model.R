@@ -67,9 +67,13 @@ fit_model <- function(data, its = 10) {
   
   sd_out <- TMB::sdreport(obj, getJointPrecision = TRUE)
   
-  return(list(obj = obj,
-              opt = opt,
-              sd_out = sd_out))
+  model_output <- list(obj = obj,
+                       opt = opt,
+                       sd_out = sd_out)
+  
+  class(model_output) <- c('fit.result', 'list')
+  
+  return(model_output)
   
   
 }
