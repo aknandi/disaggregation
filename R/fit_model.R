@@ -65,8 +65,11 @@ fit_model <- function(data, its = 10) {
   
   opt <- stats::nlminb(obj$par, obj$fn, obj$gr, control = list(iter.max = its, eval.max = 2*its, trace = 0))
   
+  sd_out <- TMB::sdreport(obj, getJointPrecision = TRUE)
+  
   return(list(obj = obj,
-              opt = opt))
+              opt = opt,
+              sd_out = sd_out))
   
   
 }

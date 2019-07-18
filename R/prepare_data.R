@@ -56,7 +56,9 @@ prepare_data <- function(polygon_shapefile,
   
   mesh <- build_mesh(polygon_shapefile, mesh.args)
   
-  disag_data <- list(polygon_data = polygon_data,
+  disag_data <- list(polygon_shapefile = polygon_shapefile,
+                     covariate_rasters = covariate_rasters,
+                     polygon_data = polygon_data,
                      covariate_data = covariate_data,
                      coords = coords,
                      startendindex = startendindex,
@@ -70,13 +72,15 @@ prepare_data <- function(polygon_shapefile,
 
 #' Function to fit the disaggregation model
 #'
+#' @param polygon_shapefile SpatialPolygonDataFrame containing the response data 
+#' @param covariate_rasters RasterStack of covariates
 #' @param polygon_data data.frame with two columns: polygon id and response
 #' @param covariate_data data.frame with cell id, polygon id and covariate columns
 #' @param coords coordinates of the covariate data points
 #' @param startendindex matrix containing the start and end index for each polygon
 #' @param mesh inla.mesh object to use in the fit
 #' 
-#' @name fit_model
+#' @name as.disag.data
 #'
 #' @examples 
 #' \dontrun{
@@ -86,15 +90,25 @@ prepare_data <- function(polygon_shapefile,
 #' @export
 
 
-as.disag.data <- function(polygon_data, covariate_data, coords, startendindex, mesh) {
+as.disag.data <- function(polygon_shapefile, 
+                          covariate_rasters, 
+                          polygon_data, 
+                          covariate_data, 
+                          coords, 
+                          startendindex, 
+                          mesh) {
   
+  stopifnot(inherits(polygon_shapefile, 'SpatialPolygonsDataFrame'))
+  stopifnot(inherits(covariate_rasters, c('RasterBrick', 'RasterStack')))
   stopifnot(inherits(polygon_data, 'data.frame'))
   stopifnot(inherits(covariate_data, 'data.frame'))
   stopifnot(inherits(coords, 'matrix'))
   stopifnot(inherits(startendindex, 'matrix'))
   stopifnot(inherits(mesh, 'inla.mesh'))
   
-  disag_data <- list(polygon_data = polygon_data,
+  disag_data <- list(polygon_shapefile = polygon_shapefile,
+                     covariate_rasters = covariate_rasters,
+                     polygon_data = polygon_data,
                      covariate_data = covariate_data,
                      coords = coords,
                      startendindex = startendindex,

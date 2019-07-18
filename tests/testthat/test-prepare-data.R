@@ -21,8 +21,10 @@ test_that("Check prepare_data function works as expected", {
                          covariate_rasters = cov_rasters)
   
   expect_is(result, 'disag.data')
-  expect_equal(length(result), 5)
-  expect_equal(names(result), c('polygon_data', 'covariate_data', 'coords', 'startendindex', 'mesh'))
+  expect_equal(length(result), 7)
+  expect_equal(names(result), c('polygon_shapefile', 'covariate_rasters', 'polygon_data', 'covariate_data', 'coords', 'startendindex', 'mesh'))
+  expect_is(result$polygon_shapefile, 'SpatialPolygonsDataFrame')
+  expect_is(result$covariate_rasters, c('RasterBrick', 'RasterStack'))
   expect_is(result$polygon_data, 'data.frame')
   expect_is(result$covariate_data, 'data.frame')
   expect_is(result$coords, 'matrix')
@@ -63,11 +65,19 @@ test_that("Check as.disag.data function works as expected", {
   
   mesh <- build_mesh(spdf)
 
-  result <- as.disag.data(polygon_data, cov_data, coords, startendindex, mesh)
+  result <- as.disag.data(spdf, 
+                          r,
+                          polygon_data, 
+                          cov_data, 
+                          coords, 
+                          startendindex, 
+                          mesh)
   
   expect_is(result, 'disag.data')
-  expect_equal(length(result), 5)
-  expect_equal(names(result), c('polygon_data', 'covariate_data', 'coords', 'startendindex', 'mesh'))
+  expect_equal(length(result), 7)
+  expect_equal(names(result), c('polygon_shapefile', 'covariate_rasters', 'polygon_data', 'covariate_data', 'coords', 'startendindex', 'mesh'))
+  expect_is(result$polygon_shapefile, 'SpatialPolygonsDataFrame')
+  expect_is(result$covariate_rasters, c('RasterBrick', 'RasterStack'))
   expect_is(result$polygon_data, 'data.frame')
   expect_is(result$covariate_data, 'data.frame')
   expect_is(result$coords, 'matrix')
