@@ -29,7 +29,8 @@ Imports:
     TMB,
     RcppEigen,
     dplyr,
-    ggplot2
+    ggplot2,
+    cowplot
 Additional_repositories: https://inla.r-inla-download.org/R/stable
 Suggests: 
     testthat,

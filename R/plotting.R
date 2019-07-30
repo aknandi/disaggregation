@@ -18,10 +18,46 @@ plot.disag.data <- function(x, ...) {
   plots$covariates <- plot_covariate_data(x$covariate_rasters)
   plots$mesh <- plot_inla_mesh(x$mesh)
   
-  #print(cowplot::plot_grid(plotlist = plots))
+  return(invisible(plots))
+}
+
+#' Plot results of fitted model
+#'
+#' @param x Object to be plotted
+#' @param ... Further arguments passed to or from other methods.
+#' 
+#' @import ggplot2
+#' 
+#' @name plot.fit.result
+#' 
+#' @export
+
+
+plot.fit.result <- function(x, ...){
+  
+  posteriors <- as.data.frame(summary(x$sd_out, select = 'fixed'))
+  posteriors <- dplyr::mutate(posteriors, name = rownames(posteriors))
+  names(posteriors) <- c('mean', 'sd', 'parameter')
+
+  fixedeffects <- ggplot() + 
+    geom_errorbar(posteriors, mapping = aes(x = parameter, ymin = mean - sd, ymax = mean + sd), width=0.2, color="blue") + 
+    geom_point(posteriors, mapping = aes(x = parameter, y = mean)) + 
+    ggtitle("Fixed effects")
+  
+  report <- x$obj$report()
+  data <- data.frame(obs = report$polygon_coverage_data, pred = report$reportprediction)
+  
+  obspred <- ggplot(data, aes(x = obs, y = pred)) + 
+    geom_point() + 
+    geom_abline(intercept = 0, slope = 1, color = 'blue') + 
+    ggtitle("In sample performance")
+  
+  plots <- list(fixedeffects, obspred)
+  print(cowplot::plot_grid(plotlist = plots))
   
   return(invisible(plots))
 }
+
 
 #' Plot polygon data from SpatialPolygonDataFrame
 #'
@@ -57,11 +93,6 @@ plot_polygon_data <- function(x) {
 plot_covariate_data <- function(x) {
   
   stopifnot(inherits(x, c('RasterStack', 'RasterBrick')))
-
-  # cov_df <- raster::as.data.frame(x, xy = TRUE)
-  # cov_df <- reshape2::melt(cov_df, id.vars = c('x','y'))
-  # 
-  # p <- ggplot() + geom_raster(data = cov_df, aes(x = x, y = y, fill = value)) + facet_wrap(~variable)
 
   p <- sp::spplot(x)
   

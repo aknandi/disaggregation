@@ -23,6 +23,8 @@ test_that("fit_model produces errors whe expected", {
   
   result <- fit_model(test_data, its = 2)
   
+  save(result, file = paste0(tempdir(), '/test_fit_result.RData'))
+  
   expect_error(fit_model(list()))
   expect_error(fit_model(test_data, its = 'its'))
   expect_is(result, 'fit.result')

@@ -77,3 +77,12 @@ test_that("Check plot.disag.data function works as expected", {
   
 })
 
+test_that("Check plot_polygon_data function works as expected", {
+  
+  fit_result <- get(load(paste0(tempdir(), '/test_fit_result.RData')))
+  
+  p <- plot(fit_result)
+  expect_is(p, 'list')
+  
+})
+
