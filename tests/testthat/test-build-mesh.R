@@ -3,13 +3,16 @@ context("Build mesh")
 
 test_that("build_mesh behaves as expected", {
   
-  cds1 <- rbind(c(-120,-20), c(-100,5), c(-60, 0), c(-100,-60), c(-120,-20))
-  cds2 <- rbind(c(30,0), c(50,60), c(70,0), c(70,-55), c(30,0))
-  cds3 <- rbind(c(10,20), c(10,50), c(-60,40), c(-30,-30), c(30,10))
-  polys <- raster::spPolygons(cds1, cds2, cds3)
+  polygons <- list()
+  for(i in 1:100) {
+    row <- ceiling(i/10)
+    col <- ifelse(i %% 10 != 0, i %% 10, 10)
+    xmin = 2*(col - 1); xmax = 2*col; ymin = 2*(row - 1); ymax = 2*row
+    polygons[[i]] <- rbind(c(xmin, ymax), c(xmax,ymax), c(xmax, ymin), c(xmin,ymin))
+  }
   
-  response_df <- data.frame(area_id = c('1', '2', '3'), response = c(4, 7, 2))
-  
+  polys <- do.call(raster::spPolygons, polygons)
+  response_df <- data.frame(area_id = 1:100, response = runif(100, min = 0, max = 10))
   spdf <- sp::SpatialPolygonsDataFrame(polys, response_df)
 
   my_mesh <- build_mesh(spdf)

@@ -26,23 +26,27 @@ it only makes sense to parallelise in this way.
 }
 \examples{
  \dontrun{
-  cds1 <- rbind(c(-180,-20), c(-160,5), c(-60, 0), c(-160,-60), c(-180,-20))
-  cds2 <- rbind(c(80,0), c(100,60), c(120,0), c(120,-55), c(80,0))
-  cds3 <- rbind(c(30,20), c(30,50), c(-40,40), c(-10,-30), c(50,10))
-  polys <- raster::spPolygons(cds1, cds2, cds3)
+  polygons <- list()
+  for(i in 1:100) {
+    row <- ceiling(i/10)
+    col <- ifelse(i \%\% 10 != 0, i \%\% 10, 10)
+    xmin = 2*(col - 1); xmax = 2*col; ymin = 2*(row - 1); ymax = 2*row
+    polygons[[i]] <- rbind(c(xmin, ymax), c(xmax,ymax), c(xmax, ymin), c(xmin,ymin))
+  }
 
-  response_df <- data.frame(area_id = c('A', 'B', 'C'), response = c(4, 7, 2))
-
+  polys <- do.call(raster::spPolygons, polygons)
+  response_df <- data.frame(area_id = 1:100, response = runif(100, min = 0, max = 10))
   spdf <- sp::SpatialPolygonsDataFrame(polys, response_df)
 
-  # Create raster stack
-  r <- raster::raster(ncol=36, nrow=18)
-  r[] <- 1:raster::ncell(r)
-  r <- raster::stack(r, r)
+  r <- raster::raster(ncol=20, nrow=20)
+  r[] <- sapply(1:raster::ncell(r), function(x) rnorm(1, ifelse(x \%\% 20 != 0, x \%\% 20, 20), 3))
+  r2 <- raster::raster(ncol=20, nrow=20)
+  r2[] <- sapply(1:raster::ncell(r), function(x) rnorm(1, ceiling(x/10), 3))
+  cov_rasters <- raster::stack(r, r2)
 
   cl <- parallel::makeCluster(2)
   doParallel::registerDoParallel(cl)
-  result <- parallelExtract(r, spdf, fun = NULL, id = 'area_id')
+  result <- parallelExtract(cov_rasters, spdf, fun = NULL, id = 'area_id')
   parallel::stopCluster(cl)
   foreach::registerDoSEQ()
  }

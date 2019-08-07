@@ -4,8 +4,7 @@
 #' @param ... Further arguments passed to or from other methods.
 #' 
 #' @import ggplot2
-#' 
-#' @name plot.disag.data
+#' @method plot disag.data
 #' 
 #' @export
 
@@ -27,8 +26,7 @@ plot.disag.data <- function(x, ...) {
 #' @param ... Further arguments passed to or from other methods.
 #' 
 #' @import ggplot2
-#' 
-#' @name plot.fit.result
+#' @method plot fit.result
 #' 
 #' @export
 
