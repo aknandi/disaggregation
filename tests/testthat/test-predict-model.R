@@ -1,7 +1,6 @@
+context("Predict model")
 
-context("Fitting model")
-
-test_that("fit_model produces errors whe expected", {
+test_that("Check predict_model function works as expected", {
   
   polygons <- list()
   for(i in 1:100) {
@@ -31,11 +30,13 @@ test_that("fit_model produces errors whe expected", {
   
   result <- fit_model(test_data, its = 2)
   
-  save(result, file = paste0(tempdir(), '/test_fit_result.RData'))
+  preds <- predict_model(test_data, result)
   
-  expect_error(fit_model(list()))
-  expect_error(fit_model(test_data, its = 'its'))
-  expect_is(result, 'fit.result')
-  expect_equal(length(result), 3)
+  expect_is(preds, 'predictions')
+  expect_equal(length(preds), 3)
+  expect_equal(names(preds), c('prediction', 'field', 'covariates'))
+  expect_is(preds$prediction, 'Raster')
+  expect_is(preds$field, 'Raster')
+  expect_is(preds$covariates, 'Raster')
   
 })

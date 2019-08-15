@@ -22,8 +22,12 @@ test_that("Check prepare_data function works as expected", {
   r2[] <- sapply(1:raster::ncell(r), function(x) rnorm(1, ceiling(x/10), 3))
   cov_rasters <- raster::stack(r, r2)
   
+  cl <- parallel::makeCluster(2)
+  doParallel::registerDoParallel(cl)
   result <- prepare_data(polygon_shapefile = spdf, 
-                         covariate_rasters = cov_rasters)
+                            covariate_rasters = cov_rasters)
+  parallel::stopCluster(cl)
+  foreach::registerDoSEQ()
   
   expect_is(result, 'disag.data')
   expect_equal(length(result), 7)
