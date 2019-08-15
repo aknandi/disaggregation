@@ -14,7 +14,7 @@ summary.fit.result <- function(object, ...) {
   report <- object$obj$report()
   nll <- report$nll
   
-  in_sample <- data.frame(obs = report$polygon_coverage_data, pred = report$reportprediction)
+  in_sample <- data.frame(obs = report$polygon_response_data, pred = report$reportprediction)
   in_sample_reduced <- in_sample[!is.na(in_sample$pred), ]
   metrics <- dplyr::summarise(in_sample_reduced, 
                               RMSE = sqrt(mean((pred - obs) ^ 2)),

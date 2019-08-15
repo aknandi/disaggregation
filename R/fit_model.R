@@ -52,7 +52,7 @@ fit_model <- function(data, its = 10) {
 
   parameters <- list(intercept = -5,
                      slope = rep(0, ncol(cov_matrix)),
-                     polygon_sd_coverage = 0.1,
+                     polygon_sd = 0.1,
                      log_kappa = -3,
                      log_tau = -0.5,
                      nodemean = rep(0, n_s))
@@ -61,7 +61,7 @@ fit_model <- function(data, its = 10) {
                      Apixel = Apix,
                      spde = spde,
                      startendindex = data$startendindex,
-                     polygon_coverage_data = data$polygon_data$response)
+                     polygon_response_data = data$polygon_data$response)
   
   obj <- TMB::MakeADFun(
     data = input_data, 

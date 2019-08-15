@@ -5,8 +5,8 @@
 // Data: Spatial field mesh and matrices, polygon data, covariate pixel data
 
 // The model:
-// coverage = inv.logit( raster covariates + spatial field 2016)
-// polygon coverage = sum(pixel pop x coverage) / sum(pixel pop) + normal or gamma error
+// response = inv.logit( raster covariates + spatial field 2016)
+// polygon response = sum(pixel pop x response) / sum(pixel pop) + normal or gamma error
 
 #define TMB_LIB_INIT R_init_disaggregation
 #include <TMB.hpp>
@@ -43,7 +43,7 @@ Type objective_function<Type>::operator()()
   DATA_IARRAY(startendindex);
   
   // Shape data. Cases and region id.
-  DATA_VECTOR(polygon_coverage_data);
+  DATA_VECTOR(polygon_response_data);
   
   // ------------------------------------------------------------------------ //
   // Parameters
@@ -58,9 +58,9 @@ Type objective_function<Type>::operator()()
   Type priorsd_slope = 0.5;
   
   // Priors for beta liklihood
-  PARAMETER(polygon_sd_coverage);
-  Type polygon_sd_coverage_mean = 0.1;
-  Type polygon_sd_coverage_sd = 0.1;
+  PARAMETER(polygon_sd);
+  Type polygon_sd_mean = 0.1;
+  Type polygon_sd_sd = 0.1;
   
   /* // iid random effect for each country. Length is the number of countries in analysis.
   PARAMETER_VECTOR(admin0_slope);
@@ -92,7 +92,7 @@ Type objective_function<Type>::operator()()
   
   // get number of data points to loop over
   // y (cases) length
-  int n_polygons = polygon_coverage_data.size();
+  int n_polygons = polygon_response_data.size();
   // Number of pixels
   int n_pixels = x.rows();
   
@@ -111,7 +111,7 @@ Type objective_function<Type>::operator()()
   nll -= dnorm(admin0_slope[s], priormean_admin0_slope, priorsd_admin0_slope, true);
 } */
   
-  nll -= dnorm(polygon_sd_coverage, polygon_sd_coverage_mean, polygon_sd_coverage_sd, true);
+  nll -= dnorm(polygon_sd, polygon_sd_mean, polygon_sd_sd, true);
   
   // Likelihood of hyperparameters for 2016 field
   nll -= dnorm(log_kappa, priormean_log_kappa, priorsd_log_kappa, true);
@@ -152,20 +152,20 @@ Type objective_function<Type>::operator()()
   for (int polygon = 0; polygon < n_polygons; polygon++) {
     // Sum pixel risks (raster + field
     
-    // Get pixel level coverage
+    // Get pixel level predictions
     pixel_pred = pixel_linear_pred.segment(startendindex(polygon, 0), startendindex(polygon, 1)).array(); // + admin0_slope[shapeadmin0[polygon] - 1];
     pixel_pred = invlogit(pixel_pred);
     
     reportprediction[polygon] = sum(pixel_pred);
     
-    // Calculate likelihood from coverage estimate
-    nll -= dnorm(polygon_coverage_data[polygon], reportprediction[polygon], polygon_sd_coverage, true);
-    reportnll[polygon] = -dnorm(polygon_coverage_data[polygon], reportprediction[polygon], polygon_sd_coverage, true);
+    // Calculate likelihood from polygon prediction
+    nll -= dnorm(polygon_response_data[polygon], reportprediction[polygon], polygon_sd, true);
+    reportnll[polygon] = -dnorm(polygon_response_data[polygon], reportprediction[polygon], polygon_sd, true);
   }
   
   REPORT(reportprediction);
   REPORT(reportnll);
-  REPORT(polygon_coverage_data);
+  REPORT(polygon_response_data);
   REPORT(nll1);
   REPORT(nll);
   

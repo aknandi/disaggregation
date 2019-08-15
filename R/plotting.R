@@ -43,7 +43,7 @@ plot.fit.result <- function(x, ...){
     ggtitle("Fixed effects")
   
   report <- x$obj$report()
-  data <- data.frame(obs = report$polygon_coverage_data, pred = report$reportprediction)
+  data <- data.frame(obs = report$polygon_response_data, pred = report$reportprediction)
   
   obspred <- ggplot(data, aes(x = obs, y = pred)) + 
     geom_point() + 
