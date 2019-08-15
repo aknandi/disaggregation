@@ -61,7 +61,6 @@ plot.fit.result <- function(x, ...){
 #' @param x Object to be plotted
 #' @param ... Further arguments passed to or from other methods.
 #' 
-#' @import ggplot2
 #' @method plot predictions
 #' 
 #' @export
@@ -80,6 +79,25 @@ plot.predictions <- function(x, ...) {
   plots <- list(mean_plot, field_plot, covariate_plot)
   
   return(invisible(plots))
+}
+
+#' Plot uncertainty
+#' 
+#' @param x Object to be plotted
+#' @param ... Further arguments passed to or from other methods.
+#' 
+#' @method plot uncertainty
+#' 
+#' @export
+
+
+plot.uncertainty <- function(x, ...) {
+  
+  unc_plot <- sp::spplot(x$predictions_ci)
+  
+  print(unc_plot)
+  
+  return(invisible(unc_plot))
 }
 
 #' Plot polygon data from SpatialPolygonDataFrame

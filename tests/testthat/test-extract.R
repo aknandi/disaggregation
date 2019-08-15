@@ -1,27 +1,28 @@
 
 context("Extract covariates and polygon data")
 
+polygons <- list()
+for(i in 1:100) {
+  row <- ceiling(i/10)
+  col <- ifelse(i %% 10 != 0, i %% 10, 10)
+  xmin = 2*(col - 1); xmax = 2*col; ymin = 2*(row - 1); ymax = 2*row
+  polygons[[i]] <- rbind(c(xmin, ymax), c(xmax,ymax), c(xmax, ymin), c(xmin,ymin))
+}
+
+polys <- do.call(raster::spPolygons, polygons)
+response_df <- data.frame(area_id = 1:100, response = runif(100, min = 0, max = 10))
+spdf <- sp::SpatialPolygonsDataFrame(polys, response_df)
+
+# Create raster stack
+r <- raster::raster(ncol=20, nrow=20)
+r[] <- sapply(1:raster::ncell(r), function(x) rnorm(1, ifelse(x %% 20 != 0, x %% 20, 20), 3))
+r2 <- raster::raster(ncol=20, nrow=20)
+r2[] <- sapply(1:raster::ncell(r), function(x) rnorm(1, ceiling(x/10), 3))
+cov_stack <- raster::stack(r, r2)
+
+
 test_that("parallelExtract gives errors when it should", {
   
-  polygons <- list()
-  for(i in 1:100) {
-    row <- ceiling(i/10)
-    col <- ifelse(i %% 10 != 0, i %% 10, 10)
-    xmin = 2*(col - 1); xmax = 2*col; ymin = 2*(row - 1); ymax = 2*row
-    polygons[[i]] <- rbind(c(xmin, ymax), c(xmax,ymax), c(xmax, ymin), c(xmin,ymin))
-  }
-  
-  polys <- do.call(raster::spPolygons, polygons)
-  response_df <- data.frame(area_id = 1:100, response = runif(100, min = 0, max = 10))
-  spdf <- sp::SpatialPolygonsDataFrame(polys, response_df)
-  
-  # Create raster stack
-  r <- raster::raster(ncol=20, nrow=20)
-  r[] <- sapply(1:raster::ncell(r), function(x) rnorm(1, ifelse(x %% 20 != 0, x %% 20, 20), 3))
-  r2 <- raster::raster(ncol=20, nrow=20)
-  r2[] <- sapply(1:raster::ncell(r), function(x) rnorm(1, ceiling(x/10), 3))
-  cov_stack <- raster::stack(r, r2)
-
   cl <- parallel::makeCluster(2)
   doParallel::registerDoParallel(cl)
   
@@ -34,25 +35,6 @@ test_that("parallelExtract gives errors when it should", {
 
 test_that("parallelExtract give the right for of output", {
   
-  polygons <- list()
-  for(i in 1:100) {
-    row <- ceiling(i/10)
-    col <- ifelse(i %% 10 != 0, i %% 10, 10)
-    xmin = 2*(col - 1); xmax = 2*col; ymin = 2*(row - 1); ymax = 2*row
-    polygons[[i]] <- rbind(c(xmin, ymax), c(xmax,ymax), c(xmax, ymin), c(xmin,ymin))
-  }
-  
-  polys <- do.call(raster::spPolygons, polygons)
-  response_df <- data.frame(area_id = 1:100, response = runif(100, min = 0, max = 10))
-  spdf <- sp::SpatialPolygonsDataFrame(polys, response_df)
-  
-  # Create raster stack
-  r <- raster::raster(ncol=20, nrow=20)
-  r[] <- sapply(1:raster::ncell(r), function(x) rnorm(1, ifelse(x %% 20 != 0, x %% 20, 20), 3))
-  r2 <- raster::raster(ncol=20, nrow=20)
-  r2[] <- sapply(1:raster::ncell(r), function(x) rnorm(1, ceiling(x/10), 3))
-  cov_stack <- raster::stack(r, r2)
-
   cl <- parallel::makeCluster(2)
   doParallel::registerDoParallel(cl)
   result1 <- parallelExtract(cov_stack, spdf, fun = NULL, id = 'area_id')
@@ -76,18 +58,6 @@ test_that("parallelExtract give the right for of output", {
 
 test_that("getPolygonData function", {
   
-  polygons <- list()
-  for(i in 1:100) {
-    row <- ceiling(i/10)
-    col <- ifelse(i %% 10 != 0, i %% 10, 10)
-    xmin = 2*(col - 1); xmax = 2*col; ymin = 2*(row - 1); ymax = 2*row
-    polygons[[i]] <- rbind(c(xmin, ymax), c(xmax,ymax), c(xmax, ymin), c(xmin,ymin))
-  }
-  
-  polys <- do.call(raster::spPolygons, polygons)
-  response_df <- data.frame(area_id = 1:100, response = runif(100, min = 0, max = 10))
-  spdf <- sp::SpatialPolygonsDataFrame(polys, response_df)
-
   expect_error(getPolygonData(spdf, id_var = 'id', response_var = 'response'))
   expect_error(getPolygonData(spdf, id_var = 'area_id', response_var = 'data'))
   
@@ -102,18 +72,6 @@ test_that("getPolygonData function", {
 })
 
 test_that("getCovariateData function gives errors when it should", {
-  
-  polygons <- list()
-  for(i in 1:100) {
-    row <- ceiling(i/10)
-    col <- ifelse(i %% 10 != 0, i %% 10, 10)
-    xmin = 2*(col - 1); xmax = 2*col; ymin = 2*(row - 1); ymax = 2*row
-    polygons[[i]] <- rbind(c(xmin, ymax), c(xmax,ymax), c(xmax, ymin), c(xmin,ymin))
-  }
-  
-  polys <- do.call(raster::spPolygons, polygons)
-  response_df <- data.frame(area_id = 1:100, response = runif(100, min = 0, max = 10))
-  spdf <- sp::SpatialPolygonsDataFrame(polys, response_df)
   
   expect_error(getCovariateRasters('/home/rasters', '.tif$', spdf))
   
@@ -131,24 +89,6 @@ test_that("getCovariateData function gives errors when it should", {
 })
 
 test_that("extractCoordsForMesh function behaves as it should", {
-
-  polygons <- list()
-  for(i in 1:100) {
-    row <- ceiling(i/10)
-    col <- ifelse(i %% 10 != 0, i %% 10, 10)
-    xmin = 2*(col - 1); xmax = 2*col; ymin = 2*(row - 1); ymax = 2*row
-    polygons[[i]] <- rbind(c(xmin, ymax), c(xmax,ymax), c(xmax, ymin), c(xmin,ymin))
-  }
-  
-  polys <- do.call(raster::spPolygons, polygons)
-  response_df <- data.frame(area_id = 1:100, response = runif(100, min = 0, max = 10))
-  spdf <- sp::SpatialPolygonsDataFrame(polys, response_df)
-  
-  r <- raster::raster(ncol=20, nrow=20)
-  r[] <- sapply(1:raster::ncell(r), function(x) rnorm(1, ifelse(x %% 20 != 0, x %% 20, 20), 3))
-  r2 <- raster::raster(ncol=20, nrow=20)
-  r2[] <- sapply(1:raster::ncell(r), function(x) rnorm(1, ceiling(x/10), 3))
-  cov_stack <- raster::stack(r, r2)
 
   cl <- parallel::makeCluster(2)
   doParallel::registerDoParallel(cl)
