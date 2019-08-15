@@ -56,6 +56,31 @@ plot.fit.result <- function(x, ...){
   return(invisible(plots))
 }
 
+#' Plot predictions
+#'
+#' @param x Object to be plotted
+#' @param ... Further arguments passed to or from other methods.
+#' 
+#' @import ggplot2
+#' @method plot predictions
+#' 
+#' @export
+
+
+plot.predictions <- function(x, ...) {
+  
+  mean_plot <- sp::spplot(x$prediction)
+  field_plot <- sp::spplot(x$field)
+  covariate_plot <- sp::spplot(x$covariates)
+  
+  print(mean_plot)
+  print(field_plot)
+  print(covariate_plot)
+  
+  plots <- list(mean_plot, field_plot, covariate_plot)
+  
+  return(invisible(plots))
+}
 
 #' Plot polygon data from SpatialPolygonDataFrame
 #'

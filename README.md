@@ -36,8 +36,13 @@ Function takes in SpatialPolygonDataFrame (response) and RasterStack (covariates
 
 Function takes data structure returned by prepare_data and fits a TMB disaggregation model
 
+## Model prediction
+
+### Predict model
+
+Function takes data structure returned by prepare_data and fit_model to predict model results
 
 ## Plotting
 
-Plotting functions for input data (Not yet: model results and predictions)
+Plotting functions for input data, model results and predictions
 

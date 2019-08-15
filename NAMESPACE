@@ -2,6 +2,7 @@
 
 S3method(plot,disag.data)
 S3method(plot,fit.result)
+S3method(plot,predictions)
 export(as.disag.data)
 export(build_mesh)
 export(extractCoordsForMesh)
