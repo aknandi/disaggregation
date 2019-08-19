@@ -1,6 +1,7 @@
 #' Function to fit the disaggregation model
 #'
 #' @param data disag.data object returned by prepare_data function that contains all the necessary objects for the model fitting
+#' @param priors list of prior values
 #' @param its number of iterations to run the optimisation for
 #' 
 #' @name fit_model
@@ -37,9 +38,10 @@
 #' 
 #' @export
 
-fit_model <- function(data, its = 10) {
+fit_model <- function(data, priors = NULL, its = 10) {
   
   stopifnot(inherits(data, 'disag.data'))
+  if(!is.null(priors)) stopifnot(inherits(priors, 'list'))
   stopifnot(inherits(its, 'numeric'))
   
   # Sort out mesh bits
@@ -49,6 +51,42 @@ fit_model <- function(data, its = 10) {
   
   cov_matrix <- as.matrix(data$covariate_data[, -c(1:2)])
   cov_matrix <- t(apply(cov_matrix, 1,as.numeric))
+  
+  # Default priors if they are not specified
+  default_priors <- list(polygon_sd_mean = 0.1,
+                         polygon_sd_sd = 0.1,
+                         priormean_intercept = -4.0,
+                         priorsd_intercept = 2.0,
+                         priormean_slope = 0.0,
+                         priorsd_slope = 0.5,
+                         priorsd_iideffect = 0.05,
+                         priormean_log_kappa = -3,
+                         priorsd_log_kappa = 0.5,
+                         priormean_log_tau = -0.50,
+                         priorsd_log_tau = 2.0,
+                         priorsd_log_tau = 3.0)
+  
+  # Replace with any specified priors
+  if(!is.null(priors)) {
+    final_priors <- default_priors
+    prior_names <- names(priors)
+    # Check all input priors are named correctly
+    if(sum(!(prior_names %in% names(final_priors))) != 0) {
+      stop(paste(prior_names[!(prior_names %in% names(final_priors))], 'is not the name of a prior'))
+    }
+    # Check priors are not specified multiple times
+    if(sum(duplicated(names(priors))) != 0) {
+      message(paste(names(priors)[duplicated(names(priors))],'are specified multiple times. Will only take first value'))
+      priors <- priors[!duplicated(names(priors))]
+    }
+    # Replace default value with new prior value
+    for(i in 1:length(priors)) {
+      prior_to_replace <- prior_names[i]
+      final_priors[[prior_to_replace]] <- priors[[prior_to_replace]]
+    }
+  } else {
+    final_priors <- default_priors
+  }
 
   parameters <- list(intercept = -5,
                      slope = rep(0, ncol(cov_matrix)),
@@ -62,18 +100,9 @@ fit_model <- function(data, its = 10) {
                      Apixel = Apix,
                      spde = spde,
                      startendindex = data$startendindex,
-                     polygon_response_data = data$polygon_data$response,
-                     polygon_sd_mean = 0.1,
-                     polygon_sd_sd = 0.1,
-                     priormean_intercept = -4.0,
-                     priorsd_intercept = 2.0,
-                     priormean_slope = 0.0,
-                     priorsd_slope = 0.5,
-                     priorsd_iideffect = 0.05,
-                     priormean_log_kappa = -3,
-                     priorsd_log_kappa = 0.5,
-                     priormean_log_tau = -0.50,
-                     priorsd_log_tau = 2.0)
+                     polygon_response_data = data$polygon_data$response)
+  
+  input_data <- c(input_data, final_priors)
   
   obj <- TMB::MakeADFun(
     data = input_data, 
