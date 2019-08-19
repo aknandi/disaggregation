@@ -52,15 +52,15 @@ Type objective_function<Type>::operator()()
   PARAMETER(intercept);
   PARAMETER_VECTOR(slope);
   
-  Type priormean_intercept = -4.0;
-  Type priorsd_intercept = 2.0; //priormean_intercept from data entry
-  Type priormean_slope = 0.0;
-  Type priorsd_slope = 0.5;
+  DATA_SCALAR(priormean_intercept);
+  DATA_SCALAR(priorsd_intercept);
+  DATA_SCALAR(priormean_slope);
+  DATA_SCALAR(priorsd_slope);
   
-  // Priors for beta liklihood
+  // Priors for liklihood
   PARAMETER(polygon_sd);
-  Type polygon_sd_mean = 0.1;
-  Type polygon_sd_sd = 0.1;
+  DATA_SCALAR(polygon_sd_mean);
+  DATA_SCALAR(polygon_sd_sd);
   
   /* // iid random effect for each country. Length is the number of countries in analysis.
   PARAMETER_VECTOR(admin0_slope);
@@ -77,10 +77,11 @@ Type objective_function<Type>::operator()()
   // Priors on spde hyperparameters
   //   kappa -- i.e. exp(priormean_log_kappa) -- set as approximately the width of the region being studied. This implies prior belief in a fairly flat field.
   //   tau -- exp(priormean_log_tau) -- set to close to zero. Betas on regression coefficients have priors of 0 so this is reasonable.
-  Type priormean_log_kappa = -3;
-  Type priorsd_log_kappa = 0.5;
-  Type priormean_log_tau = -0.50;
-  Type priorsd_log_tau = 2.0;
+  
+  DATA_SCALAR(priormean_log_kappa);
+  DATA_SCALAR(priorsd_log_kappa);
+  DATA_SCALAR(priormean_log_tau);
+  DATA_SCALAR(priorsd_log_tau);
   
   // Convert hyperparameters to natural scale
   Type tau = exp(log_tau);

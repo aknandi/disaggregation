@@ -61,7 +61,17 @@ fit_model <- function(data, its = 10) {
                      Apixel = Apix,
                      spde = spde,
                      startendindex = data$startendindex,
-                     polygon_response_data = data$polygon_data$response)
+                     polygon_response_data = data$polygon_data$response,
+                     polygon_sd_mean = 0.1,
+                     polygon_sd_sd = 0.1,
+                     priormean_intercept = -4.0,
+                     priorsd_intercept = 2.0,
+                     priormean_slope = 0.0,
+                     priorsd_slope = 0.5,
+                     priormean_log_kappa = -3,
+                     priorsd_log_kappa = 0.5,
+                     priormean_log_tau = -0.50,
+                     priorsd_log_tau = 2.0)
   
   obj <- TMB::MakeADFun(
     data = input_data, 
