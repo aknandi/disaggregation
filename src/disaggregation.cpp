@@ -31,13 +31,8 @@ Type objective_function<Type>::operator()()
   // Polygon level data
   // ------------------------------------------------------------------------ //
   
-  // Pixel data.
-  // All in long format so that if a pixel is in multiple polygons or multiple years, it will be represented by multiple rows.
-  // Environmental/other covariates data matrix
+  // Covariate pixel data
   DATA_MATRIX(x);
-  
-  // ADMIN0 region id (pixel i is in ADMIN0 polygon j). Sorted by... shapefile id
-  //DATA_IVECTOR(shapeadmin0);
   
   // two col matrix with start end indices for each shape case.
   DATA_IARRAY(startendindex);
@@ -62,22 +57,17 @@ Type objective_function<Type>::operator()()
   DATA_SCALAR(polygon_sd_mean);
   DATA_SCALAR(polygon_sd_sd);
   
-  /* // iid random effect for each country. Length is the number of countries in analysis.
-  PARAMETER_VECTOR(admin0_slope);
+  // iid random effect for each polygon
+  PARAMETER_VECTOR(iideffect);
   
-  Type priormean_admin0_slope = 0.0;
-  DATA_SCALAR(priorsd_admin0_slope); */
+  Type priormean_iideffect = 0.0;
+  DATA_SCALAR(priorsd_iideffect);
   
-  // 2016 spde hyperparameters
-  // tau defines strength of random field.
-  // kappa defines distance within which points in field affect each other.
+  // spde hyperparameters
   PARAMETER(log_kappa);
   PARAMETER(log_tau);
   
   // Priors on spde hyperparameters
-  //   kappa -- i.e. exp(priormean_log_kappa) -- set as approximately the width of the region being studied. This implies prior belief in a fairly flat field.
-  //   tau -- exp(priormean_log_tau) -- set to close to zero. Betas on regression coefficients have priors of 0 so this is reasonable.
-  
   DATA_SCALAR(priormean_log_kappa);
   DATA_SCALAR(priorsd_log_kappa);
   DATA_SCALAR(priormean_log_tau);
@@ -87,12 +77,10 @@ Type objective_function<Type>::operator()()
   Type tau = exp(log_tau);
   Type kappa = exp(log_kappa);
   
-  // Space-time random effect parameters
-  // matrix logit_pr_offset [nrows = n_mesh, col=n_years].
+  // Random effect parameters
   PARAMETER_VECTOR(nodemean);
   
-  // get number of data points to loop over
-  // y (cases) length
+  // Number of polygons
   int n_polygons = polygon_response_data.size();
   // Number of pixels
   int n_pixels = x.rows();
@@ -108,13 +96,13 @@ Type objective_function<Type>::operator()()
     nll -= dnorm(slope[s], priormean_slope, priorsd_slope, true);
   }
   
-  /* for(int s = 0; s < admin0_slope.size(); s++){
-  nll -= dnorm(admin0_slope[s], priormean_admin0_slope, priorsd_admin0_slope, true);
-} */
+  for(int s = 0; s < iideffect.size(); s++){
+    nll -= dnorm(iideffect[s], priormean_iideffect, priorsd_iideffect, true);
+  } 
   
   nll -= dnorm(polygon_sd, polygon_sd_mean, polygon_sd_sd, true);
   
-  // Likelihood of hyperparameters for 2016 field
+  // Likelihood of hyperparameters for field
   nll -= dnorm(log_kappa, priormean_log_kappa, priorsd_log_kappa, true);
   nll -= dnorm(log_tau, priormean_log_tau, priorsd_log_tau, true);
   
@@ -149,14 +137,14 @@ Type objective_function<Type>::operator()()
   vector<Type> reportprediction(n_polygons);
   vector<Type> reportnll(n_polygons);
   
-  //For each shape use startendindex to find sum of pixel incidence rates
+  // For each shape get pixel predictions within and aggregate to polygon level
   for (int polygon = 0; polygon < n_polygons; polygon++) {
-    // Sum pixel risks (raster + field
-    
+
     // Get pixel level predictions
-    pixel_pred = pixel_linear_pred.segment(startendindex(polygon, 0), startendindex(polygon, 1)).array(); // + admin0_slope[shapeadmin0[polygon] - 1];
+    pixel_pred = pixel_linear_pred.segment(startendindex(polygon, 0), startendindex(polygon, 1)).array() + iideffect[polygon];
     pixel_pred = invlogit(pixel_pred);
     
+    // Aggregate to polygon prediction
     reportprediction[polygon] = sum(pixel_pred);
     
     // Calculate likelihood from polygon prediction
@@ -167,6 +155,7 @@ Type objective_function<Type>::operator()()
   REPORT(reportprediction);
   REPORT(reportnll);
   REPORT(polygon_response_data);
+  REPORT(iideffect);
   REPORT(nll1);
   REPORT(nll);
   

@@ -53,6 +53,7 @@ fit_model <- function(data, its = 10) {
   parameters <- list(intercept = -5,
                      slope = rep(0, ncol(cov_matrix)),
                      polygon_sd = 0.1,
+                     iideffect = rep(0, nrow(data$polygon_data)),
                      log_kappa = -3,
                      log_tau = -0.5,
                      nodemean = rep(0, n_s))
@@ -68,6 +69,7 @@ fit_model <- function(data, its = 10) {
                      priorsd_intercept = 2.0,
                      priormean_slope = 0.0,
                      priorsd_slope = 0.5,
+                     priorsd_iideffect = 0.05,
                      priormean_log_kappa = -3,
                      priorsd_log_kappa = 0.5,
                      priormean_log_tau = -0.50,
@@ -76,7 +78,7 @@ fit_model <- function(data, its = 10) {
   obj <- TMB::MakeADFun(
     data = input_data, 
     parameters = parameters,
-    random = c('nodemean'),
+    random = c('nodemean', 'iideffect'),
     DLL = "disaggregation")
   
   
