@@ -3,6 +3,8 @@
 #' @param data disag.data object returned by prepare_data function that contains all the necessary objects for the model fitting
 #' @param priors list of prior values
 #' @param its number of iterations to run the optimisation for
+#' @param field boolean to flag spatial field on or off
+#' @param iid boolean to flag iid effect on or off
 #' 
 #' @name fit_model
 #'
@@ -38,7 +40,7 @@
 #' 
 #' @export
 
-fit_model <- function(data, priors = NULL, its = 10) {
+fit_model <- function(data, priors = NULL, its = 10, field = TRUE, iid = TRUE) {
   
   stopifnot(inherits(data, 'disag.data'))
   if(!is.null(priors)) stopifnot(inherits(priors, 'list'))
@@ -100,14 +102,35 @@ fit_model <- function(data, priors = NULL, its = 10) {
                      Apixel = Apix,
                      spde = spde,
                      startendindex = data$startendindex,
-                     polygon_response_data = data$polygon_data$response)
+                     polygon_response_data = data$polygon_data$response,
+                     field = as.integer(field),
+                     iid = as.integer(iid))
   
   input_data <- c(input_data, final_priors)
+  
+  tmb_map <- list()
+  if(!field) {
+    tmb_map <- c(tmb_map, list(log_kappa = as.factor(NA),
+                               log_tau = as.factor(NA),
+                               nodemean = factor(rep(NA, n_s))))
+  }
+  if(!iid) {
+    tmb_map <- c(tmb_map, list(iideffect = factor(rep(NA, nrow(data$polygon_data)))))
+  }
+  
+  random_effects <- c()
+  if(field) {
+    random_effects <- c(random_effects, 'nodemean')
+  }
+  if(iid) {
+    random_effects <- c(random_effects, 'iideffect')
+  }
   
   obj <- TMB::MakeADFun(
     data = input_data, 
     parameters = parameters,
-    random = c('nodemean', 'iideffect'),
+    map = tmb_map,
+    random = random_effects,
     DLL = "disaggregation")
   
   

@@ -4,7 +4,7 @@
 \alias{fit_model}
 \title{Function to fit the disaggregation model}
 \usage{
-fit_model(data, priors = NULL, its = 10)
+fit_model(data, priors = NULL, its = 10, field = TRUE, iid = TRUE)
 }
 \arguments{
 \item{data}{disag.data object returned by prepare_data function that contains all the necessary objects for the model fitting}
@@ -12,6 +12,10 @@ fit_model(data, priors = NULL, its = 10)
 \item{priors}{list of prior values}
 
 \item{its}{number of iterations to run the optimisation for}
+
+\item{field}{boolean to flag spatial field on or off}
+
+\item{iid}{boolean to flag iid effect on or off}
 }
 \description{
 Function to fit the disaggregation model

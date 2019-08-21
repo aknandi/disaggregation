@@ -80,6 +80,10 @@ Type objective_function<Type>::operator()()
   // Random effect parameters
   PARAMETER_VECTOR(nodemean);
   
+  // Model component flags
+  DATA_INTEGER(field);
+  DATA_INTEGER(iid);
+  
   // Number of polygons
   int n_polygons = polygon_response_data.size();
   // Number of pixels
@@ -96,38 +100,41 @@ Type objective_function<Type>::operator()()
     nll -= dnorm(slope[s], priormean_slope, priorsd_slope, true);
   }
   
-  for(int s = 0; s < iideffect.size(); s++){
-    nll -= dnorm(iideffect[s], priormean_iideffect, priorsd_iideffect, true);
-  } 
+  if(iid) {
+    for(int s = 0; s < iideffect.size(); s++){
+      nll -= dnorm(iideffect[s], priormean_iideffect, priorsd_iideffect, true);
+    } 
+  }
   
   nll -= dnorm(polygon_sd, polygon_sd_mean, polygon_sd_sd, true);
   
-  // Likelihood of hyperparameters for field
-  nll -= dnorm(log_kappa, priormean_log_kappa, priorsd_log_kappa, true);
-  nll -= dnorm(log_tau, priormean_log_tau, priorsd_log_tau, true);
-  
-  // Build spde matrix
-  SparseMatrix<Type> Q = Q_spde(spde, kappa);
-  
-  // Likelihood of the random field.
-  nll += SCALE(GMRF(Q), 1.0 / tau)(nodemean);
-  
+  if(field) {
+    // Likelihood of hyperparameters for field
+    nll -= dnorm(log_kappa, priormean_log_kappa, priorsd_log_kappa, true);
+    nll -= dnorm(log_tau, priormean_log_tau, priorsd_log_tau, true);
+    
+    // Build spde matrix
+    SparseMatrix<Type> Q = Q_spde(spde, kappa);
+    
+    // Likelihood of the random field.
+    nll += SCALE(GMRF(Q), 1.0 / tau)(nodemean);
+  }
+
   Type nll1 = nll;
-  
-  // ------------------------------------------------------------------------ //
-  // Calculate random field effects
-  // ------------------------------------------------------------------------ //
-  
-  // Calculate field for pixel data
-  vector<Type> logit_prevalence_field_2016;
-  logit_prevalence_field_2016 = Apixel * nodemean;
   
   // ------------------------------------------------------------------------ //
   // Likelihood from data
   // ------------------------------------------------------------------------ //
   
   vector<Type> pixel_linear_pred(n_pixels);
-  pixel_linear_pred = intercept + x * slope + logit_prevalence_field_2016.array();
+  pixel_linear_pred = intercept + x * slope;
+  
+  if(field) {
+    // Calculate field for pixel data
+    vector<Type> logit_prevalence_field;
+    logit_prevalence_field = Apixel * nodemean;
+    pixel_linear_pred += logit_prevalence_field.array();
+  }
   
   // recalculate startendindices to be in the form start, n
   startendindex.col(1) = startendindex.col(1) - startendindex.col(0) + 1;
@@ -141,7 +148,10 @@ Type objective_function<Type>::operator()()
   for (int polygon = 0; polygon < n_polygons; polygon++) {
 
     // Get pixel level predictions
-    pixel_pred = pixel_linear_pred.segment(startendindex(polygon, 0), startendindex(polygon, 1)).array() + iideffect[polygon];
+    pixel_pred = pixel_linear_pred.segment(startendindex(polygon, 0), startendindex(polygon, 1)).array();
+    if(iid) {
+      pixel_pred += iideffect[polygon];
+    }
     pixel_pred = invlogit(pixel_pred);
     
     // Aggregate to polygon prediction
@@ -155,7 +165,9 @@ Type objective_function<Type>::operator()()
   REPORT(reportprediction);
   REPORT(reportnll);
   REPORT(polygon_response_data);
-  REPORT(iideffect);
+  if(iid) {
+    REPORT(iideffect)
+  }
   REPORT(nll1);
   REPORT(nll);
   
