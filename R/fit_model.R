@@ -98,7 +98,8 @@ fit_model <- function(data, priors = NULL, its = 10, field = TRUE, iid = TRUE) {
                      log_tau = -0.5,
                      nodemean = rep(0, n_s))
   
-  input_data <- list(x = cov_matrix, 
+  input_data <- list(x = cov_matrix,
+                     aggregation_values = data$aggregation_pixels,
                      Apixel = Apix,
                      spde = spde,
                      startendindex = data$startendindex,

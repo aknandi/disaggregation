@@ -4,19 +4,24 @@
 \alias{prepare_data}
 \title{Function to collect all data together for disaggregation model}
 \usage{
-prepare_data(polygon_shapefile, covariate_rasters, id_var = "area_id",
-  response_var = "response", mesh.args = NULL)
+prepare_data(polygon_shapefile, covariate_rasters,
+  aggregation_raster = NULL, id_var = "area_id",
+  response_var = "response", mesh.args = NULL, ncores = 2)
 }
 \arguments{
 \item{polygon_shapefile}{SpatialPolygonDataFrame containing the response data}
 
 \item{covariate_rasters}{RasterStack of covariates}
 
+\item{aggregation_raster}{Raster to aggregate predicted pixel values e.g. population to aggregate prevalence}
+
 \item{id_var}{Name of column in SpatialPolygonDataFrame object with the polygon id}
 
 \item{response_var}{Name of column in SpatialPolygonDataFrame object with the response data}
 
 \item{mesh.args}{list of parameters that control the mesh structure with the same names as used by INLA}
+
+\item{ncores}{Number of cores used to perform covariate extraction}
 }
 \description{
 Function to collect all data together for disaggregation model

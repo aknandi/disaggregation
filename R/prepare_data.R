@@ -2,9 +2,11 @@
 #'
 #' @param polygon_shapefile SpatialPolygonDataFrame containing the response data 
 #' @param covariate_rasters RasterStack of covariates
+#' @param aggregation_raster Raster to aggregate predicted pixel values e.g. population to aggregate prevalence
 #' @param id_var Name of column in SpatialPolygonDataFrame object with the polygon id
 #' @param response_var Name of column in SpatialPolygonDataFrame object with the response data
 #' @param mesh.args list of parameters that control the mesh structure with the same names as used by INLA
+#' @param ncores Number of cores used to perform covariate extraction
 #'
 #' @name prepare_data
 #'
@@ -35,24 +37,39 @@
 #' @export
 
 prepare_data <- function(polygon_shapefile, 
-                         covariate_rasters, 
+                         covariate_rasters,
+                         aggregation_raster = NULL,
                          id_var = 'area_id', 
                          response_var = 'response', 
-                         mesh.args = NULL) {
+                         mesh.args = NULL, 
+                         ncores = 2) {
   
   stopifnot(inherits(polygon_shapefile, 'SpatialPolygonsDataFrame'))
   stopifnot(inherits(covariate_rasters, 'Raster'))
+  if(!is.null(aggregation_raster)) stopifnot(inherits(aggregation_raster, 'Raster'))
   stopifnot(inherits(id_var, 'character'))
   stopifnot(inherits(response_var, 'character'))
   if(!is.null(mesh.args)) stopifnot(inherits(mesh.args, 'list'))
   
   polygon_data <- getPolygonData(polygon_shapefile, id_var = id_var, response_var = response_var)
   
-  cl <- parallel::makeCluster(raster::nlayers(covariate_rasters))
+  # If no aggregation raster is given, use a 'unity' raster
+  if(is.null(aggregation_raster)) {
+    aggregation_raster <- covariate_rasters[[1]]
+    raster::setValues(aggregation_raster, rep(1, raster::ncell(aggregation_raster)))
+  }
+  
+  covariate_rasters <- raster::addLayer(covariate_rasters, aggregation_raster)
+  cl <- parallel::makeCluster(ncores)
   doParallel::registerDoParallel(cl)
   covariate_data <- parallelExtract(covariate_rasters, polygon_shapefile, fun = NULL, id = id_var)
   parallel::stopCluster(cl)
   foreach::registerDoSEQ()
+  
+  covariate_rasters <- raster::dropLayer(covariate_rasters, raster::nlayers(covariate_rasters))
+  
+  aggregation_pixels <- as.numeric(covariate_data[ , ncol(covariate_data)])
+  covariate_data <- covariate_data[, -ncol(covariate_data)]
   
   coords <- extractCoordsForMesh(covariate_rasters, covariate_data)
   
@@ -64,6 +81,7 @@ prepare_data <- function(polygon_shapefile,
                      covariate_rasters = covariate_rasters,
                      polygon_data = polygon_data,
                      covariate_data = covariate_data,
+                     aggregation_pixels = aggregation_pixels,
                      coords = coords,
                      startendindex = startendindex,
                      mesh = mesh)
@@ -80,6 +98,7 @@ prepare_data <- function(polygon_shapefile,
 #' @param covariate_rasters RasterStack of covariates
 #' @param polygon_data data.frame with two columns: polygon id and response
 #' @param covariate_data data.frame with cell id, polygon id and covariate columns
+#' @param aggregation_pixels vector with value of aggregation raster at each pixel
 #' @param coords coordinates of the covariate data points
 #' @param startendindex matrix containing the start and end index for each polygon
 #' @param mesh inla.mesh object to use in the fit
@@ -98,6 +117,7 @@ as.disag.data <- function(polygon_shapefile,
                           covariate_rasters, 
                           polygon_data, 
                           covariate_data, 
+                          aggregation_pixels,
                           coords, 
                           startendindex, 
                           mesh) {
@@ -106,6 +126,7 @@ as.disag.data <- function(polygon_shapefile,
   stopifnot(inherits(covariate_rasters, c('RasterBrick', 'RasterStack')))
   stopifnot(inherits(polygon_data, 'data.frame'))
   stopifnot(inherits(covariate_data, 'data.frame'))
+  stopifnot(inherits(aggregation_pixels, 'numeric'))
   stopifnot(inherits(coords, 'matrix'))
   stopifnot(inherits(startendindex, 'matrix'))
   stopifnot(inherits(mesh, 'inla.mesh'))
@@ -114,6 +135,7 @@ as.disag.data <- function(polygon_shapefile,
                      covariate_rasters = covariate_rasters,
                      polygon_data = polygon_data,
                      covariate_data = covariate_data,
+                     aggregation_pixels = aggregation_pixels,
                      coords = coords,
                      startendindex = startendindex,
                      mesh = mesh)

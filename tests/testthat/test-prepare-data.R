@@ -23,20 +23,17 @@ cov_rasters <- raster::stack(r, r2)
 
 test_that("Check prepare_data function works as expected", {
   
-  cl <- parallel::makeCluster(2)
-  doParallel::registerDoParallel(cl)
   result <- prepare_data(polygon_shapefile = spdf, 
-                            covariate_rasters = cov_rasters)
-  parallel::stopCluster(cl)
-  foreach::registerDoSEQ()
+                         covariate_rasters = cov_rasters)
   
   expect_is(result, 'disag.data')
-  expect_equal(length(result), 7)
-  expect_equal(names(result), c('polygon_shapefile', 'covariate_rasters', 'polygon_data', 'covariate_data', 'coords', 'startendindex', 'mesh'))
+  expect_equal(length(result), 8)
+  expect_equal(names(result), c('polygon_shapefile', 'covariate_rasters', 'polygon_data', 'covariate_data', 'aggregation_pixels', 'coords', 'startendindex', 'mesh'))
   expect_is(result$polygon_shapefile, 'SpatialPolygonsDataFrame')
   expect_is(result$covariate_rasters, c('RasterBrick', 'RasterStack'))
   expect_is(result$polygon_data, 'data.frame')
   expect_is(result$covariate_data, 'data.frame')
+  expect_is(result$aggregation_pixels, 'numeric')
   expect_is(result$coords, 'matrix')
   expect_is(result$startendindex, 'matrix')
   expect_is(result$mesh, 'inla.mesh')
@@ -56,6 +53,8 @@ test_that("Check as.disag.data function works as expected", {
   parallel::stopCluster(cl)
   foreach::registerDoSEQ()
   
+  aggregation_data <- rep(1, nrow(cov_data))
+  
   coords <- extractCoordsForMesh(cov_rasters, cov_data)
   
   startendindex <- getStartendindex(cov_data, polygon_data, 'area_id')
@@ -66,17 +65,19 @@ test_that("Check as.disag.data function works as expected", {
                           cov_rasters,
                           polygon_data, 
                           cov_data, 
+                          aggregation_data,
                           coords, 
                           startendindex, 
                           mesh)
   
   expect_is(result, 'disag.data')
-  expect_equal(length(result), 7)
-  expect_equal(names(result), c('polygon_shapefile', 'covariate_rasters', 'polygon_data', 'covariate_data', 'coords', 'startendindex', 'mesh'))
+  expect_equal(length(result), 8)
+  expect_equal(names(result), c('polygon_shapefile', 'covariate_rasters', 'polygon_data', 'covariate_data', 'aggregation_pixels', 'coords', 'startendindex', 'mesh'))
   expect_is(result$polygon_shapefile, 'SpatialPolygonsDataFrame')
   expect_is(result$covariate_rasters, c('RasterBrick', 'RasterStack'))
   expect_is(result$polygon_data, 'data.frame')
   expect_is(result$covariate_data, 'data.frame')
+  expect_is(result$aggregation_pixels, 'numeric')
   expect_is(result$coords, 'matrix')
   expect_is(result$startendindex, 'matrix')
   expect_is(result$mesh, 'inla.mesh')

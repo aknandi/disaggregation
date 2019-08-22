@@ -5,7 +5,7 @@
 \title{Function to fit the disaggregation model}
 \usage{
 as.disag.data(polygon_shapefile, covariate_rasters, polygon_data,
-  covariate_data, coords, startendindex, mesh)
+  covariate_data, aggregation_pixels, coords, startendindex, mesh)
 }
 \arguments{
 \item{polygon_shapefile}{SpatialPolygonDataFrame containing the response data}
@@ -15,6 +15,8 @@ as.disag.data(polygon_shapefile, covariate_rasters, polygon_data,
 \item{polygon_data}{data.frame with two columns: polygon id and response}
 
 \item{covariate_data}{data.frame with cell id, polygon id and covariate columns}
+
+\item{aggregation_pixels}{vector with value of aggregation raster at each pixel}
 
 \item{coords}{coordinates of the covariate data points}
 

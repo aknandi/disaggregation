@@ -40,6 +40,9 @@ Type objective_function<Type>::operator()()
   // Shape data. Cases and region id.
   DATA_VECTOR(polygon_response_data);
   
+  // Use to aggreagte pixel response values to polygon level
+  DATA_VECTOR(aggregation_values);
+  
   // ------------------------------------------------------------------------ //
   // Parameters
   // ------------------------------------------------------------------------ //
@@ -140,7 +143,8 @@ Type objective_function<Type>::operator()()
   startendindex.col(1) = startendindex.col(1) - startendindex.col(0) + 1;
   
   vector<Type> pixel_pred;
-  
+  vector<Type> numerator_pixels;
+  vector<Type> normalisation_pixels;
   vector<Type> reportprediction(n_polygons);
   vector<Type> reportnll(n_polygons);
   
@@ -155,7 +159,9 @@ Type objective_function<Type>::operator()()
     pixel_pred = invlogit(pixel_pred);
     
     // Aggregate to polygon prediction
-    reportprediction[polygon] = sum(pixel_pred);
+    numerator_pixels = pixel_pred * aggregation_values.segment(startendindex(polygon, 0), startendindex(polygon, 1)).array();
+    normalisation_pixels = aggregation_values.segment(startendindex(polygon, 0), startendindex(polygon, 1));
+    reportprediction[polygon] = sum(numerator_pixels) / sum(normalisation_pixels);
     
     // Calculate likelihood from polygon prediction
     nll -= dnorm(polygon_response_data[polygon], reportprediction[polygon], polygon_sd, true);
@@ -166,7 +172,7 @@ Type objective_function<Type>::operator()()
   REPORT(reportnll);
   REPORT(polygon_response_data);
   if(iid) {
-    REPORT(iideffect)
+    REPORT(iideffect);
   }
   REPORT(nll1);
   REPORT(nll);
