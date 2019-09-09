@@ -44,6 +44,13 @@ Type objective_function<Type>::operator()()
   DATA_VECTOR(aggregation_values);
   
   // ------------------------------------------------------------------------ //
+  // Likelihood and link functions
+  // ------------------------------------------------------------------------ //
+  
+  DATA_INTEGER(family);
+  DATA_INTEGER(link);
+  
+  // ------------------------------------------------------------------------ //
   // Parameters
   // ------------------------------------------------------------------------ //
   
@@ -156,16 +163,37 @@ Type objective_function<Type>::operator()()
     if(iid) {
       pixel_pred += iideffect[polygon];
     }
-    pixel_pred = invlogit(pixel_pred);
+    // Use correct link function
+    if(link == 0) {
+      pixel_pred = invlogit(pixel_pred);
+    } else if(link == 1) {
+      pixel_pred = exp(pixel_pred);
+    } else if(link == 2){
+      pixel_pred = pixel_pred;
+    } else {
+      error("Link function not implemented.");
+    }
     
     // Aggregate to polygon prediction
     numerator_pixels = pixel_pred * aggregation_values.segment(startendindex(polygon, 0), startendindex(polygon, 1)).array();
     normalisation_pixels = aggregation_values.segment(startendindex(polygon, 0), startendindex(polygon, 1));
     reportprediction[polygon] = sum(numerator_pixels) / sum(normalisation_pixels);
     
-    // Calculate likelihood from polygon prediction
-    nll -= dnorm(polygon_response_data[polygon], reportprediction[polygon], polygon_sd, true);
-    reportnll[polygon] = -dnorm(polygon_response_data[polygon], reportprediction[polygon], polygon_sd, true);
+    // Use correct likelihood function
+    if(family == 0) {
+      nll -= dnorm(polygon_response_data[polygon], reportprediction[polygon], polygon_sd, true);
+      reportnll[polygon] = -dnorm(polygon_response_data[polygon], reportprediction[polygon], polygon_sd, true);
+    } else if(family == 1) {
+      // Binomial need a sample number...
+      nll -= dbinom(polygon_response_data[polygon], Type(1.0) /*size*/, reportprediction[polygon], true);
+      reportnll[polygon] = -dbinom(polygon_response_data[polygon], Type(1.0) /*size*/, reportprediction[polygon], true);
+    } else if(family == 2) {
+      nll -= dpois(polygon_response_data[polygon], reportprediction[polygon], true);
+      reportnll[polygon] = -dpois(polygon_response_data[polygon], reportprediction[polygon], true);
+    } else {
+      error("Likelihood not implemented.");
+    }
+    
   }
   
   REPORT(reportprediction);

@@ -2,6 +2,8 @@
 #'
 #' @param data disag.data object returned by prepare_data function that contains all the necessary objects for the model fitting
 #' @param priors list of prior values
+#' @param family likelihood function: gaussian, binomial or poisson
+#' @param link link function: logit, log or identity
 #' @param its number of iterations to run the optimisation for
 #' @param field boolean to flag spatial field on or off
 #' @param iid boolean to flag iid effect on or off
@@ -40,11 +42,31 @@
 #' 
 #' @export
 
-fit_model <- function(data, priors = NULL, its = 10, field = TRUE, iid = TRUE) {
+fit_model <- function(data, priors = NULL, family = 'gaussian', link = 'logit', its = 10, field = TRUE, iid = TRUE) {
   
   stopifnot(inherits(data, 'disag.data'))
   if(!is.null(priors)) stopifnot(inherits(priors, 'list'))
   stopifnot(inherits(its, 'numeric'))
+  
+  if(family == 'gaussian') {
+    family_id = 0
+  } else if(family == 'binomial') {
+    family_id = 1
+  } else if(family == 'poisson') {
+    family_id = 2
+  } else {
+    stop(paste(family, "is not a valid likelihood"))
+  }
+  
+  if(link == 'logit') {
+    link_id = 0
+  } else if(link == 'log') {
+    link_id = 1
+  } else if(link == 'identity') {
+    link_id = 2
+  } else {
+    stop(paste(link, "is not a valid link function"))
+  }
   
   # Sort out mesh bits
   spde <- (INLA::inla.spde2.matern(data$mesh, alpha = 2)$param.inla)[c("M0", "M1", "M2")]	
@@ -104,6 +126,8 @@ fit_model <- function(data, priors = NULL, its = 10, field = TRUE, iid = TRUE) {
                      spde = spde,
                      startendindex = data$startendindex,
                      polygon_response_data = data$polygon_data$response,
+                     family = family_id,
+                     link = link_id,
                      field = as.integer(field),
                      iid = as.integer(iid))
   
@@ -117,6 +141,9 @@ fit_model <- function(data, priors = NULL, its = 10, field = TRUE, iid = TRUE) {
   }
   if(!iid) {
     tmb_map <- c(tmb_map, list(iideffect = factor(rep(NA, nrow(data$polygon_data)))))
+  }
+  if(family_id != 0) { # if not gaussian do not need a dispersion in likelihood
+    tmb_map <- c(tmb_map, list(polygon_sd = as.factor(NA)))
   }
   
   random_effects <- c()
@@ -141,7 +168,8 @@ fit_model <- function(data, priors = NULL, its = 10, field = TRUE, iid = TRUE) {
   
   model_output <- list(obj = obj,
                        opt = opt,
-                       sd_out = sd_out)
+                       sd_out = sd_out,
+                       model_setup = list(family = family_id, link = link_id, field = field, iid = iid))
   
   class(model_output) <- c('fit.result', 'list')
   
