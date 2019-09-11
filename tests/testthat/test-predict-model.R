@@ -56,7 +56,7 @@ test_that("Check predict_uncertainty function works as expected", {
 
 test_that("Check predict_model function works with newdata", {
   
-  newdata <- crop(raster::stack(r, r2), c(0, 180, -90, 90))
+  newdata <- raster::crop(raster::stack(r, r2), c(0, 180, -90, 90))
   preds1 <- predict_model(result)
   preds2 <- predict_model(result, newdata)
   
@@ -73,7 +73,7 @@ test_that("Check predict_model function works with newdata", {
 
 test_that("Check predict_uncertainty function works with newdata expected", {
   
-  newdata <- crop(raster::stack(r, r2), c(0, 180, -90, 90))
+  newdata <- raster::crop(raster::stack(r, r2), c(0, 180, -90, 90))
   unc1 <- predict_uncertainty(result, N = 5)
   unc2 <- predict_uncertainty(result, newdata, N = 5)
   
