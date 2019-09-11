@@ -11,8 +11,10 @@
 #' 
 #' @export
 
-predict_model <- function(model_output) {
+predict_model <- function(model_output, newdata = NULL) {
   
+  newdata <- check_newdata(newdata, model_output)
+
   data <- model_output$data
 
   coords <- getCoords(data)
@@ -142,3 +144,23 @@ getAmatrix <- function(mesh, coords) {
   
   return(Amatrix)
 }
+
+
+
+# Helper to check and sort out new raster data.
+check_newdata <- function(newdata, model_output){
+  if(is.null(newdata)) return(NULL)
+  if(!is.null(newdata)){
+    if(!(inherits(newdata, 'RasterStack') | inherits(newdata, 'RasterBrick'))){
+      stop('newdata should be NULL or a RasterStack or a RasterBrick')
+    } 
+    if(!all(names(newdata) %in% names(model_output$data$covariate_rasters))){
+      stop('All covariates used to fit the model must be in newdata')
+    }
+    # Take just the covariates we need and in the right order
+    newdata <- newdata[[names(model_output$data$covariate_rasters)]]
+  }
+  return(newdata)
+}
+
+
