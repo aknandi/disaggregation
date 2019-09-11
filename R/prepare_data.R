@@ -56,7 +56,8 @@ prepare_data <- function(polygon_shapefile,
   # If no aggregation raster is given, use a 'unity' raster
   if(is.null(aggregation_raster)) {
     aggregation_raster <- covariate_rasters[[1]]
-    raster::setValues(aggregation_raster, rep(1, raster::ncell(aggregation_raster)))
+    aggregation_raster <- raster::setValues(aggregation_raster, rep(1, raster::ncell(aggregation_raster)))
+    names(aggregation_raster) <- 'aggregation_raster'
   }
   
   covariate_rasters <- raster::addLayer(covariate_rasters, aggregation_raster)
