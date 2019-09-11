@@ -60,25 +60,31 @@ test_that("Check predict_model function works with newdata", {
   preds1 <- predict_model(result)
   preds2 <- predict_model(result, newdata)
   
-  expect_is(preds, 'predictions')
-  expect_equal(length(preds), 3)
-  expect_equal(names(preds), c('prediction', 'field', 'covariates'))
-  expect_is(preds$prediction, 'Raster')
-  expect_is(preds$field, 'Raster')
-  expect_is(preds$covariates, 'Raster')
+  expect_is(preds2, 'predictions')
+  expect_equal(length(preds2), 3)
+  expect_equal(names(preds2), c('prediction', 'field', 'covariates'))
+  expect_is(preds2$prediction, 'Raster')
+  expect_is(preds2$field, 'Raster')
+  expect_is(preds2$covariates, 'Raster')
+
+  expect_false(identical(extent(preds1$prediction), extent(preds2$prediction)))
   
 })
 
 test_that("Check predict_uncertainty function works with newdata expected", {
   
-  unc <- predict_uncertainty(result)
+  newdata <- crop(raster::stack(r, r2), c(0, 180, -90, 90))
+  unc1 <- predict_uncertainty(result, N = 5)
+  unc2 <- predict_uncertainty(result, newdata, N = 5)
   
-  expect_is(unc, 'uncertainty')
-  expect_equal(length(unc), 2)
-  expect_equal(names(unc), c('realisations', 'predictions_ci'))
-  expect_is(unc$realisations, 'RasterStack')
-  expect_is(unc$predictions_ci, 'RasterBrick')
-  expect_equal(raster::nlayers(unc$realisations), 100)
-  expect_equal(raster::nlayers(unc$predictions_ci), 2)
+  expect_is(unc1, 'uncertainty')
+  expect_equal(length(unc2), 2)
+  expect_equal(names(unc2), c('realisations', 'predictions_ci'))
+  expect_is(unc2$realisations, 'RasterStack')
+  expect_is(unc2$predictions_ci, 'RasterBrick')
+  expect_equal(raster::nlayers(unc2$realisations), 5)
+  expect_equal(raster::nlayers(unc2$predictions_ci), 2)
+
+  expect_false(identical(extent(unc1$realisations), extent(unc2$realisations)))
   
 })
