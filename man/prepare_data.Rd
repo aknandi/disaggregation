@@ -4,9 +4,9 @@
 \alias{prepare_data}
 \title{Function to collect all data together for disaggregation model}
 \usage{
-prepare_data(polygon_shapefile, covariate_rasters,
-  aggregation_raster = NULL, id_var = "area_id",
-  response_var = "response", mesh.args = NULL, ncores = 2)
+prepare_data(polygon_shapefile, covariate_rasters, aggregation_raster = NULL,
+  id_var = "area_id", response_var = "response", mesh.args = NULL,
+  ncores = 2)
 }
 \arguments{
 \item{polygon_shapefile}{SpatialPolygonDataFrame containing the response data}

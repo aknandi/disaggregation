@@ -4,11 +4,9 @@
 \alias{predict_model}
 \title{Function to predict mean from the model result}
 \usage{
-predict_model(data, model_output)
+predict_model(model_output)
 }
 \arguments{
-\item{data}{disag.data object returned by prepare_data function}
-
 \item{model_output}{fit.result object returned by fit_model function}
 }
 \description{
@@ -16,7 +14,7 @@ Function to predict mean from the model result
 }
 \examples{
 \dontrun{
-predict_model(data, result)
+predict_model(result)
 }
 
 }

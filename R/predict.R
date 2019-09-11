@@ -6,7 +6,7 @@
 #'
 #' @examples 
 #' \dontrun{
-#' predict_model(data, result)
+#' predict_model(result)
 #' }
 #' 
 #' @export
@@ -59,7 +59,7 @@ predict_model <- function(model_output) {
 #'
 #' @examples 
 #' \dontrun{
-#' predict_uncertainty(data, result)
+#' predict_uncertainty(result)
 #' }
 #' 
 #' @export

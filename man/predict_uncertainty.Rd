@@ -4,23 +4,23 @@
 \alias{predict_uncertainty}
 \title{Function to predict uncertainty from the model result}
 \usage{
-predict_uncertainty(data, model_output, N = 100, CI = 0.95)
+predict_uncertainty(model_output, N = 100, CI = 0.95)
 }
 \arguments{
-\item{data}{disag.data object returned by prepare_data function}
-
 \item{model_output}{fit.result object returned by fit_model function}
 
 \item{N}{number of realisations. Default: 100}
 
 \item{CI}{confidence interval. Default: 0.95}
+
+\item{data}{disag.data object returned by prepare_data function}
 }
 \description{
 Function to predict uncertainty from the model result
 }
 \examples{
 \dontrun{
-predict_uncertainty(data, result)
+predict_uncertainty(result)
 }
 
 }

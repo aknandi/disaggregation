@@ -43,7 +43,7 @@ prepare_data <- function(polygon_shapefile,
                          response_var = 'response', 
                          mesh.args = NULL, 
                          ncores = 2) {
-  
+
   stopifnot(inherits(polygon_shapefile, 'SpatialPolygonsDataFrame'))
   stopifnot(inherits(covariate_rasters, 'Raster'))
   if(!is.null(aggregation_raster)) stopifnot(inherits(aggregation_raster, 'Raster'))
