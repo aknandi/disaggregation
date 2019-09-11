@@ -53,6 +53,10 @@ prepare_data <- function(polygon_shapefile,
   
   polygon_data <- getPolygonData(polygon_shapefile, id_var = id_var, response_var = response_var)
   
+
+  # Save raster layer names so we can reassign it to make sure names don't change.
+  cov_names <- names(covariate_rasters)
+
   # If no aggregation raster is given, use a 'unity' raster
   if(is.null(aggregation_raster)) {
     aggregation_raster <- covariate_rasters[[1]]
@@ -68,6 +72,7 @@ prepare_data <- function(polygon_shapefile,
   foreach::registerDoSEQ()
   
   covariate_rasters <- raster::dropLayer(covariate_rasters, raster::nlayers(covariate_rasters))
+  names(covariate_rasters) <- cov_names
   
   aggregation_pixels <- as.numeric(covariate_data[ , ncol(covariate_data)])
   covariate_data <- covariate_data[, -ncol(covariate_data)]
