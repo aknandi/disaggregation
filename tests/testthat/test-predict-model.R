@@ -54,3 +54,31 @@ test_that("Check predict_uncertainty function works as expected", {
 
 
 
+test_that("Check predict_model function works with newdata", {
+  
+  newdata <- crop(raster::stack(r, r2), c(0, 180, -90, 90))
+  preds1 <- predict_model(result)
+  preds2 <- predict_model(result, newdata)
+  
+  expect_is(preds, 'predictions')
+  expect_equal(length(preds), 3)
+  expect_equal(names(preds), c('prediction', 'field', 'covariates'))
+  expect_is(preds$prediction, 'Raster')
+  expect_is(preds$field, 'Raster')
+  expect_is(preds$covariates, 'Raster')
+  
+})
+
+test_that("Check predict_uncertainty function works with newdata expected", {
+  
+  unc <- predict_uncertainty(result)
+  
+  expect_is(unc, 'uncertainty')
+  expect_equal(length(unc), 2)
+  expect_equal(names(unc), c('realisations', 'predictions_ci'))
+  expect_is(unc$realisations, 'RasterStack')
+  expect_is(unc$predictions_ci, 'RasterBrick')
+  expect_equal(raster::nlayers(unc$realisations), 100)
+  expect_equal(raster::nlayers(unc$predictions_ci), 2)
+  
+})

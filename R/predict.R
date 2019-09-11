@@ -27,7 +27,7 @@ predict_model <- function(model_output, newdata = NULL) {
     covariates <- newdata
   }
 
-
+  data$covariate_rasters <- covariates
   coords <- getCoords(data)
   Amatrix <- getAmatrix(data$mesh, coords)
   
