@@ -97,6 +97,7 @@ predict_uncertainty <- function(model_output, newdata = NULL, N = 100, CI = 0.95
     covariates <- newdata
   }
 
+  data$covariate_rasters <- covariates
   parameters <- model_output$obj$env$last.par.best
   
   ch <- Matrix::Cholesky(model_output$sd_out$jointPrecision)
