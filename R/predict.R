@@ -1,7 +1,9 @@
 #' Function to predict mean from the model result
 #' 
 #' @param model_output fit.result object returned by fit_model function
-#' 
+#' @param newdata If NULL, predictions are made using the data in model_output. 
+#'   If this is a raster stack or brick, predictions will be made over this data. 
+#'
 #' @name predict_model
 #'
 #' @examples 
@@ -15,7 +17,16 @@ predict_model <- function(model_output, newdata = NULL) {
   
   newdata <- check_newdata(newdata, model_output)
 
+  # Pull out original data
   data <- model_output$data
+
+  # Decide which covariates to predict over
+  if(is.null(newdata)){
+    covariates <- data$covariate_rasters
+  } else {
+    covariates <- newdata
+  }
+
 
   coords <- getCoords(data)
   Amatrix <- getAmatrix(data$mesh, coords)
@@ -23,20 +34,25 @@ predict_model <- function(model_output, newdata = NULL) {
   pars <- model_output$obj$env$last.par.best
   pars <- split(pars, names(pars))
   
-  # Extract field values
-  field <- (Amatrix %*% pars$nodemean)[, 1]
-  field_ras <- raster::rasterFromXYZ(cbind(coords, field))
-  
   # Create linear predictor
   covs_by_betas <- list()
-  for(i in seq_len(raster::nlayers(data$covariate_rasters))){
-    covs_by_betas[[i]] <- pars$slope[i] * data$covariate_rasters[[i]]
+  for(i in seq_len(raster::nlayers(covariates))){
+    covs_by_betas[[i]] <- pars$slope[i] * covariates[[i]]
   }
   
   cov_by_betas <- raster::stack(covs_by_betas)
   cov_contribution <- sum(cov_by_betas) + pars$intercept
-  
-  linear_pred <- cov_contribution + field_ras
+  linear_pred <- cov_contribution  
+
+
+  if(model_output$model_setup$field){
+    # Extract field values
+    field <- (Amatrix %*% pars$nodemean)[, 1]
+    field_ras <- raster::rasterFromXYZ(cbind(coords, field))
+    linear_pred <- linear_pred + field_ras
+  } else {
+    field_ras <- NULL
+  }
   
   mean_prediction <- 1 / (1 + exp(-1 * linear_pred))
   
@@ -66,9 +82,21 @@ predict_model <- function(model_output, newdata = NULL) {
 #' 
 #' @export
 
-predict_uncertainty <- function(model_output, N = 100, CI = 0.95) {
+predict_uncertainty <- function(model_output, newdata = NULL, N = 100, CI = 0.95) {
   
+  
+  newdata <- check_newdata(newdata, model_output)
+
+  # Pull out original data
   data <- model_output$data
+
+  # Decide which covariates to predict over
+  if(is.null(newdata)){
+    covariates <- data$covariate_rasters
+  } else {
+    covariates <- newdata
+  }
+
   parameters <- model_output$obj$env$last.par.best
   
   ch <- Matrix::Cholesky(model_output$sd_out$jointPrecision)
@@ -89,8 +117,8 @@ predict_uncertainty <- function(model_output, N = 100, CI = 0.95) {
     
     # Create linear predictor
     covs_by_betas <- list()
-    for(i in seq_len(raster::nlayers(data$covariate_rasters))){
-      covs_by_betas[[i]] <- p$slope[i] * data$covariate_rasters[[i]]
+    for(i in seq_len(raster::nlayers(covariates))){
+      covs_by_betas[[i]] <- p$slope[i] * covariates[[i]]
     }
     cov_by_betas <- raster::stack(covs_by_betas)
     cov_contribution <- sum(cov_by_betas) + p$intercept
