@@ -67,7 +67,7 @@ test_that("Check predict_model function works with newdata", {
   expect_is(preds2$field, 'Raster')
   expect_is(preds2$covariates, 'Raster')
 
-  expect_false(identical(extent(preds1$prediction), extent(preds2$prediction)))
+  expect_false(identical(raster::extent(preds1$prediction), raster::extent(preds2$prediction)))
   
 })
 
@@ -85,6 +85,6 @@ test_that("Check predict_uncertainty function works with newdata expected", {
   expect_equal(raster::nlayers(unc2$realisations), 5)
   expect_equal(raster::nlayers(unc2$predictions_ci), 2)
 
-  expect_false(identical(extent(unc1$realisations), extent(unc2$realisations)))
+  expect_false(identical(raster::extent(unc1$realisations), raster::extent(unc2$realisations)))
   
 })
