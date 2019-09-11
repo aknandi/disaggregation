@@ -4,7 +4,7 @@
 \alias{predict_uncertainty}
 \title{Function to predict uncertainty from the model result}
 \usage{
-predict_uncertainty(model_output, N = 100, CI = 0.95)
+predict_uncertainty(model_output, newdata = NULL, N = 100, CI = 0.95)
 }
 \arguments{
 \item{model_output}{fit.result object returned by fit_model function}
