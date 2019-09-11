@@ -27,7 +27,7 @@ result <- fit_model(test_data, its = 2)
 
 test_that("Check predict_model function works as expected", {
   
-  preds <- predict_model(test_data, result)
+  preds <- predict_model(result)
   
   expect_is(preds, 'predictions')
   expect_equal(length(preds), 3)
@@ -40,7 +40,7 @@ test_that("Check predict_model function works as expected", {
 
 test_that("Check predict_uncertainty function works as expected", {
   
-  unc <- predict_uncertainty(test_data, result)
+  unc <- predict_uncertainty(result)
   
   expect_is(unc, 'uncertainty')
   expect_equal(length(unc), 2)
@@ -51,3 +51,6 @@ test_that("Check predict_uncertainty function works as expected", {
   expect_equal(raster::nlayers(unc$predictions_ci), 2)
   
 })
+
+
+

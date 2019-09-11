@@ -81,8 +81,8 @@ test_that("getCovariateData function gives errors when it should", {
   r2 <- raster::raster(ncol=20, nrow=20)
   r2[] <- sapply(1:raster::ncell(r), function(x) rnorm(1, ceiling(x/10), 3))
   cov_stack <- raster::stack(r, r2)
-  raster::writeRaster(r, paste0(tempdir(), '/cov1.tif'))
-  raster::writeRaster(r2, paste0(tempdir(), '/cov2.tif'))
+  raster::writeRaster(r, paste0(tempdir(), '/cov1.tif'), overwrite = TRUE)
+  raster::writeRaster(r2, paste0(tempdir(), '/cov2.tif'), overwrite = TRUE)
   
   expect_is(getCovariateRasters(tempdir(), '.tif$', spdf), 'RasterBrick')
   
