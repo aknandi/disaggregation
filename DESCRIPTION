@@ -1,6 +1,6 @@
 Package: disaggregation
 Type: Package
-Title: Useful functions for disaggregation modelling
+Title: Useful functions for disaggregation modelling.
 Version: 0.1.0
 Authors@R: c(
     person("Anita", "Nandi", email = "anita.k.nandi@gmail.com", role = c("aut", "cre"), comment = c(ORCID = "0000-0002-5087-2494")),
@@ -8,8 +8,10 @@ Authors@R: c(
     person("Andre", "Python", email = "python.andre@gmail.com", role = "aut", comment = c(ORCID = "0000-0001-8094-7226")),
     person("Rohan", "Arambepola", email = "xxx", role = "aut")
     )
-Description: More about what it does (maybe more than one line)
-    Use four spaces when indenting paragraphs within the Description.
+Description: Fits disaggregation regression models using TMB (Template Model
+    Builder). When the response data are aggregated to polygon level but
+    the predictor variables are at a higher resolution, these models can be
+    useful. Regression models with spatial random fields.
 License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
