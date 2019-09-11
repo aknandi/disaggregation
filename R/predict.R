@@ -1,6 +1,5 @@
 #' Function to predict mean from the model result
 #' 
-#' @param data disag.data object returned by prepare_data function
 #' @param model_output fit.result object returned by fit_model function
 #' 
 #' @name predict_model
@@ -12,8 +11,10 @@
 #' 
 #' @export
 
-predict_model <- function(data, model_output) {
+predict_model <- function(model_output) {
   
+  data <- model_output$data
+
   coords <- getCoords(data)
   Amatrix <- getAmatrix(data$mesh, coords)
   
@@ -63,8 +64,9 @@ predict_model <- function(data, model_output) {
 #' 
 #' @export
 
-predict_uncertainty <- function(data, model_output, N = 100, CI = 0.95) {
+predict_uncertainty <- function(model_output, N = 100, CI = 0.95) {
   
+  data <- model_output$data
   parameters <- model_output$obj$env$last.par.best
   
   ch <- Matrix::Cholesky(model_output$sd_out$jointPrecision)
