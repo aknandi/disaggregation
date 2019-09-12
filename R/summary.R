@@ -6,8 +6,11 @@
 #' @method summary fit.result
 #' 
 #' @export
+#' @importFrom stats cor quantile sd
 
 summary.fit.result <- function(object, ...) {
+  
+  pred <- obs <- NULL
   
   model_params <- summary(object$sd_out, select = 'fixed')
   

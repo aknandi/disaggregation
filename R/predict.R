@@ -68,8 +68,9 @@ predict_model <- function(model_output, newdata = NULL) {
 
 #' Function to predict uncertainty from the model result
 #' 
-#' @param data disag.data object returned by prepare_data function
 #' @param model_output fit.result object returned by fit_model function
+#' @param newdata If NULL, predictions are made using the data in model_output. 
+#'   If this is a raster stack or brick, predictions will be made over this data. 
 #' @param N number of realisations. Default: 100
 #' @param CI confidence interval. Default: 0.95
 #' 
@@ -136,7 +137,7 @@ predict_uncertainty <- function(model_output, newdata = NULL, N = 100, CI = 0.95
   predictions <- raster::stack(predictions)
   
   probs <- c((1 - CI) / 2, 1 - (1 - CI) / 2)
-  predictions_ci <- raster::calc(predictions, function(x) quantile(x, probs = probs, na.rm = TRUE))
+  predictions_ci <- raster::calc(predictions, function(x) stats::quantile(x, probs = probs, na.rm = TRUE))
   
   uncertainty <- list(realisations = predictions,
                       predictions_ci = predictions_ci)
