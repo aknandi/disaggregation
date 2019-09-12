@@ -23,6 +23,7 @@ test_data <- prepare_data(polygon_shapefile = spdf,
                           covariate_rasters = cov_stack)
 
 result <- fit_model(test_data, its = 2)
+result_nofield <- fit_model(test_data, its = 2, field = FALSE)
 
 
 test_that("Check predict_model function works as expected", {
@@ -35,6 +36,16 @@ test_that("Check predict_model function works as expected", {
   expect_is(preds$prediction, 'Raster')
   expect_is(preds$field, 'Raster')
   expect_is(preds$covariates, 'Raster')
+  
+  
+  preds2 <- predict_model(result_nofield)
+  
+  expect_is(preds2, 'predictions')
+  expect_equal(length(preds2), 3)
+  expect_equal(names(preds2), c('prediction', 'field', 'covariates'))
+  expect_is(preds2$prediction, 'Raster')
+  expect_true(is.null(preds2$field))
+  expect_is(preds2$covariates, 'Raster')
   
 })
 
@@ -49,6 +60,19 @@ test_that("Check predict_uncertainty function works as expected", {
   expect_is(unc$predictions_ci, 'RasterBrick')
   expect_equal(raster::nlayers(unc$realisations), 100)
   expect_equal(raster::nlayers(unc$predictions_ci), 2)
+  
+  
+  unc2 <- predict_uncertainty(result_nofield, N = 10)
+  
+  expect_is(unc2, 'uncertainty')
+  expect_equal(length(unc2), 2)
+  expect_equal(names(unc2), c('realisations', 'predictions_ci'))
+  expect_is(unc2$realisations, 'RasterStack')
+  expect_is(unc2$predictions_ci, 'RasterBrick')
+  expect_equal(raster::nlayers(unc2$realisations), 10)
+  expect_equal(raster::nlayers(unc2$predictions_ci), 2)
+  
+  
   
 })
 
@@ -71,7 +95,7 @@ test_that("Check predict_model function works with newdata", {
   
 })
 
-test_that("Check predict_uncertainty function works with newdata expected", {
+test_that("Check predict_uncertainty function works with newdata as expected", {
   
   newdata <- raster::crop(raster::stack(r, r2), c(0, 180, -90, 90))
   unc1 <- predict_uncertainty(result, N = 5)
@@ -86,5 +110,26 @@ test_that("Check predict_uncertainty function works with newdata expected", {
   expect_equal(raster::nlayers(unc2$predictions_ci), 2)
 
   expect_false(identical(raster::extent(unc1$realisations), raster::extent(unc2$realisations)))
+  
+})
+
+
+test_that('Check that check_newdata works', {
+  
+  newdata <- raster::crop(raster::stack(r, r2), c(0, 180, -90, 90))
+  nd1 <- check_newdata(newdata, result)
+  expect_is(nd1, 'RasterBrick')
+  
+  nn <- newdata[[1]]
+  names(nn) <- 'extra_uneeded'
+  newdata2 <- raster::stack(newdata, nn)
+  expect_error(check_newdata(newdata2, result), NA)
+
+  newdata3 <- newdata[[1]]
+  expect_error(check_newdata(newdata3, result), 'All covariates')
+  
+  newdata4 <- result$data$covariate_data
+  expect_error(check_newdata(newdata4, result), 'newdata should be NULL or')
+  
   
 })

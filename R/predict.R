@@ -112,10 +112,6 @@ predict_uncertainty <- function(model_output, newdata = NULL, N = 100, CI = 0.95
     
     p <- split(par_draws[r, ], names(parameters))
     
-    # Extract field values
-    field <- (Amatrix %*% p$nodemean)[, 1]
-    field_ras <- raster::rasterFromXYZ(cbind(coords, field))
-    
     # Create linear predictor
     covs_by_betas <- list()
     for(i in seq_len(raster::nlayers(covariates))){
@@ -124,7 +120,15 @@ predict_uncertainty <- function(model_output, newdata = NULL, N = 100, CI = 0.95
     cov_by_betas <- raster::stack(covs_by_betas)
     cov_contribution <- sum(cov_by_betas) + p$intercept
     
-    linear_pred <- cov_contribution + field_ras
+    linear_pred <- cov_contribution  
+    
+    
+    if(model_output$model_setup$field){
+      # Extract field values
+      field <- (Amatrix %*% p$nodemean)[, 1]
+      field_ras <- raster::rasterFromXYZ(cbind(coords, field))
+      linear_pred <- linear_pred + field_ras
+    }
     
     predictions[[r]] <- 1 / (1 + exp(-1 * linear_pred))
   }
@@ -180,10 +184,10 @@ getAmatrix <- function(mesh, coords) {
 check_newdata <- function(newdata, model_output){
   if(is.null(newdata)) return(NULL)
   if(!is.null(newdata)){
-    if(!(inherits(newdata, 'RasterStack') | inherits(newdata, 'RasterBrick'))){
+    if(!(inherits(newdata, c('RasterStack', 'RasterBrick', 'RasterLayer')))){
       stop('newdata should be NULL or a RasterStack or a RasterBrick')
     } 
-    if(!all(names(newdata) %in% names(model_output$data$covariate_rasters))){
+    if(!all(names(model_output$data$covariate_rasters) %in% names(newdata))){
       stop('All covariates used to fit the model must be in newdata')
     }
     # Take just the covariates we need and in the right order
