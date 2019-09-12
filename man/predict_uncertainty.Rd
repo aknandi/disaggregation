@@ -9,11 +9,12 @@ predict_uncertainty(model_output, newdata = NULL, N = 100, CI = 0.95)
 \arguments{
 \item{model_output}{fit.result object returned by fit_model function}
 
+\item{newdata}{If NULL, predictions are made using the data in model_output. 
+If this is a raster stack or brick, predictions will be made over this data.}
+
 \item{N}{number of realisations. Default: 100}
 
 \item{CI}{confidence interval. Default: 0.95}
-
-\item{data}{disag.data object returned by prepare_data function}
 }
 \description{
 Function to predict uncertainty from the model result
