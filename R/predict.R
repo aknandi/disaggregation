@@ -137,7 +137,13 @@ predict_uncertainty <- function(model_output, newdata = NULL, N = 100, CI = 0.95
       linear_pred <- linear_pred + field_ras
     }
     
-    predictions[[r]] <- 1 / (1 + exp(-1 * linear_pred))
+    if(model_output$model_setup$link == 0) {
+      predictions[[r]] <- 1 / (1 + exp(-1 * linear_pred))
+    } else if(model_output$model_setup$link == 1) {
+      predictions[[r]] <- exp(linear_pred)
+    } else if(model_output$model_setup$link == 2) {
+      predictions[[r]] <- linear_pred
+    }
   }
 
   predictions <- raster::stack(predictions)
