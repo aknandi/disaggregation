@@ -54,7 +54,13 @@ predict_model <- function(model_output, newdata = NULL) {
     field_ras <- NULL
   }
   
-  mean_prediction <- 1 / (1 + exp(-1 * linear_pred))
+  if(model_output$model_setup$link == 0) {
+    mean_prediction <- 1 / (1 + exp(-1 * linear_pred))
+  } else if(model_output$model_setup$link == 1) {
+    mean_prediction <- exp(linear_pred)
+  } else if(model_output$model_setup$link == 2) {
+    mean_prediction <- linear_pred
+  }
   
   predictions <- list(prediction = mean_prediction, 
                       field = field_ras,
