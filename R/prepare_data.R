@@ -43,7 +43,7 @@ prepare_data <- function(polygon_shapefile,
                          response_var = 'response', 
                          mesh.args = NULL, 
                          ncores = 2) {
-  
+
   stopifnot(inherits(polygon_shapefile, 'SpatialPolygonsDataFrame'))
   stopifnot(inherits(covariate_rasters, 'Raster'))
   if(!is.null(aggregation_raster)) stopifnot(inherits(aggregation_raster, 'Raster'))
@@ -53,11 +53,17 @@ prepare_data <- function(polygon_shapefile,
   
   polygon_data <- getPolygonData(polygon_shapefile, id_var = id_var, response_var = response_var)
   
+
+  # Save raster layer names so we can reassign it to make sure names don't change.
+  cov_names <- names(covariate_rasters)
+
   # If no aggregation raster is given, use a 'unity' raster
   if(is.null(aggregation_raster)) {
     aggregation_raster <- covariate_rasters[[1]]
-    raster::setValues(aggregation_raster, rep(1, raster::ncell(aggregation_raster)))
+    aggregation_raster <- raster::setValues(aggregation_raster, rep(1, raster::ncell(aggregation_raster)))
   }
+  names(aggregation_raster) <- 'aggregation_raster'
+
   
   covariate_rasters <- raster::addLayer(covariate_rasters, aggregation_raster)
   cl <- parallel::makeCluster(ncores)
@@ -67,6 +73,7 @@ prepare_data <- function(polygon_shapefile,
   foreach::registerDoSEQ()
   
   covariate_rasters <- raster::dropLayer(covariate_rasters, raster::nlayers(covariate_rasters))
+  names(covariate_rasters) <- cov_names
   
   aggregation_pixels <- as.numeric(covariate_data[ , ncol(covariate_data)])
   covariate_data <- covariate_data[, -ncol(covariate_data)]

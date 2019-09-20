@@ -169,6 +169,7 @@ fit_model <- function(data, priors = NULL, family = 'gaussian', link = 'logit', 
   model_output <- list(obj = obj,
                        opt = opt,
                        sd_out = sd_out,
+                       data = data,
                        model_setup = list(family = family_id, link = link_id, field = field, iid = iid))
   
   class(model_output) <- c('fit.result', 'list')

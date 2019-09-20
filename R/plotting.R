@@ -33,6 +33,7 @@ plot.disag.data <- function(x, ...) {
 
 plot.fit.result <- function(x, ...){
   
+  parameter <- sd <- obs <- pred <- NULL
   posteriors <- as.data.frame(summary(x$sd_out, select = 'fixed'))
   posteriors <- dplyr::mutate(posteriors, name = rownames(posteriors))
   names(posteriors) <- c('mean', 'sd', 'parameter')
@@ -107,6 +108,7 @@ plot.uncertainty <- function(x, ...) {
 
 plot_polygon_data <- function(x) {
   
+  area_id <- long <- lat <- group <- response <- NULL
   stopifnot(inherits(x, 'SpatialPolygonsDataFrame'))
   
   df_fortify <- fortify(x, region = 'area_id')

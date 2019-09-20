@@ -1,41 +1,66 @@
 #' Function to predict mean from the model result
 #' 
-#' @param data disag.data object returned by prepare_data function
 #' @param model_output fit.result object returned by fit_model function
-#' 
+#' @param newdata If NULL, predictions are made using the data in model_output. 
+#'   If this is a raster stack or brick, predictions will be made over this data. 
+#'
 #' @name predict_model
 #'
 #' @examples 
 #' \dontrun{
-#' predict_model(data, result)
+#' predict_model(result)
 #' }
 #' 
 #' @export
 
-predict_model <- function(data, model_output) {
+predict_model <- function(model_output, newdata = NULL) {
   
+  newdata <- check_newdata(newdata, model_output)
+
+  # Pull out original data
+  data <- model_output$data
+
+  # Decide which covariates to predict over
+  if(is.null(newdata)){
+    covariates <- data$covariate_rasters
+  } else {
+    covariates <- newdata
+  }
+
+  data$covariate_rasters <- covariates
   coords <- getCoords(data)
   Amatrix <- getAmatrix(data$mesh, coords)
   
   pars <- model_output$obj$env$last.par.best
   pars <- split(pars, names(pars))
   
-  # Extract field values
-  field <- (Amatrix %*% pars$nodemean)[, 1]
-  field_ras <- raster::rasterFromXYZ(cbind(coords, field))
-  
   # Create linear predictor
   covs_by_betas <- list()
-  for(i in seq_len(raster::nlayers(data$covariate_rasters))){
-    covs_by_betas[[i]] <- pars$slope[i] * data$covariate_rasters[[i]]
+  for(i in seq_len(raster::nlayers(covariates))){
+    covs_by_betas[[i]] <- pars$slope[i] * covariates[[i]]
   }
   
   cov_by_betas <- raster::stack(covs_by_betas)
   cov_contribution <- sum(cov_by_betas) + pars$intercept
+  linear_pred <- cov_contribution  
+
+
+  if(model_output$model_setup$field){
+    # Extract field values
+    field <- (Amatrix %*% pars$nodemean)[, 1]
+    field_ras <- raster::rasterFromXYZ(cbind(coords, field))
+    linear_pred <- linear_pred + field_ras
+  } else {
+    field_ras <- NULL
+  }
   
-  linear_pred <- cov_contribution + field_ras
-  
-  mean_prediction <- 1 / (1 + exp(-1 * linear_pred))
+  if(model_output$model_setup$link == 0) {
+    mean_prediction <- 1 / (1 + exp(-1 * linear_pred))
+  } else if(model_output$model_setup$link == 1) {
+    mean_prediction <- exp(linear_pred)
+  } else if(model_output$model_setup$link == 2) {
+    mean_prediction <- linear_pred
+  }
   
   predictions <- list(prediction = mean_prediction, 
                       field = field_ras,
@@ -49,8 +74,9 @@ predict_model <- function(data, model_output) {
 
 #' Function to predict uncertainty from the model result
 #' 
-#' @param data disag.data object returned by prepare_data function
 #' @param model_output fit.result object returned by fit_model function
+#' @param newdata If NULL, predictions are made using the data in model_output. 
+#'   If this is a raster stack or brick, predictions will be made over this data. 
 #' @param N number of realisations. Default: 100
 #' @param CI confidence interval. Default: 0.95
 #' 
@@ -58,13 +84,27 @@ predict_model <- function(data, model_output) {
 #'
 #' @examples 
 #' \dontrun{
-#' predict_uncertainty(data, result)
+#' predict_uncertainty(result)
 #' }
 #' 
 #' @export
 
-predict_uncertainty <- function(data, model_output, N = 100, CI = 0.95) {
+predict_uncertainty <- function(model_output, newdata = NULL, N = 100, CI = 0.95) {
   
+  
+  newdata <- check_newdata(newdata, model_output)
+
+  # Pull out original data
+  data <- model_output$data
+
+  # Decide which covariates to predict over
+  if(is.null(newdata)){
+    covariates <- data$covariate_rasters
+  } else {
+    covariates <- newdata
+  }
+
+  data$covariate_rasters <- covariates
   parameters <- model_output$obj$env$last.par.best
   
   ch <- Matrix::Cholesky(model_output$sd_out$jointPrecision)
@@ -79,27 +119,37 @@ predict_uncertainty <- function(data, model_output, N = 100, CI = 0.95) {
     
     p <- split(par_draws[r, ], names(parameters))
     
-    # Extract field values
-    field <- (Amatrix %*% p$nodemean)[, 1]
-    field_ras <- raster::rasterFromXYZ(cbind(coords, field))
-    
     # Create linear predictor
     covs_by_betas <- list()
-    for(i in seq_len(raster::nlayers(data$covariate_rasters))){
-      covs_by_betas[[i]] <- p$slope[i] * data$covariate_rasters[[i]]
+    for(i in seq_len(raster::nlayers(covariates))){
+      covs_by_betas[[i]] <- p$slope[i] * covariates[[i]]
     }
     cov_by_betas <- raster::stack(covs_by_betas)
     cov_contribution <- sum(cov_by_betas) + p$intercept
     
-    linear_pred <- cov_contribution + field_ras
+    linear_pred <- cov_contribution  
     
-    predictions[[r]] <- 1 / (1 + exp(-1 * linear_pred))
+    
+    if(model_output$model_setup$field){
+      # Extract field values
+      field <- (Amatrix %*% p$nodemean)[, 1]
+      field_ras <- raster::rasterFromXYZ(cbind(coords, field))
+      linear_pred <- linear_pred + field_ras
+    }
+    
+    if(model_output$model_setup$link == 0) {
+      predictions[[r]] <- 1 / (1 + exp(-1 * linear_pred))
+    } else if(model_output$model_setup$link == 1) {
+      predictions[[r]] <- exp(linear_pred)
+    } else if(model_output$model_setup$link == 2) {
+      predictions[[r]] <- linear_pred
+    }
   }
 
   predictions <- raster::stack(predictions)
   
   probs <- c((1 - CI) / 2, 1 - (1 - CI) / 2)
-  predictions_ci <- raster::calc(predictions, function(x) quantile(x, probs = probs, na.rm = TRUE))
+  predictions_ci <- raster::calc(predictions, function(x) stats::quantile(x, probs = probs, na.rm = TRUE))
   
   uncertainty <- list(realisations = predictions,
                       predictions_ci = predictions_ci)
@@ -140,3 +190,23 @@ getAmatrix <- function(mesh, coords) {
   
   return(Amatrix)
 }
+
+
+
+# Helper to check and sort out new raster data.
+check_newdata <- function(newdata, model_output){
+  if(is.null(newdata)) return(NULL)
+  if(!is.null(newdata)){
+    if(!(inherits(newdata, c('RasterStack', 'RasterBrick', 'RasterLayer')))){
+      stop('newdata should be NULL or a RasterStack or a RasterBrick')
+    } 
+    if(!all(names(model_output$data$covariate_rasters) %in% names(newdata))){
+      stop('All covariates used to fit the model must be in newdata')
+    }
+    # Take just the covariates we need and in the right order
+    newdata <- newdata[[names(model_output$data$covariate_rasters)]]
+  }
+  return(newdata)
+}
+
+

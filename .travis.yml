@@ -2,6 +2,7 @@
 # Continuous integration with travis
 language: r
 sudo: required
+warnings_are_errors: false
 
 # cache packages to speed up builds
 #cache: packages

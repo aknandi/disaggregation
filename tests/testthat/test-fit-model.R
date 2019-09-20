@@ -42,7 +42,7 @@ test_that("fit_model behaves as expected", {
   save(result, file = paste0(tempdir(), '/test_fit_result.RData'))
   
   expect_is(result, 'fit.result')
-  expect_equal(length(result), 4)
+  expect_equal(length(result), 5)
   expect_equal(length(result$sd_out$par.fixed), raster::nlayers(test_data$covariate_rasters) + 4)
   expect_equal(unique(names(result$sd_out$par.random)), c("iideffect", "nodemean"))
   
@@ -55,7 +55,7 @@ test_that("user defined model setup is working as expected", {
   result4 <- fit_model(test_data, its = 2, field = FALSE, iid = FALSE, link = 'identity')
   
   expect_is(result2, 'fit.result')
-  expect_equal(length(result2), 4)
+  expect_equal(length(result2), 5)
   expect_equal(length(result2$sd_out$par.fixed), raster::nlayers(test_data$covariate_rasters) + 1)
   expect_equal(unique(names(result2$sd_out$par.random)), c("iideffect"))
   expect_false(result2$model_setup$field)
@@ -64,7 +64,7 @@ test_that("user defined model setup is working as expected", {
   expect_equal(result2$model_setup$link, 1)
   
   expect_is(result3, 'fit.result')
-  expect_equal(length(result3), 4)
+  expect_equal(length(result3), 5)
   expect_equal(length(result3$sd_out$par.fixed), raster::nlayers(test_data$covariate_rasters) + 3)
   expect_equal(unique(names(result3$sd_out$par.random)), c("nodemean"))
   expect_true(result3$model_setup$field)
@@ -73,7 +73,7 @@ test_that("user defined model setup is working as expected", {
   expect_equal(result3$model_setup$link, 0)
   
   expect_is(result4, 'fit.result')
-  expect_equal(length(result4), 4)
+  expect_equal(length(result4), 5)
   expect_equal(length(result4$sd_out$par.fixed), raster::nlayers(test_data$covariate_rasters) + 2)
   expect_equal(unique(names(result4$sd_out$par.random)), NULL)
   expect_false(result4$model_setup$field)

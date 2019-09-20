@@ -4,12 +4,13 @@
 \alias{predict_uncertainty}
 \title{Function to predict uncertainty from the model result}
 \usage{
-predict_uncertainty(data, model_output, N = 100, CI = 0.95)
+predict_uncertainty(model_output, newdata = NULL, N = 100, CI = 0.95)
 }
 \arguments{
-\item{data}{disag.data object returned by prepare_data function}
-
 \item{model_output}{fit.result object returned by fit_model function}
+
+\item{newdata}{If NULL, predictions are made using the data in model_output. 
+If this is a raster stack or brick, predictions will be made over this data.}
 
 \item{N}{number of realisations. Default: 100}
 
@@ -20,7 +21,7 @@ Function to predict uncertainty from the model result
 }
 \examples{
 \dontrun{
-predict_uncertainty(data, result)
+predict_uncertainty(result)
 }
 
 }

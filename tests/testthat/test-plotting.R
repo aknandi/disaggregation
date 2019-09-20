@@ -24,10 +24,10 @@ test_data <- prepare_data(polygon_shapefile = spdf,
 
 fit_result <- fit_model(test_data, its = 2)
 
-preds <- predict_model(test_data, fit_result)
+preds <- predict_model(fit_result)
 p <- plot(preds)
 
-unc <- predict_uncertainty(test_data, fit_result)
+unc <- predict_uncertainty(fit_result)
 p2 <- plot(unc)
 
 

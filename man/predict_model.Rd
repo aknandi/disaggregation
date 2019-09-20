@@ -4,19 +4,20 @@
 \alias{predict_model}
 \title{Function to predict mean from the model result}
 \usage{
-predict_model(data, model_output)
+predict_model(model_output, newdata = NULL)
 }
 \arguments{
-\item{data}{disag.data object returned by prepare_data function}
-
 \item{model_output}{fit.result object returned by fit_model function}
+
+\item{newdata}{If NULL, predictions are made using the data in model_output. 
+If this is a raster stack or brick, predictions will be made over this data.}
 }
 \description{
 Function to predict mean from the model result
 }
 \examples{
 \dontrun{
-predict_model(data, result)
+predict_model(result)
 }
 
 }
