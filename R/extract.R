@@ -119,6 +119,7 @@ parallelExtract <- function(raster, shape, fun = mean, id = 'OBJECTID',  ...){
 getPolygonData <- function(shape, id_var = 'area_id', response_var = 'response') {
   
   polygon_df <- shape@data[, c(id_var, response_var)]
+  names(polygon_df) <- c('area_id', 'response')
   
   return(polygon_df)
 }
