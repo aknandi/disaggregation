@@ -58,6 +58,8 @@ test_that("user defined model setup is working as expected", {
   result3 <- fit_model(binom_data, its = 2, iid = FALSE, family = 'binomial', link = 'logit')
   result4 <- fit_model(test_data, its = 2, field = FALSE, iid = FALSE, link = 'identity')
   
+  expect_error(fit_model(test_data, its = 2, iid = FALSE, family = 'binomial', link = 'logit'))
+  
   expect_is(result2, 'fit.result')
   expect_equal(length(result2), 5)
   expect_equal(length(result2$sd_out$par.fixed), raster::nlayers(test_data$covariate_rasters) + 1)
@@ -69,7 +71,7 @@ test_that("user defined model setup is working as expected", {
   
   expect_is(result3, 'fit.result')
   expect_equal(length(result3), 5)
-  expect_equal(length(result3$sd_out$par.fixed), raster::nlayers(test_data$covariate_rasters) + 3)
+  expect_equal(length(result3$sd_out$par.fixed), raster::nlayers(binom_data$covariate_rasters) + 3)
   expect_equal(unique(names(result3$sd_out$par.random)), c("nodemean"))
   expect_true(result3$model_setup$field)
   expect_false(result3$model_setup$iid)

@@ -48,6 +48,13 @@ fit_model <- function(data, priors = NULL, family = 'gaussian', link = 'logit', 
   if(!is.null(priors)) stopifnot(inherits(priors, 'list'))
   stopifnot(inherits(its, 'numeric'))
   
+  # Check that binomial model has sample_size values supplied
+  if(family == 'binomial') {
+    if(sum(is.na(data$polygon_data$N)) != 0) {
+      stop("There are NAs in the sample sizes. These must be supplied for a binomial likelihood")
+    }
+  }
+  
   if(family == 'gaussian') {
     family_id = 0
   } else if(family == 'binomial') {
