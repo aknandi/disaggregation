@@ -6,6 +6,22 @@ Disaggregation
 
 A package containing useful functions for disaggregation modelling
 
+Installation
+------------
+
+```R
+devtools::install_github('aknandi/disaggregation')
+```
+
+Inputs 
+-------
+
+Required
+* A RasterStack of covariate rasters to be used in the model
+* A SpatialPolygonsDataFrame containing the response count data (for binomial data it can also contain sample size) 
+
+Optional
+* Raster used to aggregate the pixel level predictions to polygon level (usually population)
 
 Overview
 --------
