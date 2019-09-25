@@ -3,6 +3,7 @@
 #' @param model_output fit.result object returned by fit_model function
 #' @param newdata If NULL, predictions are made using the data in model_output. 
 #'   If this is a raster stack or brick, predictions will be made over this data. 
+#' @param predict_iid If TRUE, any polygon iid effect from the model will be used in the prediction. Default FALSE
 #'
 #' @name predict_model
 #'
@@ -13,7 +14,7 @@
 #' 
 #' @export
 
-predict_model <- function(model_output, newdata = NULL) {
+predict_model <- function(model_output, newdata = NULL, predict_iid = FALSE) {
   
   newdata <- check_newdata(newdata, model_output)
 
@@ -25,6 +26,11 @@ predict_model <- function(model_output, newdata = NULL) {
     covariates <- data$covariate_rasters
   } else {
     covariates <- newdata
+  }
+  
+  # If there is no iid effect in the model, it cannot be predicted
+  if(!model_output$model_setup$iid) {
+    predict_iid <- FALSE
   }
 
   data$covariate_rasters <- covariates
@@ -54,6 +60,22 @@ predict_model <- function(model_output, newdata = NULL) {
     field_ras <- NULL
   }
   
+  if(predict_iid) {
+    shapefile_raster <- raster::rasterize(model_output$data$polygon_shapefile, 
+                                          model_output$data$covariate_rasters, 
+                                          field  = names(model_output$data$polygon_shapefile[1]))
+    shapefile_ids <- raster::unique(shapefile_raster)
+    
+    iid_samples <- stats::rnorm(length(shapefile_ids), 0, 1 / sqrt(exp(pars$iideffect)))
+    iid_ras <- shapefile_raster
+    for(i in seq_along(iid_samples)) {
+      iid_ras@data@values[which(shapefile_raster@data@values == shapefile_ids[i])] <- iid_samples[i]
+    }
+    linear_pred <- linear_pred + iid_ras
+  } else {
+    iid_ras <- NULL
+  }
+  
   if(model_output$model_setup$link == 0) {
     mean_prediction <- 1 / (1 + exp(-1 * linear_pred))
   } else if(model_output$model_setup$link == 1) {
@@ -64,6 +86,7 @@ predict_model <- function(model_output, newdata = NULL) {
   
   predictions <- list(prediction = mean_prediction, 
                       field = field_ras,
+                      iid = iid_ras,
                       covariates = cov_contribution)
   
   class(predictions) <- c('predictions', 'list')
@@ -77,6 +100,7 @@ predict_model <- function(model_output, newdata = NULL) {
 #' @param model_output fit.result object returned by fit_model function
 #' @param newdata If NULL, predictions are made using the data in model_output. 
 #'   If this is a raster stack or brick, predictions will be made over this data. 
+#' @param predict_iid If TRUE, any polygon iid effect from the model will be used in the prediction. Default FALSE
 #' @param N number of realisations. Default: 100
 #' @param CI confidence interval. Default: 0.95
 #' 
@@ -89,7 +113,7 @@ predict_model <- function(model_output, newdata = NULL) {
 #' 
 #' @export
 
-predict_uncertainty <- function(model_output, newdata = NULL, N = 100, CI = 0.95) {
+predict_uncertainty <- function(model_output, newdata = NULL, predict_iid = FALSE, N = 100, CI = 0.95) {
   
   
   newdata <- check_newdata(newdata, model_output)
@@ -113,6 +137,13 @@ predict_uncertainty <- function(model_output, newdata = NULL, N = 100, CI = 0.95
   coords <- getCoords(data)
   Amatrix <- getAmatrix(data$mesh, coords)
 
+  if(model_output$model_setup$iid) {
+    shapefile_raster <- raster::rasterize(model_output$data$polygon_shapefile, 
+                                          model_output$data$covariate_rasters, 
+                                          field  = names(model_output$data$polygon_shapefile[1]))
+    shapefile_ids <- raster::unique(shapefile_raster)
+  }
+  
   predictions <- list()
   
   for(r in seq_len(N)) {
@@ -135,6 +166,15 @@ predict_uncertainty <- function(model_output, newdata = NULL, N = 100, CI = 0.95
       field <- (Amatrix %*% p$nodemean)[, 1]
       field_ras <- raster::rasterFromXYZ(cbind(coords, field))
       linear_pred <- linear_pred + field_ras
+    }
+    
+    if(predict_iid) {
+      iid_samples <- stats::rnorm(length(shapefile_ids), 0, 1 / sqrt(exp(p$iideffect)))
+      iid_ras <- shapefile_raster
+      for(i in seq_along(iid_samples)) {
+        iid_ras@data@values[which(shapefile_raster@data@values == shapefile_ids[i])] <- iid_samples[i]
+      }
+      linear_pred <- linear_pred + iid_ras
     }
     
     if(model_output$model_setup$link == 0) {

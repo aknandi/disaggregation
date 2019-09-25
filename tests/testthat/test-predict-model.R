@@ -31,21 +31,34 @@ test_that("Check predict_model function works as expected", {
   preds <- predict_model(result)
   
   expect_is(preds, 'predictions')
-  expect_equal(length(preds), 3)
-  expect_equal(names(preds), c('prediction', 'field', 'covariates'))
+  expect_equal(length(preds), 4)
+  expect_equal(names(preds), c('prediction', 'field', 'iid', 'covariates'))
   expect_is(preds$prediction, 'Raster')
   expect_is(preds$field, 'Raster')
+  expect_true(is.null(preds$iid))
   expect_is(preds$covariates, 'Raster')
   
   
   preds2 <- predict_model(result_nofield)
   
   expect_is(preds2, 'predictions')
-  expect_equal(length(preds2), 3)
-  expect_equal(names(preds2), c('prediction', 'field', 'covariates'))
+  expect_equal(length(preds2), 4)
+  expect_equal(names(preds2), c('prediction', 'field', 'iid', 'covariates'))
   expect_is(preds2$prediction, 'Raster')
   expect_true(is.null(preds2$field))
+  expect_true(is.null(preds2$iid))
   expect_is(preds2$covariates, 'Raster')
+  
+  
+  preds3 <- predict_model(result, predict_iid = TRUE)
+  
+  expect_is(preds3, 'predictions')
+  expect_equal(length(preds3), 4)
+  expect_equal(names(preds3), c('prediction', 'field', 'iid', 'covariates'))
+  expect_is(preds3$prediction, 'Raster')
+  expect_is(preds3$field, 'Raster')
+  expect_is(preds3$iid, 'Raster')
+  expect_is(preds3$covariates, 'Raster')
   
 })
 
@@ -73,6 +86,15 @@ test_that("Check predict_uncertainty function works as expected", {
   expect_equal(raster::nlayers(unc2$predictions_ci), 2)
   
   
+  unc2 <- predict_uncertainty(result, predict_iid = TRUE, N = 10)
+  
+  expect_is(unc2, 'uncertainty')
+  expect_equal(length(unc2), 2)
+  expect_equal(names(unc2), c('realisations', 'predictions_ci'))
+  expect_is(unc2$realisations, 'RasterStack')
+  expect_is(unc2$predictions_ci, 'RasterBrick')
+  expect_equal(raster::nlayers(unc2$realisations), 10)
+  expect_equal(raster::nlayers(unc2$predictions_ci), 2)
   
 })
 
@@ -85,10 +107,11 @@ test_that("Check predict_model function works with newdata", {
   preds2 <- predict_model(result, newdata)
   
   expect_is(preds2, 'predictions')
-  expect_equal(length(preds2), 3)
-  expect_equal(names(preds2), c('prediction', 'field', 'covariates'))
+  expect_equal(length(preds2), 4)
+  expect_equal(names(preds2), c('prediction', 'field', 'iid', 'covariates'))
   expect_is(preds2$prediction, 'Raster')
   expect_is(preds2$field, 'Raster')
+  expect_true(is.null(preds2$iid))
   expect_is(preds2$covariates, 'Raster')
 
   expect_false(identical(raster::extent(preds1$prediction), raster::extent(preds2$prediction)))
