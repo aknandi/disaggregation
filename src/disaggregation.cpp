@@ -39,6 +39,7 @@ Type objective_function<Type>::operator()()
   
   // Shape data. Cases and region id.
   DATA_VECTOR(polygon_response_data);
+  DATA_VECTOR(response_sample_size);
   
   // Use to aggreagte pixel response values to polygon level
   DATA_VECTOR(aggregation_values);
@@ -185,8 +186,8 @@ Type objective_function<Type>::operator()()
       reportnll[polygon] = -dnorm(polygon_response_data[polygon], reportprediction[polygon], polygon_sd, true);
     } else if(family == 1) {
       // Binomial need a sample number...
-      nll -= dbinom(polygon_response_data[polygon], Type(1.0) /*size*/, reportprediction[polygon], true);
-      reportnll[polygon] = -dbinom(polygon_response_data[polygon], Type(1.0) /*size*/, reportprediction[polygon], true);
+      nll -= dbinom(polygon_response_data[polygon], response_sample_size[polygon], reportprediction[polygon], true);
+      reportnll[polygon] = -dbinom(polygon_response_data[polygon], response_sample_size[polygon], reportprediction[polygon], true);
     } else if(family == 2) {
       nll -= dpois(polygon_response_data[polygon], reportprediction[polygon], true);
       reportnll[polygon] = -dpois(polygon_response_data[polygon], reportprediction[polygon], true);

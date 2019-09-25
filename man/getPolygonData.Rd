@@ -4,7 +4,8 @@
 \alias{getPolygonData}
 \title{Extract data from a SpatialPolygonsDataFrame into data.frame of correct structure}
 \usage{
-getPolygonData(shape, id_var = "area_id", response_var = "response")
+getPolygonData(shape, id_var = "area_id", response_var = "response",
+  sample_size_var = NULL)
 }
 \arguments{
 \item{shape}{A shape object containing response data}
@@ -12,6 +13,8 @@ getPolygonData(shape, id_var = "area_id", response_var = "response")
 \item{id_var}{Name of column in shape object with the polygon id}
 
 \item{response_var}{Name of column in shape object with the response data}
+
+\item{sample_size_var}{For survey data, name of column in SpatialPolygonDataFrame object (if it exists) with the sample size data}
 }
 \description{
 Extract data from a SpatialPolygonsDataFrame into data.frame of correct structure

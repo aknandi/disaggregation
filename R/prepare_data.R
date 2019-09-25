@@ -5,6 +5,7 @@
 #' @param aggregation_raster Raster to aggregate predicted pixel values e.g. population to aggregate prevalence
 #' @param id_var Name of column in SpatialPolygonDataFrame object with the polygon id
 #' @param response_var Name of column in SpatialPolygonDataFrame object with the response data
+#' @param sample_size_var For survey data, name of column in SpatialPolygonDataFrame object (if it exists) with the sample size data
 #' @param mesh.args list of parameters that control the mesh structure with the same names as used by INLA
 #' @param ncores Number of cores used to perform covariate extraction
 #'
@@ -41,6 +42,7 @@ prepare_data <- function(polygon_shapefile,
                          aggregation_raster = NULL,
                          id_var = 'area_id', 
                          response_var = 'response', 
+                         sample_size_var = NULL,
                          mesh.args = NULL, 
                          ncores = 2) {
 
@@ -51,7 +53,7 @@ prepare_data <- function(polygon_shapefile,
   stopifnot(inherits(response_var, 'character'))
   if(!is.null(mesh.args)) stopifnot(inherits(mesh.args, 'list'))
   
-  polygon_data <- getPolygonData(polygon_shapefile, id_var = id_var, response_var = response_var)
+  polygon_data <- getPolygonData(polygon_shapefile, id_var, response_var, sample_size_var)
   
 
   # Save raster layer names so we can reassign it to make sure names don't change.

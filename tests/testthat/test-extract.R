@@ -10,7 +10,7 @@ for(i in 1:100) {
 }
 
 polys <- do.call(raster::spPolygons, polygons)
-response_df <- data.frame(area_id = 1:100, response = runif(100, min = 0, max = 10))
+response_df <- data.frame(area_id = 1:100, response = runif(100, min = 0, max = 1), sample_size = floor(runif(100, min = 1, max = 100)))
 spdf <- sp::SpatialPolygonsDataFrame(polys, response_df)
 
 # Create raster stack
@@ -62,12 +62,21 @@ test_that("getPolygonData function", {
   expect_error(getPolygonData(spdf, id_var = 'area_id', response_var = 'data'))
   
   result <- getPolygonData(spdf, id_var = 'area_id', response_var = 'response')
+  result_withN <- getPolygonData(spdf, id_var = 'area_id', response_var = 'response', sample_size_var = 'sample_size')
   
   expect_is(result, 'data.frame')
-  expect_equal(ncol(result), 2)
+  expect_equal(ncol(result), 3)
   expect_equal(nrow(result), nrow(spdf))
   expect_equal(result$area_id, spdf$area_id)
   expect_equal(result$response, spdf$response)
+  expect_equal(result$N, rep(NA, nrow(result)))
+  
+  expect_is(result_withN, 'data.frame')
+  expect_equal(ncol(result_withN), 3)
+  expect_equal(nrow(result_withN), nrow(spdf))
+  expect_equal(result_withN$area_id, spdf$area_id)
+  expect_equal(result_withN$response, spdf$response)
+  expect_equal(result_withN$N, spdf$sample_size)
   
 })
 

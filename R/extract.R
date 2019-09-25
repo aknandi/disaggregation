@@ -96,6 +96,7 @@ parallelExtract <- function(raster, shape, fun = mean, id = 'OBJECTID',  ...){
 #' @param shape A shape object containing response data
 #' @param id_var Name of column in shape object with the polygon id
 #' @param response_var Name of column in shape object with the response data
+#' @param sample_size_var For survey data, name of column in SpatialPolygonDataFrame object (if it exists) with the sample size data
 #' 
 #' @export
 #' @examples {
@@ -116,10 +117,16 @@ parallelExtract <- function(raster, shape, fun = mean, id = 'OBJECTID',  ...){
 #' 
 #' 
 
-getPolygonData <- function(shape, id_var = 'area_id', response_var = 'response') {
+getPolygonData <- function(shape, id_var = 'area_id', response_var = 'response', sample_size_var = NULL) {
   
-  polygon_df <- shape@data[, c(id_var, response_var)]
-  names(polygon_df) <- c('area_id', 'response')
+  if(is.null(sample_size_var)) {
+    polygon_df <- shape@data[, c(id_var, response_var)]
+    polygon_df$N <- rep(NA, nrow(polygon_df))
+  } else {
+    polygon_df <- shape@data[, c(id_var, response_var, sample_size_var)]
+  }
+  
+  names(polygon_df) <- c('area_id', 'response', 'N')
   
   return(polygon_df)
 }

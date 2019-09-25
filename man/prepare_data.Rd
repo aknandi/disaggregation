@@ -6,7 +6,8 @@
 \usage{
 prepare_data(polygon_shapefile, covariate_rasters,
   aggregation_raster = NULL, id_var = "area_id",
-  response_var = "response", mesh.args = NULL, ncores = 2)
+  response_var = "response", sample_size_var = NULL,
+  mesh.args = NULL, ncores = 2)
 }
 \arguments{
 \item{polygon_shapefile}{SpatialPolygonDataFrame containing the response data}
@@ -18,6 +19,8 @@ prepare_data(polygon_shapefile, covariate_rasters,
 \item{id_var}{Name of column in SpatialPolygonDataFrame object with the polygon id}
 
 \item{response_var}{Name of column in SpatialPolygonDataFrame object with the response data}
+
+\item{sample_size_var}{For survey data, name of column in SpatialPolygonDataFrame object (if it exists) with the sample size data}
 
 \item{mesh.args}{list of parameters that control the mesh structure with the same names as used by INLA}
 

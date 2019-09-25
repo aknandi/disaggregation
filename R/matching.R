@@ -8,7 +8,7 @@
 #'
 #' @examples {
 #'  covs <- data.frame(area_id = c(1, 1, 1, 2, 2, 3, 3, 3, 3), response = c(3, 9, 5, 2, 3, 6, 7, 3, 5))
-#'  response <- data.frame(area_id = c(1, 2, 3), response = c(4, 7, 2))
+#'  response <- data.frame(area_id = c(1, 2, 3), response = c(4, 7, 2), N = c(NA, NA, NA))
 #'  getStartendindex(covs, response, 'area_id')
 #' }
 #'
@@ -17,7 +17,7 @@
 
 getStartendindex <- function(covariates, polygon_data, id_var = 'area_id') {
 
-  stopifnot(ncol(polygon_data) == 2)
+  stopifnot(ncol(polygon_data) == 3)
   stopifnot(ncol(covariates) >= 2)
   stopifnot(nrow(covariates) > nrow(polygon_data))
   stopifnot(sum(polygon_data[, id_var] %in% covariates[, id_var]) == nrow(polygon_data))

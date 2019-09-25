@@ -10,7 +10,7 @@ for(i in 1:100) {
 }
 
 polys <- do.call(raster::spPolygons, polygons)
-response_df <- data.frame(area_id = 1:100, response = runif(100, min = 0, max = 10))
+response_df <- data.frame(area_id = 1:100, response = runif(100, min = 0, max = 1), sample_size = floor(runif(100, min = 1, max = 100)))
 spdf <- sp::SpatialPolygonsDataFrame(polys, response_df)
 
 # Create raster stack
@@ -37,10 +37,35 @@ test_that("Check prepare_data function works as expected", {
   expect_is(result$coords, 'matrix')
   expect_is(result$startendindex, 'matrix')
   expect_is(result$mesh, 'inla.mesh')
+  expect_equal(sum(is.na(result$polygon_data$N)), length(result$polygon_data$N))
   expect_equal(nrow(result$polygon_data), nrow(result$startendindex))
   expect_equal(nrow(result$covariate_data), nrow(result$coords))
   
 })
+
+test_that("Check prepare_data function with sample size works as expected", {
+  
+  result <- prepare_data(polygon_shapefile = spdf, 
+                         covariate_rasters = cov_rasters,
+                         sample_size_var = 'sample_size')
+  
+  expect_is(result, 'disag.data')
+  expect_equal(length(result), 8)
+  expect_equal(names(result), c('polygon_shapefile', 'covariate_rasters', 'polygon_data', 'covariate_data', 'aggregation_pixels', 'coords', 'startendindex', 'mesh'))
+  expect_is(result$polygon_shapefile, 'SpatialPolygonsDataFrame')
+  expect_is(result$covariate_rasters, c('RasterBrick', 'RasterStack'))
+  expect_is(result$polygon_data, 'data.frame')
+  expect_is(result$covariate_data, 'data.frame')
+  expect_is(result$aggregation_pixels, 'numeric')
+  expect_is(result$coords, 'matrix')
+  expect_is(result$startendindex, 'matrix')
+  expect_is(result$mesh, 'inla.mesh')
+  expect_equal(sum(is.na(result$polygon_data$N)), 0)
+  expect_equal(nrow(result$polygon_data), nrow(result$startendindex))
+  expect_equal(nrow(result$covariate_data), nrow(result$coords))
+  
+})
+
 
 test_that("Check as.disag.data function works as expected", {
   

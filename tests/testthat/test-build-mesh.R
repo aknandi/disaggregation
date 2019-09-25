@@ -12,7 +12,7 @@ test_that("build_mesh behaves as expected", {
   }
   
   polys <- do.call(raster::spPolygons, polygons)
-  response_df <- data.frame(area_id = 1:100, response = runif(100, min = 0, max = 10))
+  response_df <- data.frame(area_id = 1:100, response = runif(100, min = 0, max = 1), sample_size = floor(runif(100, min = 1, max = 100)))
   spdf <- sp::SpatialPolygonsDataFrame(polys, response_df)
 
   my_mesh <- build_mesh(spdf)

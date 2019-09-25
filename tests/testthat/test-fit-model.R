@@ -10,7 +10,7 @@ for(i in 1:100) {
 }
 
 polys <- do.call(raster::spPolygons, polygons)
-response_df <- data.frame(area_id = 1:100, response = runif(100, min = 0, max = 10))
+response_df <- data.frame(area_id = 1:100, response = runif(100, min = 0, max = 1), sample_size = floor(runif(100, min = 1, max = 100)))
 spdf <- sp::SpatialPolygonsDataFrame(polys, response_df)
 
 # Create raster stack
@@ -22,6 +22,10 @@ cov_stack <- raster::stack(r, r2)
 
 test_data <- prepare_data(polygon_shapefile = spdf, 
                           covariate_rasters = cov_stack)
+
+binom_data <- prepare_data(polygon_shapefile = spdf, 
+                           covariate_rasters = cov_stack,
+                           sample_size_var = 'sample_size')
 
 test_that("fit_model produces errors whe expected", {
   
@@ -51,7 +55,7 @@ test_that("fit_model behaves as expected", {
 test_that("user defined model setup is working as expected", {
   
   result2 <- fit_model(test_data, its = 2, field = FALSE, family = 'poisson', link = 'log')
-  result3 <- fit_model(test_data, its = 2, iid = FALSE, family = 'binomial', link = 'logit')
+  result3 <- fit_model(binom_data, its = 2, iid = FALSE, family = 'binomial', link = 'logit')
   result4 <- fit_model(test_data, its = 2, field = FALSE, iid = FALSE, link = 'identity')
   
   expect_is(result2, 'fit.result')

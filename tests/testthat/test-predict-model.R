@@ -9,7 +9,7 @@ for(i in 1:100) {
 }
 
 polys <- do.call(raster::spPolygons, polygons)
-response_df <- data.frame(area_id = 1:100, response = runif(100, min = 0, max = 10))
+response_df <- data.frame(area_id = 1:100, response = runif(100, min = 0, max = 1), sample_size = floor(runif(100, min = 1, max = 100)))
 spdf <- sp::SpatialPolygonsDataFrame(polys, response_df)
 
 # Create raster stack
