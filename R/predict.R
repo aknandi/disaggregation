@@ -61,7 +61,9 @@ predict_model <- function(model_output, newdata = NULL, predict_iid = FALSE) {
   }
   
   if(predict_iid) {
-    shapefile_raster <- raster::rasterize(model_output$data$polygon_shapefile, 
+    tmp_shps <- model_output$data$polygon_shapefile
+    tmp_shps@data <- 
+    shapefile_raster <- raster::rasterize(, 
                                           model_output$data$covariate_rasters, 
                                           field  = names(model_output$data$polygon_shapefile[1]))
     shapefile_ids <- raster::unique(shapefile_raster)
@@ -138,9 +140,11 @@ predict_uncertainty <- function(model_output, newdata = NULL, predict_iid = FALS
   Amatrix <- getAmatrix(data$mesh, coords)
 
   if(predict_iid) {
-    shapefile_raster <- raster::rasterize(model_output$data$polygon_shapefile, 
+    tmp_shp <- model_output$data$polygon_shapefile
+    tmp_shp@data <- data.frame(area_id = factor(model_output$data$polygon_data$area_id))
+    shapefile_raster <- raster::rasterize(tmp_shp, 
                                           model_output$data$covariate_rasters, 
-                                          field  = names(model_output$data$polygon_shapefile[1]))
+                                          field = 'area_id')
     shapefile_ids <- raster::unique(shapefile_raster)
   }
   
