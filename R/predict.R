@@ -137,7 +137,7 @@ predict_uncertainty <- function(model_output, newdata = NULL, predict_iid = FALS
   coords <- getCoords(data)
   Amatrix <- getAmatrix(data$mesh, coords)
 
-  if(model_output$model_setup$iid) {
+  if(predict_iid) {
     shapefile_raster <- raster::rasterize(model_output$data$polygon_shapefile, 
                                           model_output$data$covariate_rasters, 
                                           field  = names(model_output$data$polygon_shapefile[1]))
