@@ -61,17 +61,16 @@ predict_model <- function(model_output, newdata = NULL, predict_iid = FALSE) {
   }
   
   if(predict_iid) {
-    tmp_shps <- model_output$data$polygon_shapefile
-    tmp_shps@data <- 
-    shapefile_raster <- raster::rasterize(, 
+    tmp_shp <- model_output$data$polygon_shapefile
+    tmp_shp@data <- data.frame(area_id = factor(model_output$data$polygon_data$area_id))
+    shapefile_raster <- raster::rasterize(tmp_shp, 
                                           model_output$data$covariate_rasters, 
-                                          field  = names(model_output$data$polygon_shapefile[1]))
+                                          field = 'area_id')
     shapefile_ids <- raster::unique(shapefile_raster)
     
-    iid_samples <- stats::rnorm(length(shapefile_ids), 0, 1 / sqrt(exp(pars$iideffect)))
     iid_ras <- shapefile_raster
     for(i in seq_along(iid_samples)) {
-      iid_ras@data@values[which(shapefile_raster@data@values == shapefile_ids[i])] <- iid_samples[i]
+      iid_ras@data@values[which(shapefile_raster@data@values == shapefile_ids[i])] <- pars$iideffect[i]
     }
     linear_pred <- linear_pred + iid_ras
   } else {
@@ -173,7 +172,7 @@ predict_uncertainty <- function(model_output, newdata = NULL, predict_iid = FALS
     }
     
     if(predict_iid) {
-      iid_samples <- stats::rnorm(length(shapefile_ids), 0, 1 / sqrt(exp(p$iideffect)))
+      iid_samples <- p$iideffect
       iid_ras <- shapefile_raster
       for(i in seq_along(iid_samples)) {
         iid_ras@data@values[which(shapefile_raster@data@values == shapefile_ids[i])] <- iid_samples[i]
