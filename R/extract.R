@@ -177,10 +177,13 @@ extractCoordsForMesh <- function(cov_rasters, covariate_data) {
   stopifnot(inherits(cov_rasters, c('RasterStack', 'RasterBrick')))
   stopifnot(inherits(covariate_data, 'data.frame'))
   
-  cov_rasters[[1]][raster::values(cov_rasters[[1]]) == NA] <- -9999
+  cov_rasters[[1]][is.na(raster::values(cov_rasters[[1]]))] <- -9999
   raster_pts <- raster::rasterToPoints(cov_rasters[[1]], spatial = TRUE)
   coords <- raster_pts@coords[covariate_data$cellid, ]
   
   return(coords)
   
 }
+
+
+
