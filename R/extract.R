@@ -79,10 +79,10 @@ parallelExtract <- function(raster, shape, fun = mean, id = 'OBJECTID',  ...){
     #   Want to make covariates columns, rbind shapes, and add shape and cell id columns.
     
     # list of vectors, one for each covariate
-    values_id <- lapply(seq_along(values), function(x) cbind(shape@data[, id][x], values[[x]][[1]]))
+    values_id <- lapply(seq_along(values), function(x) data.frame(shape@data[, id][x], values[[x]][[1]]))
     
     
-    df <- data.frame(do.call(rbind, values_id))
+    df <- do.call(rbind, values_id)
     names(df) <- c(id, 'cellid', names(raster))
     
     return(df)
