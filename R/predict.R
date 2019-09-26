@@ -69,7 +69,7 @@ predict_model <- function(model_output, newdata = NULL, predict_iid = FALSE) {
     shapefile_ids <- raster::unique(shapefile_raster)
     
     iid_ras <- shapefile_raster
-    for(i in seq_along(iid_samples)) {
+    for(i in seq_along(pars$iideffect)) {
       iid_ras@data@values[which(shapefile_raster@data@values == shapefile_ids[i])] <- pars$iideffect[i]
     }
     linear_pred <- linear_pred + iid_ras
