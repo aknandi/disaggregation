@@ -42,7 +42,7 @@
 #' 
 #' @export
 
-fit_model <- function(data, priors = NULL, family = 'gaussian', link = 'logit', its = 10, field = TRUE, iid = TRUE) {
+fit_model <- function(data, priors = NULL, family = 'gaussian', link = 'identity', its = 10, field = TRUE, iid = TRUE) {
   
   stopifnot(inherits(data, 'disag.data'))
   if(!is.null(priors)) stopifnot(inherits(priors, 'list'))
