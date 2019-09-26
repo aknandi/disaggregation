@@ -10,8 +10,12 @@ for(i in 1:100) {
 }
 
 polys <- do.call(raster::spPolygons, polygons)
-response_df <- data.frame(area_id = 1:100, response = runif(100, min = 0, max = 1), sample_size = floor(runif(100, min = 1, max = 100)))
+N <- floor(runif(100, min = 1, max = 100))
+response_df <- data.frame(area_id = 1:100, response = runif(100, min = 0, max = 1000))
+response_binom_df <- data.frame(area_id = 1:100, response = N*runif(100, min = 0, max = 1), sample_size = N)
+
 spdf <- sp::SpatialPolygonsDataFrame(polys, response_df)
+spdf_binom <- sp::SpatialPolygonsDataFrame(polys, response_binom_df)
 
 # Create raster stack
 r <- raster::raster(ncol=20, nrow=20)
@@ -23,7 +27,7 @@ cov_stack <- raster::stack(r, r2)
 test_data <- prepare_data(polygon_shapefile = spdf, 
                           covariate_rasters = cov_stack)
 
-binom_data <- prepare_data(polygon_shapefile = spdf, 
+binom_data <- prepare_data(polygon_shapefile = spdf_binom, 
                            covariate_rasters = cov_stack,
                            sample_size_var = 'sample_size')
 

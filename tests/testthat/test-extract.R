@@ -10,8 +10,13 @@ for(i in 1:100) {
 }
 
 polys <- do.call(raster::spPolygons, polygons)
-response_df <- data.frame(area_id = 1:100, response = runif(100, min = 0, max = 1), sample_size = floor(runif(100, min = 1, max = 100)))
+N <- floor(runif(100, min = 1, max = 100))
+response_df <- data.frame(area_id = 1:100, response = runif(100, min = 0, max = 1000))
+response_binom_df <- data.frame(area_id = 1:100, response = N*runif(100, min = 0, max = 1), sample_size = N)
+
 spdf <- sp::SpatialPolygonsDataFrame(polys, response_df)
+spdf_binom <- sp::SpatialPolygonsDataFrame(polys, response_binom_df)
+
 
 # Create raster stack
 r <- raster::raster(ncol=20, nrow=20)
@@ -62,7 +67,7 @@ test_that("getPolygonData function", {
   expect_error(getPolygonData(spdf, id_var = 'area_id', response_var = 'data'))
   
   result <- getPolygonData(spdf, id_var = 'area_id', response_var = 'response')
-  result_withN <- getPolygonData(spdf, id_var = 'area_id', response_var = 'response', sample_size_var = 'sample_size')
+  result_binom <- getPolygonData(spdf_binom, id_var = 'area_id', response_var = 'response', sample_size_var = 'sample_size')
   
   expect_is(result, 'data.frame')
   expect_equal(ncol(result), 3)
@@ -71,12 +76,12 @@ test_that("getPolygonData function", {
   expect_equal(result$response, spdf$response)
   expect_equal(result$N, rep(NA, nrow(result)))
   
-  expect_is(result_withN, 'data.frame')
-  expect_equal(ncol(result_withN), 3)
-  expect_equal(nrow(result_withN), nrow(spdf))
-  expect_equal(result_withN$area_id, spdf$area_id)
-  expect_equal(result_withN$response, spdf$response)
-  expect_equal(result_withN$N, spdf$sample_size)
+  expect_is(result_binom, 'data.frame')
+  expect_equal(ncol(result_binom), 3)
+  expect_equal(nrow(result_binom), nrow(spdf_binom))
+  expect_equal(result_binom$area_id, spdf_binom$area_id)
+  expect_equal(result_binom$response, spdf_binom$response)
+  expect_equal(result_binom$N, spdf_binom$sample_size)
   
 })
 

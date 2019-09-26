@@ -150,6 +150,8 @@ Type objective_function<Type>::operator()()
   // recalculate startendindices to be in the form start, n
   startendindex.col(1) = startendindex.col(1) - startendindex.col(0) + 1;
   
+  Type polygon_response;
+  Type normalised_polygon_response;
   vector<Type> pixel_pred;
   vector<Type> numerator_pixels;
   vector<Type> normalisation_pixels;
@@ -178,17 +180,21 @@ Type objective_function<Type>::operator()()
     // Aggregate to polygon prediction
     numerator_pixels = pixel_pred * aggregation_values.segment(startendindex(polygon, 0), startendindex(polygon, 1)).array();
     normalisation_pixels = aggregation_values.segment(startendindex(polygon, 0), startendindex(polygon, 1));
-    reportprediction[polygon] = sum(numerator_pixels) / sum(normalisation_pixels);
-    
+
     // Use correct likelihood function
     if(family == 0) {
-      nll -= dnorm(polygon_response_data[polygon], reportprediction[polygon], polygon_sd, true);
-      reportnll[polygon] = -dnorm(polygon_response_data[polygon], reportprediction[polygon], polygon_sd, true);
+      // Calculate normal likelihood in rate space
+      reportprediction[polygon] = sum(numerator_pixels) / sum(normalisation_pixels);
+      polygon_response = polygon_response_data(polygon);
+      normalised_polygon_response = polygon_response/sum(normalisation_pixels);
+      nll -= dnorm(normalised_polygon_response, reportprediction[polygon], polygon_sd, true);
+      reportnll[polygon] = -dnorm(normalised_polygon_response, reportprediction[polygon], polygon_sd, true);
     } else if(family == 1) {
-      // Binomial need a sample number...
+      reportprediction[polygon] = sum(numerator_pixels) / sum(normalisation_pixels);
       nll -= dbinom(polygon_response_data[polygon], response_sample_size[polygon], reportprediction[polygon], true);
       reportnll[polygon] = -dbinom(polygon_response_data[polygon], response_sample_size[polygon], reportprediction[polygon], true);
     } else if(family == 2) {
+      reportprediction[polygon] = sum(numerator_pixels);
       nll -= dpois(polygon_response_data[polygon], reportprediction[polygon], true);
       reportnll[polygon] = -dpois(polygon_response_data[polygon], reportprediction[polygon], true);
     } else {

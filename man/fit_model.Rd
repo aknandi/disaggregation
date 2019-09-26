@@ -4,8 +4,8 @@
 \alias{fit_model}
 \title{Function to fit the disaggregation model}
 \usage{
-fit_model(data, priors = NULL, family = "gaussian", link = "logit",
-  its = 10, field = TRUE, iid = TRUE)
+fit_model(data, priors = NULL, family = "gaussian",
+  link = "identity", its = 10, field = TRUE, iid = TRUE)
 }
 \arguments{
 \item{data}{disag.data object returned by prepare_data function that contains all the necessary objects for the model fitting}
