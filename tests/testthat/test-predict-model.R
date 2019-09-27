@@ -179,3 +179,67 @@ test_that('Check that check_newdata works', {
   
   
 })
+
+test_that('Check that setup_objects works', {
+  
+  objects <- setup_objects(result)
+  
+  expect_is(objects, 'list')
+  expect_equal(length(objects), 3)
+  expect_equal(names(objects), c('covariates', 'field_objects', 'iid_objects'))
+  expect_is(objects$field_objects, 'list')
+  expect_true(is.null(objects$iid_objects))
+
+  newdata <- raster::crop(raster::stack(r, r2), c(0, 180, -90, 90))
+  objects2 <- setup_objects(result, newdata)
+  
+  expect_is(objects2, 'list')
+  expect_equal(length(objects2), 3)
+  expect_equal(names(objects2), c('covariates', 'field_objects', 'iid_objects'))
+  expect_is(objects2$field_objects, 'list')
+  expect_true(is.null(objects$iid_objects))
+  
+  objects3 <- setup_objects(result, predict_iid = TRUE)
+  
+  expect_is(objects3, 'list')
+  expect_equal(length(objects3), 3)
+  expect_equal(names(objects3), c('covariates', 'field_objects', 'iid_objects'))
+  expect_is(objects3$field_objects, 'list')
+  expect_is(objects3$iid_objects, 'list')
+  
+})
+
+test_that('Check that predict_single_raster works', {
+  
+  objects <- setup_objects(result)
+  
+  pars <- result$obj$env$last.par.best
+  pars <- split(pars, names(pars))
+  
+  pred <- predict_single_raster(pars, 
+                                objects = objects,
+                                link_function = result$model_setup$link)
+  
+  expect_is(pred, 'list')
+  expect_equal(length(pred), 4)
+  expect_equal(names(pred), c('prediction', 'field', 'iid', 'covariates'))
+  expect_is(pred$prediction, 'Raster')
+  expect_is(pred$field, 'Raster')
+  expect_true(is.null(pred$iid))
+  expect_is(pred$covariates, 'Raster')
+  
+  objects2 <- setup_objects(result, predict_iid = TRUE)
+  
+  pred <- predict_single_raster(pars, 
+                                objects = objects2,
+                                link_function = result$model_setup$link)
+  
+  expect_is(pred, 'list')
+  expect_equal(length(pred), 4)
+  expect_equal(names(pred), c('prediction', 'field', 'iid', 'covariates'))
+  expect_is(pred$prediction, 'Raster')
+  expect_is(pred$field, 'Raster')
+  expect_is(pred$iid, 'Raster')
+  expect_is(pred$covariates, 'Raster')
+  
+})

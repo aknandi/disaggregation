@@ -46,80 +46,15 @@ predict.fit.result <- function(object, newdata = NULL, predict_iid = FALSE, N = 
 
 predict_model <- function(model_output, newdata = NULL, predict_iid = FALSE) {
   
-  newdata <- check_newdata(newdata, model_output)
-
-  # Pull out original data
-  data <- model_output$data
-
-  # Decide which covariates to predict over
-  if(is.null(newdata)){
-    covariates <- data$covariate_rasters
-  } else {
-    covariates <- newdata
-  }
-  
-  # If there is no iid effect in the model, it cannot be predicted
-  if(!model_output$model_setup$iid) {
-    predict_iid <- FALSE
-  }
-
-  data$covariate_rasters <- covariates
-  coords <- getCoords(data)
-  Amatrix <- getAmatrix(data$mesh, coords)
+  objects_for_prediction <- setup_objects(model_output, newdata = newdata, predict_iid)
   
   pars <- model_output$obj$env$last.par.best
   pars <- split(pars, names(pars))
   
-  # Create linear predictor
-  covs_by_betas <- list()
-  for(i in seq_len(raster::nlayers(covariates))){
-    covs_by_betas[[i]] <- pars$slope[i] * covariates[[i]]
-  }
-  
-  cov_by_betas <- raster::stack(covs_by_betas)
-  cov_contribution <- sum(cov_by_betas) + pars$intercept
-  linear_pred <- cov_contribution  
+  predictions <- predict_single_raster(pars, 
+                                       objects_for_prediction,
+                                       link_function = model_output$model_setup$link) 
 
-
-  if(model_output$model_setup$field){
-    # Extract field values
-    field <- (Amatrix %*% pars$nodemean)[, 1]
-    field_ras <- raster::rasterFromXYZ(cbind(coords, field))
-    linear_pred <- linear_pred + field_ras
-  } else {
-    field_ras <- NULL
-  }
-  
-  if(predict_iid) {
-    tmp_shp <- model_output$data$polygon_shapefile
-    tmp_shp@data <- data.frame(area_id = factor(model_output$data$polygon_data$area_id))
-    shapefile_raster <- raster::rasterize(tmp_shp, 
-                                          model_output$data$covariate_rasters, 
-                                          field = 'area_id')
-    shapefile_ids <- raster::unique(shapefile_raster)
-    
-    iid_ras <- shapefile_raster
-    for(i in seq_along(pars$iideffect)) {
-      iid_ras@data@values[which(shapefile_raster@data@values == shapefile_ids[i])] <- pars$iideffect[i]
-    }
-    linear_pred <- linear_pred + iid_ras
-  } else {
-    iid_ras <- NULL
-  }
-  
-  if(model_output$model_setup$link == 0) {
-    mean_prediction <- 1 / (1 + exp(-1 * linear_pred))
-  } else if(model_output$model_setup$link == 1) {
-    mean_prediction <- exp(linear_pred)
-  } else if(model_output$model_setup$link == 2) {
-    mean_prediction <- linear_pred
-  }
-  
-  predictions <- list(prediction = mean_prediction, 
-                      field = field_ras,
-                      iid = iid_ras,
-                      covariates = cov_contribution)
-  
   class(predictions) <- c('predictions', 'list')
   
   return(predictions)
@@ -146,36 +81,12 @@ predict_model <- function(model_output, newdata = NULL, predict_iid = FALSE) {
 
 predict_uncertainty <- function(model_output, newdata = NULL, predict_iid = FALSE, N = 100, CI = 0.95) {
   
+  objects_for_prediction <- setup_objects(model_output, newdata = newdata, predict_iid)
   
-  newdata <- check_newdata(newdata, model_output)
-
-  # Pull out original data
-  data <- model_output$data
-
-  # Decide which covariates to predict over
-  if(is.null(newdata)){
-    covariates <- data$covariate_rasters
-  } else {
-    covariates <- newdata
-  }
-
-  data$covariate_rasters <- covariates
   parameters <- model_output$obj$env$last.par.best
   
   ch <- Matrix::Cholesky(model_output$sd_out$jointPrecision)
   par_draws <- sparseMVN::rmvn.sparse(N, parameters, ch, prec = TRUE)
-  
-  coords <- getCoords(data)
-  Amatrix <- getAmatrix(data$mesh, coords)
-
-  if(predict_iid) {
-    tmp_shp <- model_output$data$polygon_shapefile
-    tmp_shp@data <- data.frame(area_id = factor(model_output$data$polygon_data$area_id))
-    shapefile_raster <- raster::rasterize(tmp_shp, 
-                                          model_output$data$covariate_rasters, 
-                                          field = 'area_id')
-    shapefile_ids <- raster::unique(shapefile_raster)
-  }
   
   predictions <- list()
   
@@ -183,40 +94,11 @@ predict_uncertainty <- function(model_output, newdata = NULL, predict_iid = FALS
     
     p <- split(par_draws[r, ], names(parameters))
     
-    # Create linear predictor
-    covs_by_betas <- list()
-    for(i in seq_len(raster::nlayers(covariates))){
-      covs_by_betas[[i]] <- p$slope[i] * covariates[[i]]
-    }
-    cov_by_betas <- raster::stack(covs_by_betas)
-    cov_contribution <- sum(cov_by_betas) + p$intercept
+    prediction_result <- predict_single_raster(p, 
+                                               objects_for_prediction,
+                                               link_function = model_output$model_setup$link) 
     
-    linear_pred <- cov_contribution  
-    
-    
-    if(model_output$model_setup$field){
-      # Extract field values
-      field <- (Amatrix %*% p$nodemean)[, 1]
-      field_ras <- raster::rasterFromXYZ(cbind(coords, field))
-      linear_pred <- linear_pred + field_ras
-    }
-    
-    if(predict_iid) {
-      iid_samples <- p$iideffect
-      iid_ras <- shapefile_raster
-      for(i in seq_along(iid_samples)) {
-        iid_ras@data@values[which(shapefile_raster@data@values == shapefile_ids[i])] <- iid_samples[i]
-      }
-      linear_pred <- linear_pred + iid_ras
-    }
-    
-    if(model_output$model_setup$link == 0) {
-      predictions[[r]] <- 1 / (1 + exp(-1 * linear_pred))
-    } else if(model_output$model_setup$link == 1) {
-      predictions[[r]] <- exp(linear_pred)
-    } else if(model_output$model_setup$link == 2) {
-      predictions[[r]] <- linear_pred
-    }
+    predictions[[r]] <- prediction_result$prediction
   }
 
   predictions <- raster::stack(predictions)
@@ -282,4 +164,99 @@ check_newdata <- function(newdata, model_output){
   return(newdata)
 }
 
+# Function to setup covariates, field and iid objects for prediction
+setup_objects <- function(model_output, newdata = NULL, predict_iid = FALSE) {
+  
+  newdata <- check_newdata(newdata, model_output)
+  
+  # Pull out original data
+  data <- model_output$data
+  
+  # Decide which covariates to predict over
+  if(is.null(newdata)){
+    covariates <- data$covariate_rasters
+  } else {
+    covariates <- newdata
+  }
+  
+  data$covariate_rasters <- covariates
+  
+  # If there is no iid effect in the model, it cannot be predicted
+  if(!model_output$model_setup$iid) {
+    predict_iid <- FALSE
+  }
+  
+  if(model_output$model_setup$field) {
+    coords <- getCoords(data)
+    Amatrix <- getAmatrix(data$mesh, coords)
+    field_objects <- list(coords = coords, Amatrix = Amatrix)
+  } else {
+    field_objects <- NULL
+  }
+  
+  if(predict_iid) {
+    tmp_shp <- model_output$data$polygon_shapefile
+    tmp_shp@data <- data.frame(area_id = factor(model_output$data$polygon_data$area_id))
+    shapefile_raster <- raster::rasterize(tmp_shp, 
+                                          model_output$data$covariate_rasters, 
+                                          field = 'area_id')
+    shapefile_ids <- raster::unique(shapefile_raster)
+    iid_objects <- list(shapefile_raster = shapefile_raster, shapefile_ids = shapefile_ids)
+  } else {
+    iid_objects <- NULL
+  }
+  
+  return(list(covariates = covariates,
+              field_objects = field_objects,
+              iid_objects = iid_objects))
+}
 
+# Function to take model parameters and predict a single raster
+predict_single_raster <- function(model_parameters, objects, link_function) {
+  
+  # Create linear predictor
+  covs_by_betas <- list()
+  for(i in seq_len(raster::nlayers(objects$covariates))){
+    covs_by_betas[[i]] <- model_parameters$slope[i] * objects$covariates[[i]]
+  }
+  
+  cov_by_betas <- raster::stack(covs_by_betas)
+  cov_contribution <- sum(cov_by_betas) + model_parameters$intercept
+  
+  linear_pred <- cov_contribution  
+  
+  if(!is.null(objects$field_objects)){
+    # Extract field values
+    field <- (objects$field_objects$Amatrix %*% model_parameters$nodemean)[, 1]
+    field_ras <- raster::rasterFromXYZ(cbind(objects$field_objects$coords, field))
+    linear_pred <- linear_pred + field_ras
+  } else {
+    field_ras <- NULL
+  }
+  
+  if(!is.null(objects$iid_objects)) {
+    iid_ras <- objects$iid_objects$shapefile_raster
+    for(i in seq_along(model_parameters$iideffect)) {
+      iid_ras@data@values[which(objects$iid_objects$shapefile_raster@data@values == objects$iid_objects$shapefile_ids[i])] <- 
+        model_parameters$iideffect[i]
+    }
+    linear_pred <- linear_pred + iid_ras
+  } else {
+    iid_ras <- NULL
+  }
+  
+  if(link_function == 0) {
+    prediction_ras <- 1 / (1 + exp(-1 * linear_pred))
+  } else if(link_function == 1) {
+    prediction_ras <- exp(linear_pred)
+  } else if(link_function == 2) {
+    prediction_ras <- linear_pred
+  }
+  
+  predictions <- list(prediction = prediction_ras, 
+                      field = field_ras,
+                      iid = iid_ras,
+                      covariates = cov_contribution)
+  
+  return(predictions)
+}
