@@ -1,3 +1,33 @@
+#' Predict function to get mean and uncertainty from the model result
+#' 
+#' @param object fit.result object returned by fit_model function
+#' @param newdata If NULL, predictions are made using the data in model_output. 
+#'   If this is a raster stack or brick, predictions will be made over this data. 
+#' @param predict_iid If TRUE, any polygon iid effect from the model will be used in the prediction. Default FALSE
+#' @param N number of realisations. Default: 100
+#' @param CI confidence interval. Default: 0.95
+#' @param ... Further arguments passed to or from other methods.
+#'
+#' @method predict fit.result
+#'
+#' @examples 
+#' \dontrun{
+#' predict(fit_result)
+#' }
+#' 
+#' @export
+
+
+predict.fit.result <- function(object, newdata = NULL, predict_iid = FALSE, N = 100, CI = 0.95, ...) {
+  
+  mean_predictions <- predict_model(object, newdata = newdata, predict_iid)
+  
+  uncertainty_predictions <- predict_uncertainty(object, newdata = newdata, predict_iid, N, CI)
+  
+  return(list(mean_predictions = mean_predictions,
+              uncertainty_predictions = uncertainty_predictions))
+}
+
 #' Function to predict mean from the model result
 #' 
 #' @param model_output fit.result object returned by fit_model function

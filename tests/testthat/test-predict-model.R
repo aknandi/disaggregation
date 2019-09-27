@@ -136,6 +136,29 @@ test_that("Check predict_uncertainty function works with newdata as expected", {
   
 })
 
+test_that('Check that predict.fit.model works', {
+  
+  
+  preds <- predict(result, N = 5)
+  
+  expect_is(preds, 'list')
+  expect_equal(length(preds), 2)
+  expect_is(preds$mean_predictions, 'predictions')
+  expect_is(preds$uncertainty_predictions, 'uncertainty')
+  expect_equal(length(preds$mean_predictions), 4)
+  expect_equal(names(preds$mean_predictions), c('prediction', 'field', 'iid', 'covariates'))
+  expect_is(preds$mean_predictions$prediction, 'Raster')
+  expect_is(preds$mean_predictions$field, 'Raster')
+  expect_true(is.null(preds$mean_predictions$iid))
+  expect_is(preds$mean_predictions$covariates, 'Raster')
+  expect_equal(length(preds$uncertainty_predictions), 2)
+  expect_equal(names(preds$uncertainty_predictions), c('realisations', 'predictions_ci'))
+  expect_equal(raster::nlayers(preds$uncertainty_predictions$realisations), 5)
+  expect_equal(raster::nlayers(preds$uncertainty_predictions$predictions_ci), 2)
+
+  
+})
+
 
 test_that('Check that check_newdata works', {
   
