@@ -68,16 +68,25 @@ plot.fit.result <- function(x, ...){
 
 
 plot.predictions <- function(x, ...) {
-  
+
   mean_plot <- sp::spplot(x$prediction)
-  field_plot <- sp::spplot(x$field)
-  covariate_plot <- sp::spplot(x$covariates)
-  
   print(mean_plot)
-  print(field_plot)
+  
+  covariate_plot <- sp::spplot(x$covariates)
   print(covariate_plot)
   
-  plots <- list(mean_plot, field_plot, covariate_plot)
+  plots <- list(mean = mean_plot, covariates = covariate_plot)
+  
+  if(!is.null(x$field)) {
+    field_plot <- sp::spplot(x$field)
+    plots <- c(plots, field = list(field_plot))
+    print(field_plot)
+  }
+  if(!is.null(x$iid)) {
+    iid_plot <- sp::spplot(x$iid)
+    plots <- c(plots, iid = list(iid_plot))
+    print(iid_plot)
+  }
   
   return(invisible(plots))
 }
