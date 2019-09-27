@@ -41,3 +41,33 @@ summary.fit.result <- function(object, ...) {
   return(summary)
   
 }
+
+#' Summary function for disag.data
+#'
+#' @param object Object returned from fit_model
+#' @param ... Further arguments passed to or from other methods.
+#' 
+#' @method summary disag.data
+#' 
+#' @export
+
+summary.disag.data <- function(object, ...) {
+
+  n_polygons <- nrow(object$polygon_shapefile)
+  n_covariates <- raster::nlayers(object$covariate_rasters)
+  covariate_names <- names(object$covariate_rasters)
+  
+  cat(paste("They data contains", n_polygons, "polygons and", nrow(object$covariate_data), "pixels\n"))
+  
+  cat(paste("The largest polygon contains", max(table(object$covariate_data$area_id)), "pixels", 
+            "and the smallest polygon contains", min(table(object$covariate_data$area_id)), "pixels"))
+  
+  cat(paste("There are", n_covariates, "covariates\n"))
+  
+  covariate_summary <- summary(object$covariate_data[ , names(object$covariate_rasters)])
+  
+  return(list(number_polygons = n_polygons,
+              number_covariates = n_covariates,
+              covariate_summary = covariate_summary))
+  
+}

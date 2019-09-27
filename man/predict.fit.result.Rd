@@ -2,7 +2,7 @@
 % Please edit documentation in R/predict.R
 \name{predict.fit.result}
 \alias{predict.fit.result}
-\title{Function to predict mean from the model result}
+\title{Predict function to get mean and uncertainty from the model result}
 \usage{
 \method{predict}{fit.result}(object, newdata = NULL,
   predict_iid = FALSE, N = 100, CI = 0.95, ...)
@@ -22,7 +22,7 @@ If this is a raster stack or brick, predictions will be made over this data.}
 \item{...}{Further arguments passed to or from other methods.}
 }
 \description{
-Function to predict mean from the model result
+Predict function to get mean and uncertainty from the model result
 }
 \examples{
 \dontrun{

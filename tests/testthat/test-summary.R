@@ -23,6 +23,20 @@ test_data <- prepare_data(polygon_shapefile = spdf,
                           covariate_rasters = cov_stack)
 
 
+test_that("Check summary.disag.data function works as expected", {
+  
+  data_summary <- summary(test_data)
+  
+  expect_is(data_summary, 'list')
+  expect_equal(length(data_summary), 3)
+  expect_equal(names(data_summary), c('number_polygons', 'number_covariates', 'covariate_summary'))
+  expect_is(data_summary$number_polygons, 'integer')
+  expect_is(data_summary$number_covariates, 'integer')
+  expect_is(data_summary$covariate_summary, 'table')
+  expect_equal(ncol(data_summary$covariate_summary), data_summary$number_covariates)
+  
+})
+
 test_that("Check summary.fit.model function works as expected", {
   
   result <- fit_model(test_data, its = 2)
