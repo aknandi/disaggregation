@@ -44,12 +44,28 @@ plot.fit.result <- function(x, ...){
     ggtitle("Fixed effects")
   
   report <- x$obj$report()
-  data <- data.frame(obs = report$polygon_response_data, pred = report$reportprediction)
+  
+  # Form of the observed and predicted results depends on the likelihood function used
+  if(x$model_setup$family == 0) {
+    observed_data = report$polygon_response_data/report$reportnormalisation
+    predicted_data = report$reportprediction_rate
+    title <- 'In sample performance: incidence rate'
+  } else if(x$model_setup$family == 1) {
+    observed_data = x$data$polygon_data$response/x$data$polygon_data$N
+    predicted_data = report$reportprediction_rate
+    title <- 'In sample performance: prevalence rate'
+  } else if(x$model_setup$family == 2) {
+    observed_data = report$polygon_response_data
+    predicted_data = report$reportprediction_cases
+    title <- 'In sample performance: incidence count'
+  }
+  
+  data <- data.frame(obs = observed_data, pred = predicted_data)
   
   obspred <- ggplot(data, aes(x = obs, y = pred)) + 
     geom_point() + 
     geom_abline(intercept = 0, slope = 1, color = 'blue') + 
-    ggtitle("In sample performance")
+    ggtitle(title)
   
   plots <- list(fixedeffects, obspred)
   print(cowplot::plot_grid(plotlist = plots))

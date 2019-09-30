@@ -41,7 +41,7 @@ test_that("Check summary.disag.data function works as expected", {
 
 test_that("Check summary.fit.model function works as expected", {
   
-  result <- fit_model(test_data, its = 2)
+  result <- fit_model(test_data)
   
   model_summary <- summary(result)
   

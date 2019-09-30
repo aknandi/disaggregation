@@ -17,7 +17,19 @@ summary.fit.result <- function(object, ...) {
   report <- object$obj$report()
   nll <- report$nll
   
-  in_sample <- data.frame(obs = report$polygon_response_data, pred = report$reportprediction)
+  # Form of the observed and predicted results depends on the likelihood function used
+  if(object$model_setup$family == 0) {
+    observed_data = report$polygon_response_data/report$reportnormalisation
+    predicted_data = report$reportprediction_rate
+  } else if(object$model_setup$family == 1) {
+    observed_data = object$data$polygon_data$response/object$data$polygon_data$N
+    predicted_data = report$reportprediction_rate
+  } else if(object$model_setup$family == 2) {
+    observed_data = report$polygon_response_data
+    predicted_data = report$reportprediction_cases
+  }
+  
+  in_sample <- data.frame(obs = observed_data, pred = predicted_data)
   in_sample_reduced <- in_sample[!is.na(in_sample$pred), ]
   metrics <- dplyr::summarise(in_sample_reduced, 
                               RMSE = sqrt(mean((pred - obs) ^ 2)),

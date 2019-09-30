@@ -131,7 +131,7 @@ Type objective_function<Type>::operator()()
     nll += SCALE(GMRF(Q), 1.0 / tau)(nodemean);
   }
 
-  Type nll1 = nll;
+  Type nll_priors = nll;
   
   // ------------------------------------------------------------------------ //
   // Likelihood from data
@@ -152,16 +152,21 @@ Type objective_function<Type>::operator()()
   
   Type polygon_response;
   Type normalised_polygon_response;
+  Type normalisation_total;
+  Type pred_polygoncases;
+  Type pred_polygonrate;
   vector<Type> pixel_pred;
   vector<Type> numerator_pixels;
   vector<Type> normalisation_pixels;
-  vector<Type> reportprediction(n_polygons);
+  vector<Type> reportnormalisation(n_polygons);
+  vector<Type> reportprediction_cases(n_polygons);
+  vector<Type> reportprediction_rate(n_polygons);
   vector<Type> reportnll(n_polygons);
   
   // For each shape get pixel predictions within and aggregate to polygon level
   for (int polygon = 0; polygon < n_polygons; polygon++) {
 
-    // Get pixel level predictions
+    // Get pixel level predictions (rate)
     pixel_pred = pixel_linear_pred.segment(startendindex(polygon, 0), startendindex(polygon, 1)).array();
     if(iid) {
       pixel_pred += iideffect[polygon];
@@ -180,36 +185,42 @@ Type objective_function<Type>::operator()()
     // Aggregate to polygon prediction
     numerator_pixels = pixel_pred * aggregation_values.segment(startendindex(polygon, 0), startendindex(polygon, 1)).array();
     normalisation_pixels = aggregation_values.segment(startendindex(polygon, 0), startendindex(polygon, 1));
-
+    normalisation_total = sum(normalisation_pixels);
+    pred_polygoncases = sum(numerator_pixels);
+    pred_polygonrate = pred_polygoncases/normalisation_total;
+    
+    reportnormalisation[polygon] = normalisation_total;
+    reportprediction_cases[polygon] = pred_polygoncases;
+    reportprediction_rate[polygon] = pred_polygonrate;
+    
     // Use correct likelihood function
     if(family == 0) {
       // Calculate normal likelihood in rate space
-      reportprediction[polygon] = sum(numerator_pixels) / sum(normalisation_pixels);
       polygon_response = polygon_response_data(polygon);
-      normalised_polygon_response = polygon_response/sum(normalisation_pixels);
-      nll -= dnorm(normalised_polygon_response, reportprediction[polygon], polygon_sd, true);
-      reportnll[polygon] = -dnorm(normalised_polygon_response, reportprediction[polygon], polygon_sd, true);
+      normalised_polygon_response = polygon_response/normalisation_total;
+      nll -= dnorm(normalised_polygon_response, pred_polygonrate, polygon_sd, true);
+      reportnll[polygon] = -dnorm(normalised_polygon_response, pred_polygonrate, polygon_sd, true);
     } else if(family == 1) {
-      reportprediction[polygon] = sum(numerator_pixels) / sum(normalisation_pixels);
-      nll -= dbinom(polygon_response_data[polygon], response_sample_size[polygon], reportprediction[polygon], true);
-      reportnll[polygon] = -dbinom(polygon_response_data[polygon], response_sample_size[polygon], reportprediction[polygon], true);
+      nll -= dbinom(polygon_response_data[polygon], response_sample_size[polygon], pred_polygonrate, true);
+      reportnll[polygon] = -dbinom(polygon_response_data[polygon], response_sample_size[polygon], pred_polygonrate, true);
     } else if(family == 2) {
-      reportprediction[polygon] = sum(numerator_pixels);
-      nll -= dpois(polygon_response_data[polygon], reportprediction[polygon], true);
-      reportnll[polygon] = -dpois(polygon_response_data[polygon], reportprediction[polygon], true);
+      nll -= dpois(polygon_response_data[polygon], pred_polygoncases, true);
+      reportnll[polygon] = -dpois(polygon_response_data[polygon], pred_polygoncases, true);
     } else {
       error("Likelihood not implemented.");
     }
     
   }
   
-  REPORT(reportprediction);
+  REPORT(reportprediction_cases);
+  REPORT(reportprediction_rate);
+  REPORT(reportnormalisation);
   REPORT(reportnll);
   REPORT(polygon_response_data);
   if(iid) {
     REPORT(iideffect);
   }
-  REPORT(nll1);
+  REPORT(nll_priors);
   REPORT(nll);
   
   return nll;
