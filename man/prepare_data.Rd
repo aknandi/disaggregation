@@ -7,7 +7,7 @@
 prepare_data(polygon_shapefile, covariate_rasters,
   aggregation_raster = NULL, id_var = "area_id",
   response_var = "response", sample_size_var = NULL,
-  mesh.args = NULL, ncores = 2)
+  mesh.args = NULL, na.action = FALSE, ncores = 2)
 }
 \arguments{
 \item{polygon_shapefile}{SpatialPolygonDataFrame containing the response data}
@@ -23,6 +23,8 @@ prepare_data(polygon_shapefile, covariate_rasters,
 \item{sample_size_var}{For survey data, name of column in SpatialPolygonDataFrame object (if it exists) with the sample size data}
 
 \item{mesh.args}{list of parameters that control the mesh structure with the same names as used by INLA}
+
+\item{na.action}{If TRUE, NAs in response will be removed, covariate NAs will be given the median value, aggregation NAs will be set to zero. Default FALSE (NAs result in errors)}
 
 \item{ncores}{Number of cores used to perform covariate extraction}
 }
@@ -44,8 +46,10 @@ Function to collect all data together for disaggregation model
  spdf <- sp::SpatialPolygonsDataFrame(polys, response_df)
 
  r <- raster::raster(ncol=20, nrow=20)
+ r <- raster::setExtent(r, raster::extent(spdf))
  r[] <- sapply(1:raster::ncell(r), function(x) rnorm(1, ifelse(x \%\% 20 != 0, x \%\% 20, 20), 3))
  r2 <- raster::raster(ncol=20, nrow=20)
+ r2 <- raster::setExtent(r2, raster::extent(spdf))
  r2[] <- sapply(1:raster::ncell(r), function(x) rnorm(1, ceiling(x/10), 3))
  cov_rasters <- raster::stack(r, r2)
 

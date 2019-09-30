@@ -20,8 +20,10 @@ spdf_binom <- sp::SpatialPolygonsDataFrame(polys, response_binom_df)
 
 # Create raster stack
 r <- raster::raster(ncol=20, nrow=20)
+r <- raster::setExtent(r, raster::extent(spdf))
 r[] <- sapply(1:raster::ncell(r), function(x) rnorm(1, ifelse(x %% 20 != 0, x %% 20, 20), 3))
 r2 <- raster::raster(ncol=20, nrow=20)
+r2 <- raster::setExtent(r2, raster::extent(spdf))
 r2[] <- sapply(1:raster::ncell(r), function(x) rnorm(1, ceiling(x/10), 3))
 cov_stack <- raster::stack(r, r2)
 

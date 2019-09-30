@@ -7,6 +7,7 @@
 #' @param response_var Name of column in SpatialPolygonDataFrame object with the response data
 #' @param sample_size_var For survey data, name of column in SpatialPolygonDataFrame object (if it exists) with the sample size data
 #' @param mesh.args list of parameters that control the mesh structure with the same names as used by INLA
+#' @param na.action If TRUE, NAs in response will be removed, covariate NAs will be given the median value, aggregation NAs will be set to zero. Default FALSE (NAs result in errors)
 #' @param ncores Number of cores used to perform covariate extraction
 #'
 #' @name prepare_data
@@ -26,8 +27,10 @@
 #'  spdf <- sp::SpatialPolygonsDataFrame(polys, response_df)
 #' 
 #'  r <- raster::raster(ncol=20, nrow=20)
+#'  r <- raster::setExtent(r, raster::extent(spdf))
 #'  r[] <- sapply(1:raster::ncell(r), function(x) rnorm(1, ifelse(x %% 20 != 0, x %% 20, 20), 3))
 #'  r2 <- raster::raster(ncol=20, nrow=20)
+#'  r2 <- raster::setExtent(r2, raster::extent(spdf))
 #'  r2[] <- sapply(1:raster::ncell(r), function(x) rnorm(1, ceiling(x/10), 3))
 #'  cov_rasters <- raster::stack(r, r2)
 #' 
@@ -44,6 +47,7 @@ prepare_data <- function(polygon_shapefile,
                          response_var = 'response', 
                          sample_size_var = NULL,
                          mesh.args = NULL, 
+                         na.action = FALSE,
                          ncores = 2) {
 
   stopifnot(inherits(polygon_shapefile, 'SpatialPolygonsDataFrame'))
@@ -52,6 +56,16 @@ prepare_data <- function(polygon_shapefile,
   stopifnot(inherits(id_var, 'character'))
   stopifnot(inherits(response_var, 'character'))
   if(!is.null(mesh.args)) stopifnot(inherits(mesh.args, 'list'))
+  
+  # Check for NAs in response data
+  na_rows <- is.na(polygon_shapefile@data[, response_var])
+  if(sum(na_rows) != 0) {
+    if(na.action) {
+      polygon_shapefile <- polygon_shapefile[!na_rows, ]
+    } else {
+      stop('There are NAs in the response data. Please deal with these, or set na.action = TRUE')
+    }
+  }
   
   polygon_data <- getPolygonData(polygon_shapefile, id_var, response_var, sample_size_var)
   
@@ -79,6 +93,24 @@ prepare_data <- function(polygon_shapefile,
   
   aggregation_pixels <- as.numeric(covariate_data[ , ncol(covariate_data)])
   covariate_data <- covariate_data[, -ncol(covariate_data)]
+  
+  # Check for NAs in population data
+  if(sum(is.na(aggregation_pixels)) != 0) {
+    if(na.action) {
+      aggregation_pixels[is.na(aggregation_pixels)] <- 0
+    } else {
+      stop('There are NAs in the aggregation rasters within polygons. Please deal with these, or set na.action = TRUE')
+    }
+  }
+  
+  # Check for NAs in covariate data
+  if(sum(is.na(covariate_data)) != 0) {
+    if(na.action) {
+      covariate_data[-c(1:2)] <- sapply(covariate_data[-c(1:2)], function(x) { x[is.na(x)] <- stats::median(x, na.rm = T); return(x) })
+    } else {
+      stop('There are NAs in the covariate rasters within polygons. Please deal with these, or set na.action = TRUE')
+    }
+  }
   
   coords <- extractCoordsForMesh(covariate_rasters, covariate_data)
   

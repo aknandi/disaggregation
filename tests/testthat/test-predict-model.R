@@ -14,8 +14,10 @@ spdf <- sp::SpatialPolygonsDataFrame(polys, response_df)
 
 # Create raster stack
 r <- raster::raster(ncol=20, nrow=20)
+r <- raster::setExtent(r, raster::extent(spdf))
 r[] <- sapply(1:raster::ncell(r), function(x) rnorm(1, ifelse(x %% 20 != 0, x %% 20, 20), 3))
 r2 <- raster::raster(ncol=20, nrow=20)
+r2 <- raster::setExtent(r2, raster::extent(spdf))
 r2[] <- sapply(1:raster::ncell(r), function(x) rnorm(1, ceiling(x/10), 3))
 cov_stack <- raster::stack(r, r2)
 
@@ -102,7 +104,7 @@ test_that("Check predict_uncertainty function works as expected", {
 
 test_that("Check predict_model function works with newdata", {
   
-  newdata <- raster::crop(raster::stack(r, r2), c(0, 180, -90, 90))
+  newdata <- raster::crop(raster::stack(r, r2), c(0, 10, 0, 10))
   preds1 <- predict_model(result)
   preds2 <- predict_model(result, newdata)
   
@@ -120,7 +122,7 @@ test_that("Check predict_model function works with newdata", {
 
 test_that("Check predict_uncertainty function works with newdata as expected", {
   
-  newdata <- raster::crop(raster::stack(r, r2), c(0, 180, -90, 90))
+  newdata <- raster::crop(raster::stack(r, r2), c(0, 10, 0, 10))
   unc1 <- predict_uncertainty(result, N = 5)
   unc2 <- predict_uncertainty(result, newdata, N = 5)
   
@@ -162,7 +164,7 @@ test_that('Check that predict.fit.model works', {
 
 test_that('Check that check_newdata works', {
   
-  newdata <- raster::crop(raster::stack(r, r2), c(0, 180, -90, 90))
+  newdata <- raster::crop(raster::stack(r, r2), c(0, 10, 0, 10))
   nd1 <- check_newdata(newdata, result)
   expect_is(nd1, 'RasterBrick')
   
