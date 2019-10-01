@@ -5,7 +5,8 @@
 \title{Function to fit the disaggregation model}
 \usage{
 fit_model(data, priors = NULL, family = "gaussian",
-  link = "identity", its = 10, field = TRUE, iid = TRUE)
+  link = "identity", its = 10, field = TRUE, iid = TRUE,
+  silent = TRUE)
 }
 \arguments{
 \item{data}{disag.data object returned by prepare_data function that contains all the necessary objects for the model fitting}
@@ -21,6 +22,8 @@ fit_model(data, priors = NULL, family = "gaussian",
 \item{field}{boolean to flag spatial field on or off}
 
 \item{iid}{boolean to flag iid effect on or off}
+
+\item{silent}{Suppress verbose output.}
 }
 \description{
 Function to fit the disaggregation model

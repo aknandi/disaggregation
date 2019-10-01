@@ -50,9 +50,27 @@ summary.fit.result <- function(object, ...) {
                   nll = nll,
                   metrics = metrics)
   
-  return(summary)
+  return(invisible(summary))
   
 }
+
+
+#' Print function for fit result
+#'
+#' @param x Object returned from fit_model
+#' @param ... Further arguments passed to or from other methods.
+#' 
+#' @method print fit.result
+#' 
+#' @export
+#' @importFrom stats cor quantile sd
+
+print.fit.result <- function(x, ...){
+  summary(x)
+  return(NULL)
+  
+}
+
 
 #' Summary function for disag.data
 #'
@@ -72,7 +90,7 @@ summary.disag.data <- function(object, ...) {
   cat(paste("They data contains", n_polygons, "polygons and", nrow(object$covariate_data), "pixels\n"))
   
   cat(paste("The largest polygon contains", max(table(object$covariate_data$area_id)), "pixels", 
-            "and the smallest polygon contains", min(table(object$covariate_data$area_id)), "pixels"))
+            "and the smallest polygon contains", min(table(object$covariate_data$area_id)), "pixels\n"))
   
   cat(paste("There are", n_covariates, "covariates\n"))
   
@@ -82,4 +100,19 @@ summary.disag.data <- function(object, ...) {
               number_covariates = n_covariates,
               covariate_summary = covariate_summary))
   
+}
+
+
+#' Print method for disag.data
+#'
+#' @param x Object returned from fit_model
+#' @param ... Further arguments passed to or from other methods.
+#' 
+#' @method print disag.data
+#' 
+#' @export
+print.disag.data <- function(x, ...){
+  summary(x)
+  print(summary(x$covariate_data[ , names(x$covariate_rasters)]))
+  return(NULL)
 }

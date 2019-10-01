@@ -7,6 +7,7 @@
 #' @param its number of iterations to run the optimisation for
 #' @param field boolean to flag spatial field on or off
 #' @param iid boolean to flag iid effect on or off
+#' @param silent Suppress verbose output.
 #' 
 #' @name fit_model
 #'
@@ -44,7 +45,14 @@
 #' 
 #' @export
 
-fit_model <- function(data, priors = NULL, family = 'gaussian', link = 'identity', its = 10, field = TRUE, iid = TRUE) {
+fit_model <- function(data, 
+                      priors = NULL, 
+                      family = 'gaussian', 
+                      link = 'identity', 
+                      its = 10, 
+                      field = TRUE, 
+                      iid = TRUE,
+                      silent = TRUE) {
   
   stopifnot(inherits(data, 'disag.data'))
   if(!is.null(priors)) stopifnot(inherits(priors, 'list'))
@@ -168,12 +176,17 @@ fit_model <- function(data, priors = NULL, family = 'gaussian', link = 'identity
     parameters = parameters,
     map = tmb_map,
     random = random_effects,
+    silent = silent,
     DLL = "disaggregation")
   
+  message('Fitting model. This may be slow.')
+  opt <- stats::nlminb(obj$par, obj$fn, obj$gr, control = list(iter.max = its, trace = 0))
   
-  opt <- stats::nlminb(obj$par, obj$fn, obj$gr, control = list(iter.max = its, eval.max = 2*its, trace = 0))
+  
   
   sd_out <- TMB::sdreport(obj, getJointPrecision = TRUE)
+  
+  if(opt$convergence != 0) warning('The model did not converge. Try increasing its')
   
   model_output <- list(obj = obj,
                        opt = opt,
