@@ -187,6 +187,8 @@ fit_model <- function(data,
   
   sd_out <- TMB::sdreport(obj, getJointPrecision = TRUE)
   
+  if(opt$convergence != 0) warning('The model did not converge. Try increasing its')
+  
   model_output <- list(obj = obj,
                        opt = opt,
                        sd_out = sd_out,
