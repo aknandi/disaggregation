@@ -85,21 +85,21 @@ plot.fit.result <- function(x, ...){
 
 plot.predictions <- function(x, ...) {
 
-  mean_plot <- sp::spplot(x$prediction)
+  mean_plot <- sp::spplot(x$prediction, main = list(label = 'mean prediction'))
   print(mean_plot)
   
-  covariate_plot <- sp::spplot(x$covariates)
+  covariate_plot <- sp::spplot(x$covariates, main = list(label = 'covariate contribution'))
   print(covariate_plot)
   
   plots <- list(mean = mean_plot, covariates = covariate_plot)
   
   if(!is.null(x$field)) {
-    field_plot <- sp::spplot(x$field)
+    field_plot <- sp::spplot(x$field, main = list(label = 'spatial field'))
     plots <- c(plots, field = list(field_plot))
     print(field_plot)
   }
   if(!is.null(x$iid)) {
-    iid_plot <- sp::spplot(x$iid)
+    iid_plot <- sp::spplot(x$iid, main = list(label = 'iideffect'))
     plots <- c(plots, iid = list(iid_plot))
     print(iid_plot)
   }
@@ -119,7 +119,7 @@ plot.predictions <- function(x, ...) {
 
 plot.uncertainty <- function(x, ...) {
   
-  unc_plot <- sp::spplot(x$predictions_ci)
+  unc_plot <- sp::spplot(x$predictions_ci, main=list(label = c('lower CI', 'upper CI')))
   
   print(unc_plot)
   
