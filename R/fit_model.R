@@ -96,8 +96,7 @@ fit_model <- function(data, priors = NULL, family = 'gaussian', link = 'identity
                          priormean_log_kappa = -3,
                          priorsd_log_kappa = 0.5,
                          priormean_log_tau = -0.50,
-                         priorsd_log_tau = 2.0,
-                         priorsd_log_tau = 3.0)
+                         priorsd_log_tau = 2.0)
   
   # Replace with any specified priors
   if(!is.null(priors)) {
