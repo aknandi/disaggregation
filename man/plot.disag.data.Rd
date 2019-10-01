@@ -4,10 +4,12 @@
 \alias{plot.disag.data}
 \title{These are plot methods for input data and predictions for disaggragation}
 \usage{
-\method{plot}{disag.data}(x, ...)
+\method{plot}{disag.data}(x, zcol = "response", ...)
 }
 \arguments{
 \item{x}{Object to be plotted}
+
+\item{zcol}{Name of response variable in polygon shapefile}
 
 \item{...}{Further arguments passed to or from other methods.}
 }

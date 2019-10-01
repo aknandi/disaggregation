@@ -1,6 +1,7 @@
 #' These are plot methods for input data and predictions for disaggragation
 #'
 #' @param x Object to be plotted
+#' @param zcol Name of response variable in polygon shapefile
 #' @param ... Further arguments passed to or from other methods.
 #' 
 #' @import ggplot2
@@ -8,12 +9,12 @@
 #' 
 #' @export
 
-plot.disag.data <- function(x, ...) {
+plot.disag.data <- function(x, zcol = 'response', ...) {
   
   # Plot polygon data, covariate rasters and mesh
   plots <- list()
   
-  plots$polygon <- plot_polygon_data(x$polygon_shapefile)
+  plots$polygon <- plot_polygon_data(x$polygon_shapefile, zcol)
   plots$covariates <- plot_covariate_data(x$covariate_rasters)
   plots$mesh <- plot_inla_mesh(x$mesh)
   
@@ -129,16 +130,24 @@ plot.uncertainty <- function(x, ...) {
 #' Plot polygon data from SpatialPolygonDataFrame
 #'
 #' @param x Object to be plotted
+#' @param zcol name of the response variable to be plotted
 #' @name plot_polygon_data
 
-plot_polygon_data <- function(x) {
+plot_polygon_data <- function(x, zcol = 'response') {
+  
+  if(!(zcol %in% names(x))) {
+    stop(paste(zcol, 'is not a variable name in the SpatialPolygonDataFrame. Please specify the name of the response variable with the argument zcol.'))
+  }
+  # Rename the response variable for plotting
+  shp <- x
+  shp@data <- dplyr::rename(shp@data, 'response' = zcol)
   
   area_id <- long <- lat <- group <- response <- NULL
-  stopifnot(inherits(x, 'SpatialPolygonsDataFrame'))
+  stopifnot(inherits(shp, 'SpatialPolygonsDataFrame'))
   
-  df_fortify <- fortify(x, region = 'area_id')
+  df_fortify <- fortify(shp, region = 'area_id')
   
-  df <- x@data
+  df <- shp@data
   df <- dplyr::mutate(df, area_id = as.character(area_id)) 
   df <- dplyr::left_join(df_fortify, df, by = c('id' = 'area_id'))
   
