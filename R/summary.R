@@ -114,5 +114,5 @@ summary.disag.data <- function(object, ...) {
 print.disag.data <- function(x, ...){
   summary(x)
   print(summary(x$covariate_data[ , names(x$covariate_rasters)]))
-  return(4)
+  return(NULL)
 }
