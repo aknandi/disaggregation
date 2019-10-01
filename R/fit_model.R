@@ -180,7 +180,7 @@ fit_model <- function(data,
     silent = silent,
     DLL = "disaggregation")
   
-  
+  message('Fitting model. This may be slow.')
   opt <- stats::nlminb(obj$par, obj$fn, obj$gr, control = list(iter.max = its, trace = 0))
   
   
