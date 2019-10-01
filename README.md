@@ -63,7 +63,21 @@ Function fit_model takes data structure returned by prepare_data and fits a TMB 
 ```R
 model_result <- fit_model(data_for_model, 
                           family = 'gaussian', 
-                          link = 'identity')
+                          link = 'identity',
+                          field = TRUE,
+                          iid = FALSE)
+```
+
+### Specify priors
+
+Priors can be specified for the regression parameters, field and iid effect as a single list.
+
+```R
+model_result <- fit_model(data_for_model, 
+                          priors = list(priormean_intercept = -2.0,
+                                        priorsd_intercept = 2.0,
+                                        priormean_slope = 0.0,
+                                        priorsd_slope = 0.3))
 ```
 
 ## Model prediction
