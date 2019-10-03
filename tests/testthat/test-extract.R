@@ -112,9 +112,12 @@ test_that("extractCoordsForMesh function behaves as it should", {
   parallel::stopCluster(cl)
   foreach::registerDoSEQ()
   
-  result <- extractCoordsForMesh(cov_stack, cov_data)
+  result <- extractCoordsForMesh(cov_stack, cov_data$cellid)
+  
+  result2 <- extractCoordsForMesh(cov_stack)
 
-  expect_error(extractCoordsForMesh(cov_data, cov_stack))
+  expect_error(extractCoordsForMesh(cov_data$cellid, cov_stack))
   expect_is(result, 'matrix')
+  expect_is(result2, 'matrix')
 
 })

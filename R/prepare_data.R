@@ -39,7 +39,8 @@
 #'  \item{polygon_data }{A data frame with columns of \emph{area_id}, \emph{response} and \emph{N} (sample size: all NAs unless using binomial data). Each row represents a polygon.}
 #'  \item{covariate_data }{A data frame with columns of \emph{area_id}, \emph{cell_id} and one for each covariate in \emph{covariate_rasters}. Each row represents a pixel in a polygon.}
 #'  \item{aggregation_pixels }{An array with the value of the aggregation raster for each pixel in the same order as the rows of \emph{covariate_data}.}
-#'  \item{coords }{A matrix with two columns of x, y coordinates of pixels within the polygons. Used to make the spatial field.}
+#'  \item{coordsForFit }{A matrix with two columns of x, y coordinates of pixels within the polygons. Used to make the spatial field.}
+#'  \item{coordsForPrediction }{A matrix with two columns of x, y coordinates of pixels in the whole Raster. Used to make predictions.}
 #'  \item{startendindex }{A matrix with two columns containing the start and end index of the pixels within each polygon.}
 #'  \item{mesh }{A INLA mesh to be used for the spatial field of the disaggregation model.}
 #' 
@@ -147,7 +148,9 @@ prepare_data <- function(polygon_shapefile,
     }
   }
   
-  coords <- extractCoordsForMesh(covariate_rasters, covariate_data)
+  coordsForFit <- extractCoordsForMesh(covariate_rasters, selectIds = covariate_data$cellid)
+  
+  coordsForPrediction <- extractCoordsForMesh(covariate_rasters)
   
   startendindex <- getStartendindex(covariate_data, polygon_data, id_var = id_var)
   
@@ -158,7 +161,8 @@ prepare_data <- function(polygon_shapefile,
                      polygon_data = polygon_data,
                      covariate_data = covariate_data,
                      aggregation_pixels = aggregation_pixels,
-                     coords = coords,
+                     coordsForFit = coordsForFit,
+                     coordsForPrediction = coordsForPrediction,
                      startendindex = startendindex,
                      mesh = mesh)
   
@@ -175,7 +179,8 @@ prepare_data <- function(polygon_shapefile,
 #' @param polygon_data data.frame with two columns: polygon id and response
 #' @param covariate_data data.frame with cell id, polygon id and covariate columns
 #' @param aggregation_pixels vector with value of aggregation raster at each pixel
-#' @param coords coordinates of the covariate data points
+#' @param coordsForFit coordinates of the covariate data points within the polygons in polygon_shapefile
+#' @param coordsForPrediction coordinates of the covariate data points in the whole raster extent
 #' @param startendindex matrix containing the start and end index for each polygon
 #' @param mesh inla.mesh object to use in the fit
 #' 
@@ -194,7 +199,8 @@ as.disag.data <- function(polygon_shapefile,
                           polygon_data, 
                           covariate_data, 
                           aggregation_pixels,
-                          coords, 
+                          coordsForFit, 
+                          coordsForPrediction,
                           startendindex, 
                           mesh) {
   
@@ -203,7 +209,8 @@ as.disag.data <- function(polygon_shapefile,
   stopifnot(inherits(polygon_data, 'data.frame'))
   stopifnot(inherits(covariate_data, 'data.frame'))
   stopifnot(inherits(aggregation_pixels, 'numeric'))
-  stopifnot(inherits(coords, 'matrix'))
+  stopifnot(inherits(coordsForFit, 'matrix'))
+  stopifnot(inherits(coordsForPrediction, 'matrix'))
   stopifnot(inherits(startendindex, 'matrix'))
   stopifnot(inherits(mesh, 'inla.mesh'))
   
@@ -212,7 +219,8 @@ as.disag.data <- function(polygon_shapefile,
                      polygon_data = polygon_data,
                      covariate_data = covariate_data,
                      aggregation_pixels = aggregation_pixels,
-                     coords = coords,
+                     coordsForFit = coordsForFit,
+                     coordsForPrediction = coordsForPrediction,
                      startendindex = startendindex,
                      mesh = mesh)
   

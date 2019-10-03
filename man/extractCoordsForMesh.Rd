@@ -4,12 +4,12 @@
 \alias{extractCoordsForMesh}
 \title{Extract coordinates from raster to use constructing the INLA mesh}
 \usage{
-extractCoordsForMesh(cov_rasters, covariate_data)
+extractCoordsForMesh(cov_rasters, selectIds = NULL)
 }
 \arguments{
 \item{cov_rasters}{RasterStack of the covariate rasters}
 
-\item{covariate_data}{data.frame with each covariate as a column an and id column}
+\item{selectIds}{numeric vector containing cell ids to retain. Default NULL retains all cell ids in the covariate rasters}
 }
 \description{
 Extract coordinates from raster to use constructing the INLA mesh

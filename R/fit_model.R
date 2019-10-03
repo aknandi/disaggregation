@@ -5,22 +5,22 @@
 #' The model definition
 #' 
 #' The disaggregation model make predictions at the pixel level:
-#' \deqn{link(pred_i) = \beta_0 + \betaX + GP(s_i) + u_i}
+#' \deqn{link(pred_i) = \beta_0 + \beta X + GP(s_i) + u_i}{ link(predi) = \beta 0 + \beta X + GP + u}
 #' 
 #' And then aggregates these predictions to the polygon level using the weighted sum (via the aggregation raster, \eqn{agg_i}):
-#' \deqn{cases_j = \sum_{i \epsilon j} pred_i \times agg_i}
-#' \deqn{rate_j = \frac{\sum_{i \epsilon j} pred_i \times agg_i}{\sum_{i \epsilon j} agg_i}}
+#' \deqn{cases_j = \sum_{i \epsilon j} pred_i \times agg_i}{ casesj = \sum (predi x aggi)}
+#' \deqn{rate_j = \frac{\sum_{i \epsilon j} pred_i \times agg_i}{\sum_{i \epsilon j} agg_i}}{ratej = \sum(predi x aggi) / \sum (aggi)}
 #' 
 #' The different likelihood correspond to slightly different models (\eqn{y_j} is the repsonse count data):
 #' \itemize{
 #'   \item Gaussian: 
 #'    \eqn{\sigma} is the dispersion of the normal likelihood 
-#'    \deqn{dnorm(y_j/\sum agg_i, rate_j, \sigma)} - predicts incidence rate
+#'    \deqn{dnorm(y_j/\sum agg_i, rate_j, \sigma)}{dnorm(yj / \sum aggi, ratej, \sigma)} - predicts incidence rate
 #'   \item Binomial: 
-#'    For a survey in polygon j, \eqn{y_j} is the number positive and N_j is the number tested
-#'    \deqn{dbinom(y_j, N_j, rate_j)} - predicts prevalence rate
+#'    For a survey in polygon j, \eqn{y_j}{yj} is the number positive and N_j is the number tested
+#'    \deqn{dbinom(y_j, N_j, rate_j)}{dbinom(yj, Nj, ratej)} - predicts prevalence rate
 #'   \item Poisson: 
-#'    \deqn{dpois(y_j, cases_j)} - predicts incidence count
+#'    \deqn{dpois(y_j, cases_j)}{dpois(yj, casesj)} - predicts incidence count
 #' }
 #' 
 #' Specify priors for the regression parameters, field and iid effect as a single list.
@@ -134,7 +134,7 @@ fit_model <- function(data,
   
   # Sort out mesh bits
   spde <- (INLA::inla.spde2.matern(data$mesh, alpha = 2)$param.inla)[c("M0", "M1", "M2")]	
-  Apix <- INLA::inla.mesh.project(data$mesh, loc = data$coords)$A
+  Apix <- INLA::inla.mesh.project(data$mesh, loc = data$coordsForFit)$A
   n_s <- nrow(spde$M0)
   
   cov_matrix <- as.matrix(data$covariate_data[, -c(1:2)])

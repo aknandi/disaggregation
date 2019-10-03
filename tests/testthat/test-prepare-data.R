@@ -35,19 +35,21 @@ test_that("Check prepare_data function works as expected", {
                          covariate_rasters = cov_rasters)
   
   expect_is(result, 'disag.data')
-  expect_equal(length(result), 8)
-  expect_equal(names(result), c('polygon_shapefile', 'covariate_rasters', 'polygon_data', 'covariate_data', 'aggregation_pixels', 'coords', 'startendindex', 'mesh'))
+  expect_equal(length(result), 9)
+  expect_equal(names(result), c('polygon_shapefile', 'covariate_rasters', 'polygon_data', 'covariate_data', 
+                                'aggregation_pixels', 'coordsForFit', 'coordsForPrediction', 'startendindex', 'mesh'))
   expect_is(result$polygon_shapefile, 'SpatialPolygonsDataFrame')
   expect_is(result$covariate_rasters, c('RasterBrick', 'RasterStack'))
   expect_is(result$polygon_data, 'data.frame')
   expect_is(result$covariate_data, 'data.frame')
   expect_is(result$aggregation_pixels, 'numeric')
-  expect_is(result$coords, 'matrix')
+  expect_is(result$coordsForFit, 'matrix')
+  expect_is(result$coordsForPrediction, 'matrix')
   expect_is(result$startendindex, 'matrix')
   expect_is(result$mesh, 'inla.mesh')
   expect_equal(sum(is.na(result$polygon_data$N)), length(result$polygon_data$N))
   expect_equal(nrow(result$polygon_data), nrow(result$startendindex))
-  expect_equal(nrow(result$covariate_data), nrow(result$coords))
+  expect_equal(nrow(result$covariate_data), nrow(result$coordsForFit))
   
 })
 
@@ -58,19 +60,21 @@ test_that("Check prepare_data function with sample size works as expected", {
                          sample_size_var = 'sample_size')
   
   expect_is(result, 'disag.data')
-  expect_equal(length(result), 8)
-  expect_equal(names(result), c('polygon_shapefile', 'covariate_rasters', 'polygon_data', 'covariate_data', 'aggregation_pixels', 'coords', 'startendindex', 'mesh'))
+  expect_equal(length(result), 9)
+  expect_equal(names(result), c('polygon_shapefile', 'covariate_rasters', 'polygon_data', 'covariate_data', 
+                                'aggregation_pixels', 'coordsForFit', 'coordsForPrediction', 'startendindex', 'mesh'))
   expect_is(result$polygon_shapefile, 'SpatialPolygonsDataFrame')
   expect_is(result$covariate_rasters, c('RasterBrick', 'RasterStack'))
   expect_is(result$polygon_data, 'data.frame')
   expect_is(result$covariate_data, 'data.frame')
   expect_is(result$aggregation_pixels, 'numeric')
-  expect_is(result$coords, 'matrix')
+  expect_is(result$coordsForFit, 'matrix')
+  expect_is(result$coordsForPrediction, 'matrix')
   expect_is(result$startendindex, 'matrix')
   expect_is(result$mesh, 'inla.mesh')
   expect_equal(sum(is.na(result$polygon_data$N)), 0)
   expect_equal(nrow(result$polygon_data), nrow(result$startendindex))
-  expect_equal(nrow(result$covariate_data), nrow(result$coords))
+  expect_equal(nrow(result$covariate_data), nrow(result$coordsForFit))
   
 })
 
@@ -92,18 +96,19 @@ test_that("Check prepare_data function deals with NAs as expected", {
                          na.action = TRUE)
   
   expect_is(result, 'disag.data')
-  expect_equal(length(result), 8)
-  expect_equal(names(result), c('polygon_shapefile', 'covariate_rasters', 'polygon_data', 'covariate_data', 'aggregation_pixels', 'coords', 'startendindex', 'mesh'))
+  expect_equal(length(result), 9)
+  expect_equal(names(result), c('polygon_shapefile', 'covariate_rasters', 'polygon_data', 'covariate_data', 
+                                'aggregation_pixels', 'coordsForFit', 'coordsForPrediction', 'startendindex', 'mesh'))
   expect_is(result$polygon_shapefile, 'SpatialPolygonsDataFrame')
   expect_is(result$covariate_rasters, c('RasterBrick', 'RasterStack'))
   expect_is(result$polygon_data, 'data.frame')
   expect_is(result$covariate_data, 'data.frame')
   expect_is(result$aggregation_pixels, 'numeric')
-  expect_is(result$coords, 'matrix')
+  expect_is(result$coordsForFit, 'matrix')
   expect_is(result$startendindex, 'matrix')
   expect_is(result$mesh, 'inla.mesh')
   expect_equal(nrow(result$polygon_data), nrow(result$startendindex))
-  expect_equal(nrow(result$covariate_data), nrow(result$coords))
+  expect_equal(nrow(result$covariate_data), nrow(result$coordsForFit))
   expect_equal(sum(is.na(result$polygon_data$response)), 0)
   expect_equal(sum(is.na(result$covariate_data)), 0)
   expect_equal(sum(is.na(result$aggregation_pixels)), 0)
@@ -124,7 +129,9 @@ test_that("Check as.disag.data function works as expected", {
   
   aggregation_data <- rep(1, nrow(cov_data))
   
-  coords <- extractCoordsForMesh(cov_rasters, cov_data)
+  coordsForFit <- extractCoordsForMesh(cov_rasters, cov_data$cellid)
+  
+  coordsForPrediction <- extractCoordsForMesh(cov_rasters)
   
   startendindex <- getStartendindex(cov_data, polygon_data, 'area_id')
   
@@ -135,23 +142,26 @@ test_that("Check as.disag.data function works as expected", {
                           polygon_data, 
                           cov_data, 
                           aggregation_data,
-                          coords, 
+                          coordsForFit, 
+                          coordsForPrediction,
                           startendindex, 
                           mesh)
   
   expect_is(result, 'disag.data')
-  expect_equal(length(result), 8)
-  expect_equal(names(result), c('polygon_shapefile', 'covariate_rasters', 'polygon_data', 'covariate_data', 'aggregation_pixels', 'coords', 'startendindex', 'mesh'))
+  expect_equal(length(result), 9)
+  expect_equal(names(result), c('polygon_shapefile', 'covariate_rasters', 'polygon_data', 'covariate_data', 
+                                'aggregation_pixels', 'coordsForFit', 'coordsForPrediction', 'startendindex', 'mesh'))
   expect_is(result$polygon_shapefile, 'SpatialPolygonsDataFrame')
   expect_is(result$covariate_rasters, c('RasterBrick', 'RasterStack'))
   expect_is(result$polygon_data, 'data.frame')
   expect_is(result$covariate_data, 'data.frame')
   expect_is(result$aggregation_pixels, 'numeric')
-  expect_is(result$coords, 'matrix')
+  expect_is(result$coordsForFit, 'matrix')
+  expect_is(result$coordsForPrediction, 'matrix')
   expect_is(result$startendindex, 'matrix')
   expect_is(result$mesh, 'inla.mesh')
   expect_equal(nrow(result$polygon_data), nrow(result$startendindex))
-  expect_equal(nrow(result$covariate_data), nrow(result$coords))
+  expect_equal(nrow(result$covariate_data), nrow(result$coordsForFit))
   
 })
 

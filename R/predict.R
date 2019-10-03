@@ -213,7 +213,11 @@ setup_objects <- function(model_output, newdata = NULL, predict_iid = FALSE) {
   }
   
   if(model_output$model_setup$field) {
-    coords <- getCoords(data)
+    if(is.null(newdata)) {
+      coords <- data$coordsForPrediction
+    } else {
+      coords <- getCoords(data)
+    }
     Amatrix <- getAmatrix(data$mesh, coords)
     field_objects <- list(coords = coords, Amatrix = Amatrix)
   } else {

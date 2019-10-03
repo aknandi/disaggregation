@@ -165,23 +165,29 @@ getCovariateRasters <- function(directory, file_pattern = '.tif$', shape) {
 #' Extract coordinates from raster to use constructing the INLA mesh
 #' 
 #' @param cov_rasters RasterStack of the covariate rasters
-#' @param covariate_data data.frame with each covariate as a column an and id column
+#' @param selectIds numeric vector containing cell ids to retain. Default NULL retains all cell ids in the covariate rasters
 #' 
 #' @export
 #' @examples 
 #' \dontrun{
-#'   extractCoordsForMesh(cov_rasters, cov_data)
+#'   extractCoordsForMesh(cov_rasters, selectIds)
 #'  }
 #' 
 
-extractCoordsForMesh <- function(cov_rasters, covariate_data) {
+extractCoordsForMesh <- function(cov_rasters, selectIds = NULL) {
   
   stopifnot(inherits(cov_rasters, c('RasterStack', 'RasterBrick')))
-  stopifnot(inherits(covariate_data, 'data.frame'))
+  if(!is.null(selectIds)) stopifnot(inherits(selectIds, 'numeric'))
   
-  cov_rasters[[1]][is.na(raster::values(cov_rasters[[1]]))] <- -9999
-  raster_pts <- raster::rasterToPoints(cov_rasters[[1]], spatial = TRUE)
-  coords <- raster_pts@coords[covariate_data$cellid, ]
+  points_raster <- cov_rasters[[1]]
+  points_raster[is.na(raster::values(points_raster))] <- -9999
+  raster_pts <- raster::rasterToPoints(points_raster, spatial = TRUE)
+  coords <- raster_pts@coords
+  
+  # If specified, only retain certain pixel ids
+  if(!is.null(selectIds)) {
+    coords <- coords[selectIds, ]
+  }
   
   return(coords)
   
