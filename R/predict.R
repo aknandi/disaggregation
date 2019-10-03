@@ -1,12 +1,38 @@
-#' Predict function to get mean and uncertainty from the model result
+#' Predict mean and uncertainty from the disaggregation model result
+#' 
+#' \emph{predict.fit.result} function takes a \emph{fit.result} object created by \emph{disaggregation::fit_model} and predicts mean and uncertainty maps
+#' 
+#' To predict over a different spatial extent to that used in the model, 
+#' a RasterStack covering the region to make predictions over is passed to the argument \emph{newdata}. 
+#' If this is not given predictions are made over the data used in the fit
+#' 
+#' The \emph{predict_iid} logical flag should be set to TRUE if the results of the iid effect from the model are to be used in the prediction. 
+#' 
+#' For the uncertainty calculations, the number of the realisations and the size of the confidence interval to be calculated 
+#' are given by the arguments \emph{N} and \emph{CI} respectively. 
 #' 
 #' @param object fit.result object returned by fit_model function
 #' @param newdata If NULL, predictions are made using the data in model_output. 
 #'   If this is a raster stack or brick, predictions will be made over this data. 
-#' @param predict_iid If TRUE, any polygon iid effect from the model will be used in the prediction. Default FALSE
-#' @param N number of realisations. Default: 100
-#' @param CI confidence interval. Default: 0.95
+#' @param predict_iid logical. If TRUE, any polygon iid effect from the model will be used in the prediction. Default FALSE
+#' @param N Number of realisations. Default: 100
+#' @param CI Confidence interval to be calculated from the realisations. Default: 0.95
 #' @param ... Further arguments passed to or from other methods.
+#'
+#' @return A list of two objects is returned: 
+#'  \item{mean_predictions }{List of class \emph{predictions}:
+#'   \itemize{
+#'    \item \emph{predictions} Raster of mean predictions based
+#'    \item \emph{field} Raster of the field component of the linear predictor
+#'    \item \emph{iid} Raster of the iid component of the linear predictor
+#'    \item \emph{covariates} Raster of the covariate component of the linear predictor
+#'   }} 
+#'  \item{uncertainty_predictions }{List of class \emph{uncertainty}:
+#'   \itemize{
+#'    \item \emph{realisations} RasterStack of realisations of predictions. Number of realisations defined by argument \emph{N}.
+#'    \item \emph{predictions_ci} RasterStack of the upper and lower credible intervals. Defined by argument \emph{CI}.
+#'   }} 
+#'
 #'
 #' @method predict fit.result
 #'
