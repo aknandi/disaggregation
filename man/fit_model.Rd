@@ -2,14 +2,14 @@
 % Please edit documentation in R/fit_model.R
 \name{fit_model}
 \alias{fit_model}
-\title{Function to fit the disaggregation model}
+\title{Fit the disaggregation model}
 \usage{
 fit_model(data, priors = NULL, family = "gaussian",
   link = "identity", its = 10, field = TRUE, iid = TRUE,
   silent = TRUE)
 }
 \arguments{
-\item{data}{disag.data object returned by prepare_data function that contains all the necessary objects for the model fitting}
+\item{data}{disag.data object returned by \emph{prepare_data} function that contains all the necessary objects for the model fitting}
 
 \item{priors}{list of prior values}
 
@@ -19,14 +19,40 @@ fit_model(data, priors = NULL, family = "gaussian",
 
 \item{its}{number of iterations to run the optimisation for}
 
-\item{field}{boolean to flag spatial field on or off}
+\item{field}{logical. Flag the spatial field on or off}
 
-\item{iid}{boolean to flag iid effect on or off}
+\item{iid}{logical. Flag the iid effect on or off}
 
-\item{silent}{Suppress verbose output.}
+\item{silent}{logical. Suppress verbose output.}
+}
+\value{
+A list is returned of class \code{fit.result}. 
+The functions \emph{summary}, \emph{print} and \emph{plot} can be used on \code{fit.result}. 
+The list  of class \code{fit.result} contains:
+ \item{obj }{The TMB model object returned by \emph{TMB::MakeADFun}.} 
+ \item{opt }{The optimized model object.} 
+ \item{sd_out }{The TMB object return by \emph{TMB::sdreport}.}
+ \item{data }{The \emph{disag.data} object used as an input to the model.}
+ \item{model_setup }{A list of information on the model setup. Likelihood function (\emph{family}), link function(\emph{link}), logical: whether a field was used (\emph{field}) and logical: whether an iid effect was used (\emph{iid}).}
 }
 \description{
-Function to fit the disaggregation model
+\emph{fit_model} function takes a \emph{disag.data} object created by \emph{disaggregation::prepare_data} and performs a Bayesian disaggregation fit
+}
+\details{
+Takes a \emph{disag.data} object created by \emph{disaggregation::prepare_data}
+
+Specify priors for the regression parameters, field and iid effect as a single list.
+
+The \emph{family} and \emph{link} arguments are used to specify the likelihood and link function respectively. 
+The likelihood function can be one of \emph{gaussian}, \emph{poisson} or \emph{binomial}. 
+The link function can be one of \emph{logit}, \emph{log} or \emph{identity}.
+These are specified as strings
+
+The field and iid effect can be turned on or off via the \emph{field} and \emph{iid} logical flags. Default TRUE.
+
+The \emph{its} argument specifies the maximum number of iterations the model can run for to find an optimal point.
+
+The \emph{silent} argument can be used to publish/supress verbose output. Default TRUE.
 }
 \examples{
 \dontrun{
