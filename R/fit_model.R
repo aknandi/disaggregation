@@ -1,8 +1,27 @@
 #' Fit the disaggregation model
 #' 
-#' \emph{fit_model} function takes a \emph{disag.data} object created by \emph{disaggregation::prepare_data} and performs a Bayesian disaggregation fit
+#' \emph{fit_model} function takes a \emph{disag.data} object created by \code{\link{prepare_data}} and performs a Bayesian disaggregation fit
 #' 
-#' Takes a \emph{disag.data} object created by \emph{disaggregation::prepare_data}
+#' The model definition
+#' 
+#' The disaggregation model make predictions at the pixel level:
+#' \deqn{link(pred_i) = \beta_0 + \betaX + GP(s_i) + u_i}
+#' 
+#' And then aggregates these predictions to the polygon level using the weighted sum (via the aggregation raster, \eqn{agg_i}):
+#' \deqn{cases_j = \sum_{i \epsilon j} pred_i \times agg_i}
+#' \deqn{rate_j = \frac{\sum_{i \epsilon j} pred_i \times agg_i}{\sum_{i \epsilon j} agg_i}}
+#' 
+#' The different likelihood correspond to slightly different models (\eqn{y_j} is the repsonse count data):
+#' \itemize{
+#'   \item Gaussian: 
+#'    \eqn{\sigma} is the dispersion of the normal likelihood 
+#'    \deqn{dnorm(y_j/\sum agg_i, rate_j, \sigma)} - predicts incidence rate
+#'   \item Binomial: 
+#'    For a survey in polygon j, \eqn{y_j} is the number positive and N_j is the number tested
+#'    \deqn{dbinom(y_j, N_j, rate_j)} - predicts prevalence rate
+#'   \item Poisson: 
+#'    \deqn{dpois(y_j, cases_j)} - predicts incidence count
+#' }
 #' 
 #' Specify priors for the regression parameters, field and iid effect as a single list.
 #' 
@@ -11,17 +30,17 @@
 #' The link function can be one of \emph{logit}, \emph{log} or \emph{identity}.
 #' These are specified as strings
 #' 
-#' The field and iid effect can be turned on or off via the \emph{field} and \emph{iid} logical flags. Default TRUE.
+#' The field and iid effect can be turned on or off via the \emph{field} and \emph{iid} logical flags. Both are default TRUE.
 #' 
 #' The \emph{its} argument specifies the maximum number of iterations the model can run for to find an optimal point.
 #' 
 #' The \emph{silent} argument can be used to publish/supress verbose output. Default TRUE.
 #' 
 #'
-#' @param data disag.data object returned by \emph{prepare_data} function that contains all the necessary objects for the model fitting
+#' @param data disag.data object returned by \code{\link{prepare_data}} function that contains all the necessary objects for the model fitting
 #' @param priors list of prior values
-#' @param family likelihood function: gaussian, binomial or poisson
-#' @param link link function: logit, log or identity
+#' @param family likelihood function: \emph{gaussian}, \emph{binomial} or \emph{poisson}
+#' @param link link function: \emph{logit}, \emph{log} or \emph{identity}
 #' @param its number of iterations to run the optimisation for
 #' @param field logical. Flag the spatial field on or off
 #' @param iid logical. Flag the iid effect on or off
@@ -31,9 +50,9 @@
 #' @return A list is returned of class \code{fit.result}. 
 #' The functions \emph{summary}, \emph{print} and \emph{plot} can be used on \code{fit.result}. 
 #' The list  of class \code{fit.result} contains:
-#'  \item{obj }{The TMB model object returned by \emph{TMB::MakeADFun}.} 
-#'  \item{opt }{The optimized model object.} 
-#'  \item{sd_out }{The TMB object return by \emph{TMB::sdreport}.}
+#'  \item{obj }{The TMB model object returned by \code{\link[TMB]{MakeADFun}}.} 
+#'  \item{opt }{The optimized model object returned by \code{\link[stats]{nlminb}}.} 
+#'  \item{sd_out }{The TMB object returned by \code{\link[TMB]{sdreport}}.}
 #'  \item{data }{The \emph{disag.data} object used as an input to the model.}
 #'  \item{model_setup }{A list of information on the model setup. Likelihood function (\emph{family}), link function(\emph{link}), logical: whether a field was used (\emph{field}) and logical: whether an iid effect was used (\emph{iid}).}
 #'  
