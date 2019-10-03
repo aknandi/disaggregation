@@ -47,15 +47,15 @@ plot.fit.result <- function(x, ...){
   report <- x$obj$report()
   
   # Form of the observed and predicted results depends on the likelihood function used
-  if(x$model_setup$family == 0) {
+  if(x$model_setup$family == 'gaussian') {
     observed_data = report$polygon_response_data/report$reportnormalisation
     predicted_data = report$reportprediction_rate
     title <- 'In sample performance: incidence rate'
-  } else if(x$model_setup$family == 1) {
+  } else if(x$model_setup$family == 'binomial') {
     observed_data = x$data$polygon_data$response/x$data$polygon_data$N
     predicted_data = report$reportprediction_rate
     title <- 'In sample performance: prevalence rate'
-  } else if(x$model_setup$family == 2) {
+  } else if(x$model_setup$family == 'poisson') {
     observed_data = report$polygon_response_data
     predicted_data = report$reportprediction_cases
     title <- 'In sample performance: incidence count'

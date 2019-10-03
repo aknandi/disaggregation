@@ -220,7 +220,7 @@ fit_model <- function(data,
                        opt = opt,
                        sd_out = sd_out,
                        data = data,
-                       model_setup = list(family = family_id, link = link_id, field = field, iid = iid))
+                       model_setup = list(family = family, link = link, field = field, iid = iid))
   
   class(model_output) <- c('fit.result', 'list')
   

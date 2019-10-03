@@ -245,11 +245,11 @@ predict_single_raster <- function(model_parameters, objects, link_function) {
     iid_ras <- NULL
   }
   
-  if(link_function == 0) {
+  if(link_function == 'logit') {
     prediction_ras <- 1 / (1 + exp(-1 * linear_pred))
-  } else if(link_function == 1) {
+  } else if(link_function == 'log') {
     prediction_ras <- exp(linear_pred)
-  } else if(link_function == 2) {
+  } else if(link_function == 'identity') {
     prediction_ras <- linear_pred
   }
   

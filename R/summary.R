@@ -18,13 +18,13 @@ summary.fit.result <- function(object, ...) {
   nll <- report$nll
   
   # Form of the observed and predicted results depends on the likelihood function used
-  if(object$model_setup$family == 0) {
+  if(object$model_setup$family == 'gaussian') {
     observed_data = report$polygon_response_data/report$reportnormalisation
     predicted_data = report$reportprediction_rate
-  } else if(object$model_setup$family == 1) {
+  } else if(object$model_setup$family == 'binomial') {
     observed_data = object$data$polygon_data$response/object$data$polygon_data$N
     predicted_data = report$reportprediction_rate
-  } else if(object$model_setup$family == 2) {
+  } else if(object$model_setup$family == 'poisson') {
     observed_data = report$polygon_response_data
     predicted_data = report$reportprediction_cases
   }
