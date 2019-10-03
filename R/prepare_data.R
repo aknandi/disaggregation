@@ -1,15 +1,48 @@
-#' Function to collect all data together for disaggregation model
-#'
-#' @param polygon_shapefile SpatialPolygonDataFrame containing the response data 
-#' @param covariate_rasters RasterStack of covariates
-#' @param aggregation_raster Raster to aggregate predicted pixel values e.g. population to aggregate prevalence
+#' Prepare data for disaggregation modelling
+#' 
+#' \emph{prepare_data} function is used to extract all the data required for fitting a disaggregation model. 
+#' Designed to be used in the \emph{disaggregation::fit_model} function
+#' 
+#' Takes a SpatialPolygonDataFrame with the response data and a RasterStack of covariates. 
+#' 
+#' Extract the values of the covariates (as well as the aggregation raster, if given) at each pixel within the polygons (\emph{parallelExtract} function). 
+#' This is done in parallel and \emph{n.cores} argument is used to set the number of cores to use for covariate extraction. This can be the number of covariates used in the model.
+#' 
+#' The aggregation raster defines how the pixels within each polygon are aggregated. 
+#' The disaggregation model performs a weighted sum of the pixel prediction, weighted by the pixel values in the aggregation raster.
+#' For disease incidence rate you use the population raster to aggregate pixel incidence rate by summing the number of cases (rate weighted by population)
+#' If not aggregation raster is provided a uniform distribution is assumed, i.e. the pixel predictions are aggregated to polygon level by summing the pixel values.
+#' 
+#' Makes a matrix that contains the start and end pixel index for each polygon. Builds an INLA mesh to use for the spatial field (\emph{getStartendindex} function)
+#' 
+#' The \emph{mesh.args} argument allows you to supply a list of INLA mesh parameters to control the mesh used for the spatial field (\emph{build_mesh} function).
+#' 
+#' The \emph{na.action} flag is automatically off. If there are any NAs in the response or covariate data within the polygons the \emph{prepare_data} method will error. 
+#' Ideally the NAs in the data would be dealt with beforehand, however, setting na.action = TRUE will automatically deal with NAs. 
+#' It removes any polygons that have NAs as a response, sets any aggregation pixels with NA to zero and sets covariate NAs pixels to the median value for the that covariate.
+#' 
+#' @param polygon_shapefile SpatialPolygonDataFrame  containing at least two columns: one with the id for the polygons (\emph{id_var}) and one with the response count data (\emph{response_var}); for binomial data, i.e survey data, it can also contain a sample size column (\emph{sample_size_var}).
+#' @param covariate_rasters RasterStack of covariate rasters to be used in the model
+#' @param aggregation_raster Raster to aggregate pixel level predictions to polygon level e.g. population to aggregate prevalence. If this is not supplied a uniform raster will be used
 #' @param id_var Name of column in SpatialPolygonDataFrame object with the polygon id
 #' @param response_var Name of column in SpatialPolygonDataFrame object with the response data
 #' @param sample_size_var For survey data, name of column in SpatialPolygonDataFrame object (if it exists) with the sample size data
 #' @param mesh.args list of parameters that control the mesh structure with the same names as used by INLA
-#' @param na.action If TRUE, NAs in response will be removed, covariate NAs will be given the median value, aggregation NAs will be set to zero. Default FALSE (NAs result in errors)
+#' @param na.action logical. If TRUE, NAs in response will be removed, covariate NAs will be given the median value, aggregation NAs will be set to zero. Default FALSE (NAs in response or covariate data within the polygons will give errors)
 #' @param ncores Number of cores used to perform covariate extraction
 #'
+#' @return A list is returned of class \code{disag.data}. 
+#' The functions \emph{summary}, \emph{print} and \emph{plot} can be used on \code{disag.data}. 
+#' The list  of class \code{disag.data} contains:
+#'  \item{polygon_shapefile }{The SpatialPolygonDataFrame used as an input.} 
+#'  \item{covariate_rasters }{The RasterStack used as an input.} 
+#'  \item{polygon_data }{A data frame with columns of \emph{area_id}, \emph{response} and \emph{N} (sample size: all NAs unless using binomial data). Each row represents a polygon.}
+#'  \item{covariate_data }{A data frame with columns of \emph{area_id}, \emph{cell_id} and one for each covariate in \emph{covariate_rasters}. Each row represents a pixel in a polygon.}
+#'  \item{aggregation_pixels }{An array with the value of the aggregation raster for each pixel in the same order as the rows of \emph{covariate_data}.}
+#'  \item{coords }{A matrix with two columns of x, y coordinates of pixels within the polygons. Used to make the spatial field.}
+#'  \item{startendindex }{A matrix with two columns containing the start and end index of the pixels within each polygon.}
+#'  \item{mesh }{A INLA mesh to be used for the spatial field of the disaggregation model.}
+#' 
 #' @name prepare_data
 #'
 #' @examples 
@@ -39,6 +72,8 @@
 #' } 
 #'                    
 #' @export
+#' 
+#' 
 
 prepare_data <- function(polygon_shapefile, 
                          covariate_rasters,
