@@ -1,4 +1,8 @@
-#' These are plot methods for input data and predictions for disaggragation
+#' Plot input data for disaggregation
+#'
+#' Plotting function for class disag.data (the input data for disaggragation)
+#' 
+#' Produces three plots: polygon response data, covariates and INLA mesh
 #'
 #' @param x Object to be plotted
 #' @param zcol Name of response variable in polygon shapefile
@@ -23,6 +27,10 @@ plot.disag.data <- function(x, zcol = 'response', ...) {
 
 #' Plot results of fitted model
 #'
+#' Plotting function for class fit.result (the result of the disaggragation fitting)
+#' 
+#' Produces two plots: results of the fixed effects and in-sample observed vs predicted plot
+#' 
 #' @param x Object to be plotted
 #' @param ... Further arguments passed to or from other methods.
 #' 
@@ -74,7 +82,11 @@ plot.fit.result <- function(x, ...){
   return(invisible(plots))
 }
 
-#' Plot predictions
+#' Plot predictions from the disaggregation model results
+#'
+#' Plotting function for class predictions (the mean predictions of the disaggragation fitting)
+#' 
+#' Produces plots of the mean prediction, and the covariate, field  and iid contribution to the linear predictor
 #'
 #' @param x Object to be plotted
 #' @param ... Further arguments passed to or from other methods.
@@ -108,7 +120,11 @@ plot.predictions <- function(x, ...) {
   return(invisible(plots))
 }
 
-#' Plot uncertainty
+#' Plot uncertainty predictions from the disaggregation model results
+#'
+#' Plotting function for class uncertainty (the uncertainty predictions of the disaggragation fitting)
+#' 
+#' Produces plots of the realisations, and the upper and lower credible interval rasters
 #' 
 #' @param x Object to be plotted
 #' @param ... Further arguments passed to or from other methods.

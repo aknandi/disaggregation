@@ -2,7 +2,7 @@
 % Please edit documentation in R/summary.R
 \name{print.disag.data}
 \alias{print.disag.data}
-\title{Print method for disag.data}
+\title{Print function for disaggregation input data}
 \usage{
 \method{print}{disag.data}(x, ...)
 }
@@ -12,5 +12,8 @@
 \item{...}{Further arguments passed to or from other methods.}
 }
 \description{
-Print method for disag.data
+Function that prints the input data from the disaggregation model
+}
+\details{
+Prints the number of polyons and pixels, the number of pixels in the largest and smallest polygons and summaries of the covariates
 }

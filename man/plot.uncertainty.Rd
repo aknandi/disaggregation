@@ -2,7 +2,7 @@
 % Please edit documentation in R/plotting.R
 \name{plot.uncertainty}
 \alias{plot.uncertainty}
-\title{Plot uncertainty}
+\title{Plot uncertainty predictions from the disaggregation model results}
 \usage{
 \method{plot}{uncertainty}(x, ...)
 }
@@ -12,5 +12,8 @@
 \item{...}{Further arguments passed to or from other methods.}
 }
 \description{
-Plot uncertainty
+Plotting function for class uncertainty (the uncertainty predictions of the disaggragation fitting)
+}
+\details{
+Produces plots of the realisations, and the upper and lower credible interval rasters
 }

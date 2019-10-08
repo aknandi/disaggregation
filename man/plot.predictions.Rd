@@ -2,7 +2,7 @@
 % Please edit documentation in R/plotting.R
 \name{plot.predictions}
 \alias{plot.predictions}
-\title{Plot predictions}
+\title{Plot predictions from the disaggregation model results}
 \usage{
 \method{plot}{predictions}(x, ...)
 }
@@ -12,5 +12,8 @@
 \item{...}{Further arguments passed to or from other methods.}
 }
 \description{
-Plot predictions
+Plotting function for class predictions (the mean predictions of the disaggragation fitting)
+}
+\details{
+Produces plots of the mean prediction, and the covariate, field  and iid contribution to the linear predictor
 }

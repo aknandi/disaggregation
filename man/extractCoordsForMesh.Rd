@@ -16,7 +16,7 @@ Extract coordinates from raster to use constructing the INLA mesh
 }
 \examples{
 \dontrun{
-  extractCoordsForMesh(cov_rasters, cov_data)
+  extractCoordsForMesh(cov_rasters, selectIds)
  }
 
 }

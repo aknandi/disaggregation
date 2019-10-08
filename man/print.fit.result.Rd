@@ -2,7 +2,7 @@
 % Please edit documentation in R/summary.R
 \name{print.fit.result}
 \alias{print.fit.result}
-\title{Print function for fit result}
+\title{Print function for disaggregation fit result}
 \usage{
 \method{print}{fit.result}(x, ...)
 }
@@ -12,5 +12,8 @@
 \item{...}{Further arguments passed to or from other methods.}
 }
 \description{
-Print function for fit result
+Function that prints the fit result from the disaggregation model
+}
+\details{
+Prints the negative log likelihood, model parameters and calculates metrics from in-sample performance
 }

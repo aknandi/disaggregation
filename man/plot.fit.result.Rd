@@ -12,5 +12,8 @@
 \item{...}{Further arguments passed to or from other methods.}
 }
 \description{
-Plot results of fitted model
+Plotting function for class fit.result (the result of the disaggragation fitting)
+}
+\details{
+Produces two plots: results of the fixed effects and in-sample observed vs predicted plot
 }

@@ -2,7 +2,7 @@
 % Please edit documentation in R/summary.R
 \name{summary.fit.result}
 \alias{summary.fit.result}
-\title{Summary function for fit result}
+\title{Summary function for disaggregation fit result}
 \usage{
 \method{summary}{fit.result}(object, ...)
 }
@@ -12,5 +12,8 @@
 \item{...}{Further arguments passed to or from other methods.}
 }
 \description{
-Summary function for fit result
+Function that summarizes the fit result from the disaggregation model
+}
+\details{
+Prints the negative log likelihood, model parameters and calculates metrics from in-sample performance
 }

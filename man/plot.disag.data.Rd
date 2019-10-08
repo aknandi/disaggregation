@@ -2,7 +2,7 @@
 % Please edit documentation in R/plotting.R
 \name{plot.disag.data}
 \alias{plot.disag.data}
-\title{These are plot methods for input data and predictions for disaggragation}
+\title{Plot input data for disaggregation}
 \usage{
 \method{plot}{disag.data}(x, zcol = "response", ...)
 }
@@ -14,5 +14,8 @@
 \item{...}{Further arguments passed to or from other methods.}
 }
 \description{
-These are plot methods for input data and predictions for disaggragation
+Plotting function for class disag.data (the input data for disaggragation)
+}
+\details{
+Produces three plots: polygon response data, covariates and INLA mesh
 }

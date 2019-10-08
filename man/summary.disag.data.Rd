@@ -2,7 +2,7 @@
 % Please edit documentation in R/summary.R
 \name{summary.disag.data}
 \alias{summary.disag.data}
-\title{Summary function for disag.data}
+\title{Summary function for disaggregation input data}
 \usage{
 \method{summary}{disag.data}(object, ...)
 }
@@ -12,5 +12,8 @@
 \item{...}{Further arguments passed to or from other methods.}
 }
 \description{
-Summary function for disag.data
+Function that summarizes the input data from the disaggregation model
+}
+\details{
+Prints the number of polyons and pixels, the number of pixels in the largest and smallest polygons and summaries of the covariates
 }
