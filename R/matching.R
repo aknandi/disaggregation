@@ -20,7 +20,7 @@ getStartendindex <- function(covariates, polygon_data, id_var = 'area_id') {
   stopifnot(ncol(polygon_data) == 3)
   stopifnot(ncol(covariates) >= 2)
   stopifnot(nrow(covariates) > nrow(polygon_data))
-  stopifnot(sum(polygon_data[, id_var] %in% covariates[, id_var]) == nrow(polygon_data))
+  stopifnot(sum(polygon_data$area_id %in% covariates[, id_var]) == nrow(polygon_data))
 
   # Create  startendindex matrix
   # This defines which pixels in the matrix are associated with which polygon.
@@ -28,7 +28,7 @@ getStartendindex <- function(covariates, polygon_data, id_var = 'area_id') {
 
   startendindex <- do.call(rbind, startendindex)
 
-  whichindices <- match(polygon_data[, id_var], unique(covariates[, id_var]))
+  whichindices <- match(polygon_data$area_id, unique(covariates[, id_var]))
 
   # c++ is zero indexed.
   startendindex <- startendindex[whichindices, ] - 1L
