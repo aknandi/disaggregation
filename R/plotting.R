@@ -47,7 +47,7 @@ plot.fit.result <- function(x, ...){
   names(posteriors) <- c('mean', 'sd', 'parameter')
 
   fixedeffects <- ggplot() + 
-    geom_errorbar(posteriors, mapping = aes(x = parameter, ymin = mean - sd, ymax = mean + sd), width=0.2, color="blue") + 
+    geom_errorbar(posteriors, mapping = aes(x = parameter, ymin = mean - sd, ymax = mean + sd), width = 0.2, color = "blue") + 
     geom_point(posteriors, mapping = aes(x = parameter, y = mean)) + 
     ggtitle("Fixed effects")
   

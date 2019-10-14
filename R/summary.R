@@ -101,8 +101,8 @@ summary.disag.data <- function(object, ...) {
   
   cat(paste("They data contains", n_polygons, "polygons and", nrow(object$covariate_data), "pixels\n"))
   
-  cat(paste("The largest polygon contains", max(table(object$covariate_data$area_id)), "pixels", 
-            "and the smallest polygon contains", min(table(object$covariate_data$area_id)), "pixels\n"))
+  cat(paste("The largest polygon contains", max(table(object$covariate_data[ , object$shapefile_names$id_var])), "pixels", 
+            "and the smallest polygon contains", min(table(object$covariate_data[ , object$shapefile_names$id_var])), "pixels\n"))
   
   cat(paste("There are", n_covariates, "covariates\n"))
   
