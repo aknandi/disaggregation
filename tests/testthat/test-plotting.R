@@ -37,12 +37,11 @@ fit_result_nofield <- fit_model(test_data, its = 2, field = FALSE)
 
 test_that("Check plot_polygon_data function works as expected", {
   
-  p <- plot_polygon_data(spdf)
-  expect_error(plot_polygon_data(polys))
+  p <- plot_polygon_data(spdf, list(id_var = 'area_id', response_var = 'response'))
+  expect_error(plot_polygon_data(polys, list(id_var = 'area_id', response_var = 'response')))
   expect_is(p, 'ggplot')
   
-  p2 <- plot_polygon_data(spdf2, zcol = 'n_positive')
-  expect_error(plot_polygon_data(spdf2))
+  p2 <- plot_polygon_data(spdf2, list(id_var = 'area_id', response_var = 'n_positive'))
   expect_is(p2, 'ggplot')
   
 })
@@ -80,8 +79,7 @@ test_that("Check plot.disag.data function works as expected", {
   expect_equal(length(p), 2)
   expect_equal(names(p), c('polygon', 'covariates'))
   
-  p2 <- plot(test_data2, zcol = 'n_positive')
-  expect_error(plot(test_data2))
+  p2 <- plot(test_data2)
   
   expect_is(p2, 'list')
   expect_equal(length(p2), 2)

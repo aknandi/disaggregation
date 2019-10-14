@@ -5,7 +5,6 @@
 #' Produces three plots: polygon response data, covariates and INLA mesh
 #'
 #' @param x Object to be plotted
-#' @param zcol Name of response variable in polygon shapefile
 #' @param ... Further arguments passed to or from other methods.
 #' 
 #' @import ggplot2
@@ -13,12 +12,12 @@
 #' 
 #' @export
 
-plot.disag.data <- function(x, zcol = 'response', ...) {
+plot.disag.data <- function(x, ...) {
   
   # Plot polygon data, covariate rasters and mesh
   plots <- list()
   
-  plots$polygon <- plot_polygon_data(x$polygon_shapefile, zcol)
+  plots$polygon <- plot_polygon_data(x$polygon_shapefile, x$shapefile_names)
   plots$covariates <- plot_covariate_data(x$covariate_rasters)
   plots$mesh <- plot_inla_mesh(x$mesh)
   
@@ -146,17 +145,15 @@ plot.uncertainty <- function(x, ...) {
 #' Plot polygon data from SpatialPolygonDataFrame
 #'
 #' @param x Object to be plotted
-#' @param zcol name of the response variable to be plotted
+#' @param names list of 2 names: polygon id variable and response variable names
 #' @name plot_polygon_data
 
-plot_polygon_data <- function(x, zcol = 'response') {
-  
-  if(!(zcol %in% names(x))) {
-    stop(paste(zcol, 'is not a variable name in the SpatialPolygonDataFrame. Please specify the name of the response variable with the argument zcol.'))
-  }
+plot_polygon_data <- function(x, names) {
+
   # Rename the response variable for plotting
   shp <- x
-  shp@data <- dplyr::rename(shp@data, 'response' = zcol)
+  shp@data <- dplyr::rename(shp@data, 'response' = names$response_var)
+  shp@data <- dplyr::rename(shp@data, 'area_id' = names$id_var)
   
   area_id <- long <- lat <- group <- response <- NULL
   stopifnot(inherits(shp, 'SpatialPolygonsDataFrame'))

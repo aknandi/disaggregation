@@ -4,12 +4,14 @@
 \alias{as.disag.data}
 \title{Function to fit the disaggregation model}
 \usage{
-as.disag.data(polygon_shapefile, covariate_rasters, polygon_data,
-  covariate_data, aggregation_pixels, coordsForFit, coordsForPrediction,
-  startendindex, mesh)
+as.disag.data(polygon_shapefile, shapefile_names, covariate_rasters,
+  polygon_data, covariate_data, aggregation_pixels, coordsForFit,
+  coordsForPrediction, startendindex, mesh)
 }
 \arguments{
 \item{polygon_shapefile}{SpatialPolygonDataFrame containing the response data}
+
+\item{shapefile_names}{List of 2: polygon id variable name and response variable name from polygon_shapefile}
 
 \item{covariate_rasters}{RasterStack of covariates}
 

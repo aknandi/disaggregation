@@ -35,10 +35,11 @@ test_that("Check prepare_data function works as expected", {
                          covariate_rasters = cov_rasters)
   
   expect_is(result, 'disag.data')
-  expect_equal(length(result), 9)
-  expect_equal(names(result), c('polygon_shapefile', 'covariate_rasters', 'polygon_data', 'covariate_data', 
+  expect_equal(length(result), 10)
+  expect_equal(names(result), c('polygon_shapefile', 'shapefile_names', 'covariate_rasters', 'polygon_data', 'covariate_data', 
                                 'aggregation_pixels', 'coordsForFit', 'coordsForPrediction', 'startendindex', 'mesh'))
   expect_is(result$polygon_shapefile, 'SpatialPolygonsDataFrame')
+  expect_is(result$shapefile_names, 'list')
   expect_is(result$covariate_rasters, c('RasterBrick', 'RasterStack'))
   expect_is(result$polygon_data, 'data.frame')
   expect_is(result$covariate_data, 'data.frame')
@@ -60,10 +61,11 @@ test_that("Check prepare_data function with sample size works as expected", {
                          sample_size_var = 'sample_size')
   
   expect_is(result, 'disag.data')
-  expect_equal(length(result), 9)
-  expect_equal(names(result), c('polygon_shapefile', 'covariate_rasters', 'polygon_data', 'covariate_data', 
+  expect_equal(length(result), 10)
+  expect_equal(names(result), c('polygon_shapefile', 'shapefile_names', 'covariate_rasters', 'polygon_data', 'covariate_data', 
                                 'aggregation_pixels', 'coordsForFit', 'coordsForPrediction', 'startendindex', 'mesh'))
   expect_is(result$polygon_shapefile, 'SpatialPolygonsDataFrame')
+  expect_is(result$shapefile_names, 'list')
   expect_is(result$covariate_rasters, c('RasterBrick', 'RasterStack'))
   expect_is(result$polygon_data, 'data.frame')
   expect_is(result$covariate_data, 'data.frame')
@@ -96,10 +98,11 @@ test_that("Check prepare_data function deals with NAs as expected", {
                          na.action = TRUE)
   
   expect_is(result, 'disag.data')
-  expect_equal(length(result), 9)
-  expect_equal(names(result), c('polygon_shapefile', 'covariate_rasters', 'polygon_data', 'covariate_data', 
+  expect_equal(length(result), 10)
+  expect_equal(names(result), c('polygon_shapefile', 'shapefile_names', 'covariate_rasters', 'polygon_data', 'covariate_data', 
                                 'aggregation_pixels', 'coordsForFit', 'coordsForPrediction', 'startendindex', 'mesh'))
   expect_is(result$polygon_shapefile, 'SpatialPolygonsDataFrame')
+  expect_is(result$shapefile_names, 'list')
   expect_is(result$covariate_rasters, c('RasterBrick', 'RasterStack'))
   expect_is(result$polygon_data, 'data.frame')
   expect_is(result$covariate_data, 'data.frame')
@@ -138,6 +141,7 @@ test_that("Check as.disag.data function works as expected", {
   mesh <- build_mesh(spdf)
 
   result <- as.disag.data(spdf, 
+                          list('area_id', 'response'),
                           cov_rasters,
                           polygon_data, 
                           cov_data, 
@@ -148,10 +152,11 @@ test_that("Check as.disag.data function works as expected", {
                           mesh)
   
   expect_is(result, 'disag.data')
-  expect_equal(length(result), 9)
-  expect_equal(names(result), c('polygon_shapefile', 'covariate_rasters', 'polygon_data', 'covariate_data', 
+  expect_equal(length(result), 10)
+  expect_equal(names(result), c('polygon_shapefile', 'shapefile_names', 'covariate_rasters', 'polygon_data', 'covariate_data', 
                                 'aggregation_pixels', 'coordsForFit', 'coordsForPrediction', 'startendindex', 'mesh'))
   expect_is(result$polygon_shapefile, 'SpatialPolygonsDataFrame')
+  expect_is(result$shapefile_names, 'list')
   expect_is(result$covariate_rasters, c('RasterBrick', 'RasterStack'))
   expect_is(result$polygon_data, 'data.frame')
   expect_is(result$covariate_data, 'data.frame')

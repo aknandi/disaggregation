@@ -4,12 +4,10 @@
 \alias{plot.disag.data}
 \title{Plot input data for disaggregation}
 \usage{
-\method{plot}{disag.data}(x, zcol = "response", ...)
+\method{plot}{disag.data}(x, ...)
 }
 \arguments{
 \item{x}{Object to be plotted}
-
-\item{zcol}{Name of response variable in polygon shapefile}
 
 \item{...}{Further arguments passed to or from other methods.}
 }

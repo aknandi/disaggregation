@@ -4,12 +4,12 @@
 \alias{plot_polygon_data}
 \title{Plot polygon data from SpatialPolygonDataFrame}
 \usage{
-plot_polygon_data(x, zcol = "response")
+plot_polygon_data(x, names)
 }
 \arguments{
 \item{x}{Object to be plotted}
 
-\item{zcol}{name of the response variable to be plotted}
+\item{names}{list of 2 names: polygon id variable and response variable names}
 }
 \description{
 Plot polygon data from SpatialPolygonDataFrame
