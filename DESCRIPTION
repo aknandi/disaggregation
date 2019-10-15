@@ -37,8 +37,11 @@ Imports:
 Additional_repositories: https://inla.r-inla-download.org/R/stable
 Suggests: 
     testthat,
-    INLA
+    INLA,
+    knitr,
+    rmarkdown
 LinkingTo: 
     TMB,
     RcppEigen
 SystemRequirements: GNU make
+VignetteBuilder: knitr

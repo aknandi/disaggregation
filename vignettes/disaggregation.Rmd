@@ -1,0 +1,126 @@
+---
+title: "A short introduction to the disaggregation package"
+author: "Anita Nandi"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Vignette Title}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  cache = TRUE,
+  fig.width = 7
+)
+```
+
+The **disaggregation** package contains functions to run Bayesian disaggregation models. Aggregated response data over large heterongenous regions can be used alongside fine-scale covariate information to predict fine-scale response across the region. The github page for thsi package can be found [here](https://github.com/aknandi/disaggregation).
+
+Install **disggregation** using:
+
+```r
+install.packages("disaggregation")
+```
+
+The key functions are `prepare_data`, `fit_model` and `predict`. The `prepare_data` function takes the aggregated data and covariate data to be used in the model and produces an object to be use by `fit_model`. This functions runs the disaggregation model and the out can be passed to `predict` to produce fine-scale predicted maps of the response variable. 
+
+To use the disaggregation `prepare_data` fuction, you must have the aggregated data as a `SpatialPolygonDataFrame` object and a `RasterStack` of the covariate data to be used in the model.
+
+## Example
+
+We will demonstrate an example of the **disaggregation** package using areal data of leukemia incidence in New York, using data from the package `SpatialEpi`.
+
+```{r, results='hide'}
+library(SpatialEpi, quietly = TRUE)
+library(dplyr, quietly = TRUE)
+library(sp, quietly = TRUE) 
+library(raster, quietly = TRUE)
+library(disaggregation, quietly = TRUE)
+
+map <- NYleukemia$spatial.polygon
+df <- NYleukemia$data
+
+polygon_data <- SpatialPolygonsDataFrame(map, df)
+polygon_data
+```
+
+Now we simulate two covariate rasters for the area of interest and make a `RasterStack`. They are simulated at the resolution of approximately 1km2.
+
+```{r, fig.show='hold'}
+extent_in_km <- 111*(polygon_data@bbox[, 2] - polygon_data@bbox[, 1])
+n_pixels_x <- floor(extent_in_km[[1]])
+n_pixels_y <- floor(extent_in_km[[2]])
+r <- raster::raster(ncol = n_pixels_x, nrow = n_pixels_y)
+r <- raster::setExtent(r, raster::extent(polygon_data))
+r[] <- sapply(1:raster::ncell(r), function(x) rnorm(1, ifelse(x %% n_pixels_x != 0, x %% n_pixels_x, n_pixels_x), 3))
+r2 <- raster::raster(ncol = n_pixels_x, nrow = n_pixels_y)
+r2 <- raster::setExtent(r2, raster::extent(polygon_data))
+r2[] <- sapply(1:raster::ncell(r), function(x) rnorm(1, ceiling(x/n_pixels_y), 3))
+cov_stack <- raster::stack(r, r2)
+```
+
+We also create a population raster. This is to allow the model to correctly aggregated the pixel values to the polygon level. For this simple example we assume that the population within each polygon is uniformly distributed.
+
+```{r, fig.show='hold'}
+extracted <- extract(r, polygon_data)
+n_cells <- sapply(extracted, length)
+polygon_data@data$pop_per_cell <- polygon_data@data$population/n_cells
+pop_raster <- rasterize(polygon_data, cov_stack, field = 'pop_per_cell')
+
+```
+
+To correct small inconsistencies in the polygon geometry, we run the line below
+
+```{r, fig.show='hold'}
+polygon_data <- rgeos::gBuffer(polygon_data, byid = TRUE, width = 0)
+```
+
+Now we have setup the data we can use the `prepare_data` function to create the objects needed to run the disaggregation model. The name of the response variable and id variable in the `SpatialPolygonsDataFrame` should be specified. The user can also control the parameters of the mesh that is used to create the spatial field.
+
+```{r, fig.show='hold'}
+data_for_model <- prepare_data(polygon_data,
+                               cov_stack,
+                               pop_raster,
+                               response_var = 'cases',
+                               id_var = 'censustract.FIPS',
+                               mesh.args = list(cut = 0.01,
+                                                offset = c(0.1, 0.5),
+                                                max.edge = c(0.1, 0.2),
+                                                resolution = 250),
+                               na.action = TRUE,
+                               ncores = 4)
+```
+
+```{r, fig.show='hold'}
+plot(data_for_model)
+```
+
+Now have our data object we are ready to run the model. Here we can specify the likelihood function as gaussian, binomial or poisson, and we can specify the link function as logit, log or identity. The user can also specify the priors for the regression parameters as well as the hyperpriors of the field. By default the model contains a spatial field and a polygon iid effect. These can be turned off in the `fit_model` function.
+
+```{r, fig.show='hold'}
+model_result <- fit_model(data_for_model,
+                          its = 1000,
+                          family = 'gaussian',
+                          link = 'logit',
+                          priors = list(priormean_intercept = 0,
+                                        priorsd_intercept = 2,
+                                        priormean_slope = 0.0,
+                                        priorsd_slope = 0.6))
+```
+
+```{r, fig.show='hold'}
+plot(model_result)
+```
+
+Now we have the results from the model of the fitted parameters, we can predict Leukemia incidence rate at fine-scale (the scale of the covariate data) across New York.
+
+```{r, fig.show='hold'}
+preds <- predict(model_result)
+
+plot(preds$mean_predictions)
+plot(preds$uncertainty_predictions)
+```

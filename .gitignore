@@ -1,6 +1,9 @@
+inst/doc
 .Rproj.user
 .Rhistory
 .Rproj
 .RData
 *.o
 *.so
+vignettes/disaggregation_cache/*
+vignettes/disaggregation_files/*
