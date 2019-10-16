@@ -75,18 +75,22 @@ Type objective_function<Type>::operator()()
   DATA_SCALAR(priorsd_iideffect);
   
   // spde hyperparameters
-  PARAMETER(log_kappa);
-  PARAMETER(log_tau);
+  PARAMETER(log_sigma);
+  PARAMETER(log_rho);
+  Type sigma = exp(log_sigma);
+  Type rho = exp(log_rho);
   
   // Priors on spde hyperparameters
-  DATA_SCALAR(priormean_log_kappa);
-  DATA_SCALAR(priorsd_log_kappa);
-  DATA_SCALAR(priormean_log_tau);
-  DATA_SCALAR(priorsd_log_tau);
+  DATA_SCALAR(prior_rho_min);
+  DATA_SCALAR(prior_rho_prob);
+  DATA_SCALAR(prior_sigma_max);
+  DATA_SCALAR(prior_sigma_prob);
   
   // Convert hyperparameters to natural scale
-  Type tau = exp(log_tau);
-  Type kappa = exp(log_kappa);
+  // todo
+  Type kappa = sqrt(8) / rho;
+  Type nu = 1;
+  Type tau = sigma * pow(kappa, nu) * sqrt(4 * M_PI);
   
   // Random effect parameters
   PARAMETER_VECTOR(nodemean);
@@ -121,8 +125,10 @@ Type objective_function<Type>::operator()()
   
   if(field) {
     // Likelihood of hyperparameters for field
-    nll -= dnorm(log_kappa, priormean_log_kappa, priorsd_log_kappa, true);
-    nll -= dnorm(log_tau, priormean_log_tau, priorsd_log_tau, true);
+    Type lambdatilde1 = -log(prior_rho_prob) * prior_rho_min;
+    Type lambdatilde2 = -log(prior_sigma_prob) / prior_sigma_max;
+    Type pcdensity = lambdatilde1 * lambdatilde2 * pow(rho, -2) * exp(-lambdatilde1 * pow(rho, -1) - lambdatilde2 * sigma);
+    nll -= log(pcdensity);
     
     // Build spde matrix
     SparseMatrix<Type> Q = Q_spde(spde, kappa);

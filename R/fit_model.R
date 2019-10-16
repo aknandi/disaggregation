@@ -148,10 +148,10 @@ fit_model <- function(data,
                          priormean_slope = 0.0,
                          priorsd_slope = 0.5,
                          priorsd_iideffect = 0.05,
-                         priormean_log_kappa = -3,
-                         priorsd_log_kappa = 0.5,
-                         priormean_log_tau = -0.50,
-                         priorsd_log_tau = 2.0)
+                         prior_rho_min = 3,
+                         prior_rho_prob = 0.00001,
+                         prior_sigma_max = 1,
+                         prior_sigma_prob = 0.00001)
   
   # Replace with any specified priors
   if(!is.null(priors)) {
@@ -179,8 +179,8 @@ fit_model <- function(data,
                      slope = rep(0, ncol(cov_matrix)),
                      polygon_sd = 0.1,
                      iideffect = rep(0, nrow(data$polygon_data)),
-                     log_kappa = -3,
-                     log_tau = -0.5,
+                     log_sigma = 0,
+                     log_rho = 4,
                      nodemean = rep(0, n_s))
   
   input_data <- list(x = cov_matrix,
@@ -199,8 +199,8 @@ fit_model <- function(data,
   
   tmb_map <- list()
   if(!field) {
-    tmb_map <- c(tmb_map, list(log_kappa = as.factor(NA),
-                               log_tau = as.factor(NA),
+    tmb_map <- c(tmb_map, list(log_sigma = as.factor(NA),
+                               log_rho = as.factor(NA),
                                nodemean = factor(rep(NA, n_s))))
   }
   if(!iid) {
