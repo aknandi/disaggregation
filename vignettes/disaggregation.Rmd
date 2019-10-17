@@ -108,6 +108,7 @@ $link(pred_i) = \beta_0 + \beta X + GP(s_i) + u_i$
 where $X$ are the covariates, $GP$ is the gaussian random field and $u_i$ is the iid random effect. The pixel predictions are then aggregated to the polygon level using the weighted sum (via the aggregation raster, $agg_i$):
 
 $cases_j = \sum_{i \epsilon j} pred_i \times agg_i$
+
 $rate_j = \frac{\sum_{i \epsilon j} pred_i \times agg_i}{\sum_{i \epsilon j} agg_i}$
 
 The different likelihood correspond to slightly different models ($y_j$ is the repsonse count data):
@@ -116,7 +117,7 @@ The different likelihood correspond to slightly different models ($y_j$ is the r
 
 $dnorm(y_j/\sum agg_i, rate_j, \sigma)$
 
-**Binomial** (For a survey in polygon j, $y_j$ is the number positive and N_j is the number tested)
+**Binomial** (For a survey in polygon j, $y_j$ is the number positive and $N_j$ is the number tested)
 
 $dbinom(y_j, N_j, rate_j)$
 
@@ -148,10 +149,13 @@ model_result <- fit_model(data_for_model,
 plot(model_result)
 ```
 
-Now we have the results from the model of the fitted parameters, we can predict Leukemia incidence rate at fine-scale (the scale of the covariate data) across New York.
+Now we have the results from the model of the fitted parameters, we can predict Leukemia incidence rate at fine-scale (the scale of the covariate data) across New York. The `predict` function takes the model result and predicts both the mean raster surface and predicts and summarises `N` parameter draws, where `N` is set by the user (default 100). The uncertainty is summarirised via the confidence interval set by the user (default 95% CI).
+
 
 ```{r, fig.show='hold'}
-preds <- predict(model_result)
+preds <- predict(model_result, 
+                 N = 100, 
+                 CI = 0.95)
 
 plot(preds$mean_predictions)
 plot(preds$uncertainty_predictions)
