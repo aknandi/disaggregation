@@ -34,7 +34,7 @@ To use the disaggregation `prepare_data` fuction, you must have the aggregated d
 
 We will demonstrate an example of the **disaggregation** package using areal data of leukemia incidence in New York, using data from the package `SpatialEpi`.
 
-```{r, results='hide'}
+```{r}
 library(SpatialEpi, quietly = TRUE)
 library(dplyr, quietly = TRUE)
 library(sp, quietly = TRUE) 
