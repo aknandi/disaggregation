@@ -23,7 +23,10 @@
 #'    \deqn{dpois(y_j, cases_j)}{dpois(yj, casesj)} - predicts incidence count
 #' }
 #' 
-#' Specify priors for the regression parameters, field and iid effect as a single list.
+#' Specify priors for the regression parameters, field and iid effect as a single list. Hyperpriors for the field 
+#' are given as penalised complexity priors you specify \eqn{\rho_{min}} and \eqn{\rho_{prob}} for the range of the field 
+#' where \eqn{P(\rho < \rho_{min}) = \rho_{prob}}, and \eqn{\sigma_{min}$ and $\sigma_{prob}} for the variation of the field 
+#' where \eqn{P(\sigma > \sigma_{min}) = \sigma_{prob}}.
 #' 
 #' The \emph{family} and \emph{link} arguments are used to specify the likelihood and link function respectively. 
 #' The likelihood function can be one of \emph{gaussian}, \emph{poisson} or \emph{binomial}. 
