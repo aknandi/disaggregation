@@ -36,3 +36,5 @@ matrix:
   include:
     - r: release
       r_github_packages: andrewzm/INLA
+    - r: devel
+      r_github_packages: andrewzm/INLA
