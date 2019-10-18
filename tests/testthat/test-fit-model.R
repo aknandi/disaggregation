@@ -26,14 +26,12 @@ r2 <- raster::setExtent(r2, raster::extent(spdf))
 r2[] <- sapply(1:raster::ncell(r), function(x) rnorm(1, ceiling(x/10), 3))
 cov_stack <- raster::stack(r, r2)
 
-test_data <- prepare_data(polygon_shapefile = spdf, 
-                          covariate_rasters = cov_stack)
-
-binom_data <- prepare_data(polygon_shapefile = spdf_binom, 
-                           covariate_rasters = cov_stack,
-                           sample_size_var = 'sample_size')
-
 test_that("fit_model produces errors whe expected", {
+  
+  skip_on_cran()
+  
+  test_data <- prepare_data(polygon_shapefile = spdf, 
+                            covariate_rasters = cov_stack)
   
   expect_error(fit_model(list()))
   expect_error(fit_model(test_data, its = 'its'))
@@ -47,6 +45,11 @@ test_that("fit_model produces errors whe expected", {
 
 test_that("fit_model behaves as expected", {
   
+  skip_on_cran()
+  
+  test_data <- prepare_data(polygon_shapefile = spdf, 
+                            covariate_rasters = cov_stack)
+  
   result <- fit_model(test_data, its = 2)
 
   save(result, file = paste0(tempdir(), '/test_fit_result.RData'))
@@ -59,6 +62,15 @@ test_that("fit_model behaves as expected", {
 })
 
 test_that("user defined model setup is working as expected", {
+  
+  skip_on_cran()
+  
+  test_data <- prepare_data(polygon_shapefile = spdf, 
+                            covariate_rasters = cov_stack)
+  
+  binom_data <- prepare_data(polygon_shapefile = spdf_binom, 
+                             covariate_rasters = cov_stack,
+                             sample_size_var = 'sample_size')
   
   result2 <- fit_model(test_data, its = 2, field = FALSE, family = 'poisson', link = 'log')
   result3 <- fit_model(binom_data, its = 2, iid = FALSE, family = 'binomial', link = 'logit')

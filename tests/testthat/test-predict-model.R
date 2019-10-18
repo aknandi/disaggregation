@@ -21,14 +21,17 @@ r2 <- raster::setExtent(r2, raster::extent(spdf))
 r2[] <- sapply(1:raster::ncell(r), function(x) rnorm(1, ceiling(x/10), 3))
 cov_stack <- raster::stack(r, r2)
 
-test_data <- prepare_data(polygon_shapefile = spdf, 
-                          covariate_rasters = cov_stack)
-
-result <- fit_model(test_data, its = 2)
-result_nofield <- fit_model(test_data, its = 2, field = FALSE)
-
 
 test_that("Check predict_model function works as expected", {
+  
+  skip_on_cran()
+  
+  test_data <- prepare_data(polygon_shapefile = spdf, 
+                            covariate_rasters = cov_stack)
+  
+  result <- fit_model(test_data, its = 2)
+  
+  result_nofield <- fit_model(test_data, its = 2, field = FALSE)
   
   preds <- predict_model(result)
   
@@ -66,6 +69,15 @@ test_that("Check predict_model function works as expected", {
 
 test_that("Check predict_uncertainty function works as expected", {
   
+  skip_on_cran()
+  
+  test_data <- prepare_data(polygon_shapefile = spdf, 
+                            covariate_rasters = cov_stack)
+  
+  result <- fit_model(test_data, its = 2)
+  
+  result_nofield <- fit_model(test_data, its = 2, field = FALSE)
+  
   unc <- predict_uncertainty(result)
   
   expect_is(unc, 'uncertainty')
@@ -102,7 +114,14 @@ test_that("Check predict_uncertainty function works as expected", {
 
 
 
-test_that("Check predict_model function works with newdata", {
+test_that("Check predict_model and predict_uncertainty function works with newdata", {
+  
+  skip_on_cran()
+  
+  test_data <- prepare_data(polygon_shapefile = spdf, 
+                            covariate_rasters = cov_stack)
+  
+  result <- fit_model(test_data, its = 2)
   
   newdata <- raster::crop(raster::stack(r, r2), c(0, 10, 0, 10))
   preds1 <- predict_model(result)
@@ -118,9 +137,6 @@ test_that("Check predict_model function works with newdata", {
 
   expect_false(identical(raster::extent(preds1$prediction), raster::extent(preds2$prediction)))
   
-})
-
-test_that("Check predict_uncertainty function works with newdata as expected", {
   
   newdata <- raster::crop(raster::stack(r, r2), c(0, 10, 0, 10))
   unc1 <- predict_uncertainty(result, N = 5)
@@ -133,13 +149,20 @@ test_that("Check predict_uncertainty function works with newdata as expected", {
   expect_is(unc2$predictions_ci, 'RasterBrick')
   expect_equal(raster::nlayers(unc2$realisations), 5)
   expect_equal(raster::nlayers(unc2$predictions_ci), 2)
-
+  
   expect_false(identical(raster::extent(unc1$realisations), raster::extent(unc2$realisations)))
   
 })
 
+
 test_that('Check that predict.fit.model works', {
   
+  skip_on_cran()
+  
+  test_data <- prepare_data(polygon_shapefile = spdf, 
+                            covariate_rasters = cov_stack)
+  
+  result <- fit_model(test_data, its = 2)
   
   preds <- predict(result, N = 5)
   
@@ -164,6 +187,13 @@ test_that('Check that predict.fit.model works', {
 
 test_that('Check that check_newdata works', {
   
+  skip_on_cran()
+  
+  test_data <- prepare_data(polygon_shapefile = spdf, 
+                            covariate_rasters = cov_stack)
+  
+  result <- fit_model(test_data, its = 2)
+  
   newdata <- raster::crop(raster::stack(r, r2), c(0, 10, 0, 10))
   nd1 <- check_newdata(newdata, result)
   expect_is(nd1, 'RasterBrick')
@@ -183,6 +213,13 @@ test_that('Check that check_newdata works', {
 })
 
 test_that('Check that setup_objects works', {
+  
+  skip_on_cran()
+  
+  test_data <- prepare_data(polygon_shapefile = spdf, 
+                            covariate_rasters = cov_stack)
+  
+  result <- fit_model(test_data, its = 2)
   
   objects <- setup_objects(result)
   
@@ -212,6 +249,13 @@ test_that('Check that setup_objects works', {
 })
 
 test_that('Check that predict_single_raster works', {
+  
+  skip_on_cran()
+  
+  test_data <- prepare_data(polygon_shapefile = spdf, 
+                            covariate_rasters = cov_stack)
+  
+  result <- fit_model(test_data, its = 2)
   
   objects <- setup_objects(result)
   

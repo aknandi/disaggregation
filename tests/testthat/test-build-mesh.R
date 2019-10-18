@@ -3,6 +3,8 @@ context("Build mesh")
 
 test_that("build_mesh behaves as expected", {
   
+  skip_on_cran()
+  
   polygons <- list()
   for(i in 1:100) {
     row <- ceiling(i/10)
