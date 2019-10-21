@@ -7,7 +7,7 @@
 prepare_data(polygon_shapefile, covariate_rasters,
   aggregation_raster = NULL, id_var = "area_id",
   response_var = "response", sample_size_var = NULL,
-  mesh.args = NULL, na.action = FALSE, ncores = 2)
+  mesh.args = NULL, na.action = FALSE, makeMesh = TRUE, ncores = 2)
 }
 \arguments{
 \item{polygon_shapefile}{SpatialPolygonDataFrame  containing at least two columns: one with the id for the polygons (\emph{id_var}) and one with the response count data (\emph{response_var}); for binomial data, i.e survey data, it can also contain a sample size column (\emph{sample_size_var}).}
@@ -25,6 +25,8 @@ prepare_data(polygon_shapefile, covariate_rasters,
 \item{mesh.args}{list of parameters that control the mesh structure with the same names as used by INLA}
 
 \item{na.action}{logical. If TRUE, NAs in response will be removed, covariate NAs will be given the median value, aggregation NAs will be set to zero. Default FALSE (NAs in response or covariate data within the polygons will give errors)}
+
+\item{makeMesh}{logical. If TRUE, build INLA mesh, takes some time. Default TRUE.}
 
 \item{ncores}{Number of cores used to perform covariate extraction}
 }

@@ -29,6 +29,7 @@
 #' @param sample_size_var For survey data, name of column in SpatialPolygonDataFrame object (if it exists) with the sample size data
 #' @param mesh.args list of parameters that control the mesh structure with the same names as used by INLA
 #' @param na.action logical. If TRUE, NAs in response will be removed, covariate NAs will be given the median value, aggregation NAs will be set to zero. Default FALSE (NAs in response or covariate data within the polygons will give errors)
+#' @param makeMesh logical. If TRUE, build INLA mesh, takes some time. Default TRUE.
 #' @param ncores Number of cores used to perform covariate extraction
 #'
 #' @return A list is returned of class \code{disag.data}. 
@@ -84,6 +85,7 @@ prepare_data <- function(polygon_shapefile,
                          sample_size_var = NULL,
                          mesh.args = NULL, 
                          na.action = FALSE,
+                         makeMesh = TRUE,
                          ncores = 2) {
 
   stopifnot(inherits(polygon_shapefile, 'SpatialPolygonsDataFrame'))
@@ -154,11 +156,16 @@ prepare_data <- function(polygon_shapefile,
   
   startendindex <- getStartendindex(covariate_data, polygon_data, id_var = id_var)
   
-  if("INLA" %in% utils::installed.packages()) {
-    mesh <- build_mesh(polygon_shapefile, mesh.args)
+  if(makeMesh) {
+    if("INLA" %in% utils::installed.packages()) {
+      mesh <- build_mesh(polygon_shapefile, mesh.args)
+    } else {
+      mesh <- NULL
+      message("Cannot build mesh as INLA is not installed. If you need a spatial field in your model, you must install INLA.")
+    }
   } else {
     mesh <- NULL
-    message("Cannot build mesh as INLA is not installed. If you need a spatial field in your model, you must install INLA.")
+    message("A mesh is not being built. You will not be able to run a model without a mesh.")
   }
   
   disag_data <- list(polygon_shapefile = polygon_shapefile,

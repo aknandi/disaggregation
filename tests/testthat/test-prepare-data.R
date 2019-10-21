@@ -68,7 +68,8 @@ test_that("Check prepare_data function with sample size works as expected", {
   
   result <- prepare_data(polygon_shapefile = spdf_binom, 
                          covariate_rasters = cov_stack,
-                         sample_size_var = 'sample_size')
+                         sample_size_var = 'sample_size',
+                         makeMesh = FALSE)
   
   expect_is(result, 'disag.data')
   expect_equal(length(result), 10)
@@ -83,7 +84,7 @@ test_that("Check prepare_data function with sample size works as expected", {
   expect_is(result$coordsForFit, 'matrix')
   expect_is(result$coordsForPrediction, 'matrix')
   expect_is(result$startendindex, 'matrix')
-  expect_is(result$mesh, 'inla.mesh')
+  expect_true(is.null(result$mesh))
   expect_equal(sum(is.na(result$polygon_data$N)), 0)
   expect_equal(nrow(result$polygon_data), nrow(result$startendindex))
   expect_equal(nrow(result$covariate_data), nrow(result$coordsForFit))
@@ -101,14 +102,15 @@ test_that("Check prepare_data function deals with NAs as expected", {
   aggregation_raster_na <- r
   aggregation_raster_na[c(1:10)] <- NA
   
-  expect_error(prepare_data(polygon_shapefile = spdf_na, covariate_rasters = cov_stack))
-  expect_error(prepare_data(polygon_shapefile = spdf, covariate_rasters = cov_stack_na))
-  expect_error(prepare_data(polygon_shapefile = spdf, covariate_rasters = cov_stack, aggregation_raster = aggregation_raster_na))
+  expect_error(prepare_data(polygon_shapefile = spdf_na, covariate_rasters = cov_stack, makeMesh = FALSE))
+  expect_error(prepare_data(polygon_shapefile = spdf, covariate_rasters = cov_stack_na, makeMesh = FALSE))
+  expect_error(prepare_data(polygon_shapefile = spdf, covariate_rasters = cov_stack, aggregation_raster = aggregation_raster_na, makeMesh = FALSE))
                
   result <- prepare_data(polygon_shapefile = spdf_na, 
                          covariate_rasters = cov_stack_na,
                          aggregation_raster = aggregation_raster_na,
-                         na.action = TRUE)
+                         na.action = TRUE,
+                         makeMesh = FALSE)
   
   expect_is(result, 'disag.data')
   expect_equal(length(result), 10)
@@ -122,7 +124,7 @@ test_that("Check prepare_data function deals with NAs as expected", {
   expect_is(result$aggregation_pixels, 'numeric')
   expect_is(result$coordsForFit, 'matrix')
   expect_is(result$startendindex, 'matrix')
-  expect_is(result$mesh, 'inla.mesh')
+  expect_true(is.null(result$mesh))
   expect_equal(nrow(result$polygon_data), nrow(result$startendindex))
   expect_equal(nrow(result$covariate_data), nrow(result$coordsForFit))
   expect_equal(sum(is.na(result$polygon_data$response)), 0)

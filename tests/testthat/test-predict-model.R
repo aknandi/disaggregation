@@ -122,7 +122,7 @@ test_that("Check predict_model function works with newdata", {
   skip_if_not_installed('INLA')
   skip_on_cran()
   
-  result <- fit_model(test_data, its = 2)
+  result <- fit_model(test_data, field = FALSE, its = 2)
   
   newdata <- raster::crop(raster::stack(r, r2), c(0, 10, 0, 10))
   preds1 <- predict_model(result)
@@ -132,7 +132,7 @@ test_that("Check predict_model function works with newdata", {
   expect_equal(length(preds2), 4)
   expect_equal(names(preds2), c('prediction', 'field', 'iid', 'covariates'))
   expect_is(preds2$prediction, 'Raster')
-  expect_is(preds2$field, 'Raster')
+  expect_true(is.null(preds2$field))
   expect_true(is.null(preds2$iid))
   expect_is(preds2$covariates, 'Raster')
 
@@ -145,7 +145,7 @@ test_that("Check predict_uncertainty function works with newdata as expected", {
   skip_if_not_installed('INLA')
   skip_on_cran()
   
-  result <- fit_model(test_data, its = 2)
+  result <- fit_model(test_data, field = FALSE, its = 2)
   
   newdata <- raster::crop(raster::stack(r, r2), c(0, 10, 0, 10))
   unc1 <- predict_uncertainty(result, N = 5)
@@ -168,7 +168,7 @@ test_that('Check that predict.fit.model works', {
   skip_if_not_installed('INLA')
   skip_on_cran()
   
-  result <- fit_model(test_data, its = 2)
+  result <- fit_model(test_data, field = FALSE, its = 2)
   
   preds <- predict(result, N = 5)
   
@@ -179,7 +179,7 @@ test_that('Check that predict.fit.model works', {
   expect_equal(length(preds$mean_predictions), 4)
   expect_equal(names(preds$mean_predictions), c('prediction', 'field', 'iid', 'covariates'))
   expect_is(preds$mean_predictions$prediction, 'Raster')
-  expect_is(preds$mean_predictions$field, 'Raster')
+  expect_true(is.null(preds$mean_predictions$field))
   expect_true(is.null(preds$mean_predictions$iid))
   expect_is(preds$mean_predictions$covariates, 'Raster')
   expect_equal(length(preds$uncertainty_predictions), 2)
@@ -196,7 +196,7 @@ test_that('Check that check_newdata works', {
   skip_if_not_installed('INLA')
   skip_on_cran()
   
-  result <- fit_model(test_data, its = 2)
+  result <- fit_model(test_data, field = FALSE, its = 2)
   
   newdata <- raster::crop(raster::stack(r, r2), c(0, 10, 0, 10))
   nd1 <- check_newdata(newdata, result)

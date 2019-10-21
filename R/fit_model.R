@@ -135,6 +135,10 @@ fit_model <- function(data,
     stop(paste(link, "is not a valid link function"))
   }
   
+  if(is.null(data$mesh)) {
+    stop('Your data object must contain an INLA mesh.')
+  }
+  
   # Sort out mesh bits
   spde <- (INLA::inla.spde2.matern(data$mesh, alpha = 2)$param.inla)[c("M0", "M1", "M2")]	
   Apix <- INLA::inla.mesh.project(data$mesh, loc = data$coordsForFit)$A

@@ -47,7 +47,7 @@ test_that("Check summary.fit.model function works as expected", {
   skip_if_not_installed('INLA')
   skip_on_cran()
   
-  result <- fit_model(test_data, its = 2)
+  result <- fit_model(test_data, field = FALSE, its = 2)
   
   model_summary <- summary(result)
   
