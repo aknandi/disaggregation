@@ -22,7 +22,7 @@ r2[] <- sapply(1:raster::ncell(r), function(x) rnorm(1, ceiling(x/10), 3))
 cov_stack <- raster::stack(r, r2)
 
 
-test_that("Check predict_model function works as expected", {
+test_that("Check predict functions work as expected", {
   
   skip_on_cran()
   
@@ -65,19 +65,6 @@ test_that("Check predict_model function works as expected", {
   expect_is(preds3$iid, 'Raster')
   expect_is(preds3$covariates, 'Raster')
   
-})
-
-test_that("Check predict_uncertainty function works as expected", {
-  
-  skip_on_cran()
-  
-  test_data <- prepare_data(polygon_shapefile = spdf, 
-                            covariate_rasters = cov_stack)
-  
-  result <- fit_model(test_data, its = 2)
-  
-  result_nofield <- fit_model(test_data, its = 2, field = FALSE)
-  
   unc <- predict_uncertainty(result)
   
   expect_is(unc, 'uncertainty')
@@ -110,11 +97,29 @@ test_that("Check predict_uncertainty function works as expected", {
   expect_equal(raster::nlayers(unc2$realisations), 10)
   expect_equal(raster::nlayers(unc2$predictions_ci), 2)
   
+  
+  preds <- predict(result, N = 5)
+  
+  expect_is(preds, 'list')
+  expect_equal(length(preds), 2)
+  expect_is(preds$mean_predictions, 'predictions')
+  expect_is(preds$uncertainty_predictions, 'uncertainty')
+  expect_equal(length(preds$mean_predictions), 4)
+  expect_equal(names(preds$mean_predictions), c('prediction', 'field', 'iid', 'covariates'))
+  expect_is(preds$mean_predictions$prediction, 'Raster')
+  expect_is(preds$mean_predictions$field, 'Raster')
+  expect_true(is.null(preds$mean_predictions$iid))
+  expect_is(preds$mean_predictions$covariates, 'Raster')
+  expect_equal(length(preds$uncertainty_predictions), 2)
+  expect_equal(names(preds$uncertainty_predictions), c('realisations', 'predictions_ci'))
+  expect_equal(raster::nlayers(preds$uncertainty_predictions$realisations), 5)
+  expect_equal(raster::nlayers(preds$uncertainty_predictions$predictions_ci), 2)
+  
+  
 })
 
 
-
-test_that("Check predict_model and predict_uncertainty function works with newdata", {
+test_that("Check that using newdata works as expected", {
   
   skip_on_cran()
   
@@ -123,6 +128,22 @@ test_that("Check predict_model and predict_uncertainty function works with newda
   
   result <- fit_model(test_data, its = 2)
   
+  newdata <- raster::crop(raster::stack(r, r2), c(0, 10, 0, 10))
+  nd1 <- check_newdata(newdata, result)
+  expect_is(nd1, 'RasterBrick')
+  
+  nn <- newdata[[1]]
+  names(nn) <- 'extra_uneeded'
+  newdata2 <- raster::stack(newdata, nn)
+  expect_error(check_newdata(newdata2, result), NA)
+  
+  newdata3 <- newdata[[1]]
+  expect_error(check_newdata(newdata3, result), 'All covariates')
+  
+  newdata4 <- result$data$covariate_data
+  expect_error(check_newdata(newdata4, result), 'newdata should be NULL or')
+  
+
   newdata <- raster::crop(raster::stack(r, r2), c(0, 10, 0, 10))
   preds1 <- predict_model(result)
   preds2 <- predict_model(result, newdata)
@@ -154,63 +175,6 @@ test_that("Check predict_model and predict_uncertainty function works with newda
   
 })
 
-
-test_that('Check that predict.fit.model works', {
-  
-  skip_on_cran()
-  
-  test_data <- prepare_data(polygon_shapefile = spdf, 
-                            covariate_rasters = cov_stack)
-  
-  result <- fit_model(test_data, its = 2)
-  
-  preds <- predict(result, N = 5)
-  
-  expect_is(preds, 'list')
-  expect_equal(length(preds), 2)
-  expect_is(preds$mean_predictions, 'predictions')
-  expect_is(preds$uncertainty_predictions, 'uncertainty')
-  expect_equal(length(preds$mean_predictions), 4)
-  expect_equal(names(preds$mean_predictions), c('prediction', 'field', 'iid', 'covariates'))
-  expect_is(preds$mean_predictions$prediction, 'Raster')
-  expect_is(preds$mean_predictions$field, 'Raster')
-  expect_true(is.null(preds$mean_predictions$iid))
-  expect_is(preds$mean_predictions$covariates, 'Raster')
-  expect_equal(length(preds$uncertainty_predictions), 2)
-  expect_equal(names(preds$uncertainty_predictions), c('realisations', 'predictions_ci'))
-  expect_equal(raster::nlayers(preds$uncertainty_predictions$realisations), 5)
-  expect_equal(raster::nlayers(preds$uncertainty_predictions$predictions_ci), 2)
-
-  
-})
-
-
-test_that('Check that check_newdata works', {
-  
-  skip_on_cran()
-  
-  test_data <- prepare_data(polygon_shapefile = spdf, 
-                            covariate_rasters = cov_stack)
-  
-  result <- fit_model(test_data, its = 2)
-  
-  newdata <- raster::crop(raster::stack(r, r2), c(0, 10, 0, 10))
-  nd1 <- check_newdata(newdata, result)
-  expect_is(nd1, 'RasterBrick')
-  
-  nn <- newdata[[1]]
-  names(nn) <- 'extra_uneeded'
-  newdata2 <- raster::stack(newdata, nn)
-  expect_error(check_newdata(newdata2, result), NA)
-
-  newdata3 <- newdata[[1]]
-  expect_error(check_newdata(newdata3, result), 'All covariates')
-  
-  newdata4 <- result$data$covariate_data
-  expect_error(check_newdata(newdata4, result), 'newdata should be NULL or')
-  
-  
-})
 
 test_that('Check that setup_objects works', {
   
