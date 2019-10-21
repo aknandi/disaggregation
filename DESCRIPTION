@@ -33,7 +33,8 @@ Imports:
     dplyr,
     ggplot2,
     cowplot,
-    sparseMVN
+    sparseMVN,
+    utils
 Additional_repositories: https://inla.r-inla-download.org/R/stable
 Suggests: 
     testthat,

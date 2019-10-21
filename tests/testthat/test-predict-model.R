@@ -1,34 +1,42 @@
 context("Predict model")
 
 polygons <- list()
-for(i in 1:100) {
-  row <- ceiling(i/10)
-  col <- ifelse(i %% 10 != 0, i %% 10, 10)
+n_polygon_per_side <- 7
+n_polygons <- n_polygon_per_side * n_polygon_per_side
+n_pixels_per_side <- n_polygon_per_side * 2
+
+for(i in 1:n_polygons) {
+  row <- ceiling(i/n_polygon_per_side)
+  col <- ifelse(i %% n_polygon_per_side != 0, i %% n_polygon_per_side, n_polygon_per_side)
   xmin = 2*(col - 1); xmax = 2*col; ymin = 2*(row - 1); ymax = 2*row
   polygons[[i]] <- rbind(c(xmin, ymax), c(xmax,ymax), c(xmax, ymin), c(xmin,ymin))
 }
 
 polys <- do.call(raster::spPolygons, polygons)
-response_df <- data.frame(area_id = 1:100, response = runif(100, min = 0, max = 1000))
+response_df <- data.frame(area_id = 1:n_polygons, response = runif(n_polygons, min = 0, max = 1000))
 spdf <- sp::SpatialPolygonsDataFrame(polys, response_df)
 
 # Create raster stack
-r <- raster::raster(ncol=20, nrow=20)
+r <- raster::raster(ncol=n_pixels_per_side, nrow=n_pixels_per_side)
 r <- raster::setExtent(r, raster::extent(spdf))
-r[] <- sapply(1:raster::ncell(r), function(x) rnorm(1, ifelse(x %% 20 != 0, x %% 20, 20), 3))
-r2 <- raster::raster(ncol=20, nrow=20)
+r[] <- sapply(1:raster::ncell(r), function(x) rnorm(1, ifelse(x %% n_pixels_per_side != 0, x %% n_pixels_per_side, n_pixels_per_side), 3))
+r2 <- raster::raster(ncol=n_pixels_per_side, nrow=n_pixels_per_side)
 r2 <- raster::setExtent(r2, raster::extent(spdf))
-r2[] <- sapply(1:raster::ncell(r), function(x) rnorm(1, ceiling(x/10), 3))
+r2[] <- sapply(1:raster::ncell(r), function(x) rnorm(1, ceiling(x/n_pixels_per_side), 3))
 cov_stack <- raster::stack(r, r2)
 
 test_data <- prepare_data(polygon_shapefile = spdf, 
                           covariate_rasters = cov_stack)
 
-result <- fit_model(test_data, its = 2)
-result_nofield <- fit_model(test_data, its = 2, field = FALSE)
-
 
 test_that("Check predict_model function works as expected", {
+  
+  skip_if_not_installed('INLA')
+  skip_on_cran()
+  
+  result <- fit_model(test_data, its = 2)
+  
+  result_nofield <- fit_model(test_data, its = 2, field = FALSE)
   
   preds <- predict_model(result)
   
@@ -65,6 +73,13 @@ test_that("Check predict_model function works as expected", {
 })
 
 test_that("Check predict_uncertainty function works as expected", {
+  
+  skip_if_not_installed('INLA')
+  skip_on_cran()
+  
+  result <- fit_model(test_data, its = 2)
+  
+  result_nofield <- fit_model(test_data, its = 2, field = FALSE)
   
   unc <- predict_uncertainty(result)
   
@@ -104,6 +119,11 @@ test_that("Check predict_uncertainty function works as expected", {
 
 test_that("Check predict_model function works with newdata", {
   
+  skip_if_not_installed('INLA')
+  skip_on_cran()
+  
+  result <- fit_model(test_data, its = 2)
+  
   newdata <- raster::crop(raster::stack(r, r2), c(0, 10, 0, 10))
   preds1 <- predict_model(result)
   preds2 <- predict_model(result, newdata)
@@ -121,6 +141,11 @@ test_that("Check predict_model function works with newdata", {
 })
 
 test_that("Check predict_uncertainty function works with newdata as expected", {
+  
+  skip_if_not_installed('INLA')
+  skip_on_cran()
+  
+  result <- fit_model(test_data, its = 2)
   
   newdata <- raster::crop(raster::stack(r, r2), c(0, 10, 0, 10))
   unc1 <- predict_uncertainty(result, N = 5)
@@ -140,6 +165,10 @@ test_that("Check predict_uncertainty function works with newdata as expected", {
 
 test_that('Check that predict.fit.model works', {
   
+  skip_if_not_installed('INLA')
+  skip_on_cran()
+  
+  result <- fit_model(test_data, its = 2)
   
   preds <- predict(result, N = 5)
   
@@ -164,6 +193,11 @@ test_that('Check that predict.fit.model works', {
 
 test_that('Check that check_newdata works', {
   
+  skip_if_not_installed('INLA')
+  skip_on_cran()
+  
+  result <- fit_model(test_data, its = 2)
+  
   newdata <- raster::crop(raster::stack(r, r2), c(0, 10, 0, 10))
   nd1 <- check_newdata(newdata, result)
   expect_is(nd1, 'RasterBrick')
@@ -183,6 +217,11 @@ test_that('Check that check_newdata works', {
 })
 
 test_that('Check that setup_objects works', {
+  
+  skip_if_not_installed('INLA')
+  skip_on_cran()
+  
+  result <- fit_model(test_data, its = 2)
   
   objects <- setup_objects(result)
   
@@ -212,6 +251,11 @@ test_that('Check that setup_objects works', {
 })
 
 test_that('Check that predict_single_raster works', {
+  
+  skip_if_not_installed('INLA')
+  skip_on_cran()
+  
+  result <- fit_model(test_data, its = 2)
   
   objects <- setup_objects(result)
   
