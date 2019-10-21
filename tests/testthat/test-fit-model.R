@@ -26,8 +26,7 @@ r2 <- raster::setExtent(r2, raster::extent(spdf))
 r2[] <- sapply(1:raster::ncell(r), function(x) rnorm(1, ceiling(x/10), 3))
 cov_stack <- raster::stack(r, r2)
 
-
-test_that("fit_model behaves as expected", {
+test_that("fit_model produces errors whe expected", {
   
   skip_on_cran()
   
@@ -42,6 +41,15 @@ test_that("fit_model behaves as expected", {
   expect_error(fit_model(test_data, link = 'apple'))
   expect_is(fit_model(test_data, priors = list(polygon_sd_mean = 0.3, polygon_sd_mean = 0.2)), 'fit.result')
   
+})
+
+test_that("fit_model behaves as expected", {
+  
+  skip_on_cran()
+  
+  test_data <- prepare_data(polygon_shapefile = spdf, 
+                            covariate_rasters = cov_stack)
+  
   result <- fit_model(test_data, its = 2)
 
   save(result, file = paste0(tempdir(), '/test_fit_result.RData'))
@@ -51,6 +59,14 @@ test_that("fit_model behaves as expected", {
   expect_equal(length(result$sd_out$par.fixed), raster::nlayers(test_data$covariate_rasters) + 4)
   expect_equal(unique(names(result$sd_out$par.random)), c("iideffect", "nodemean"))
   
+})
+
+test_that("user defined model setup is working as expected", {
+  
+  skip_on_cran()
+  
+  test_data <- prepare_data(polygon_shapefile = spdf, 
+                            covariate_rasters = cov_stack)
   
   binom_data <- prepare_data(polygon_shapefile = spdf_binom, 
                              covariate_rasters = cov_stack,
@@ -88,6 +104,4 @@ test_that("fit_model behaves as expected", {
   expect_false(result4$model_setup$iid)
   expect_equal(result4$model_setup$family, 'gaussian')
   expect_equal(result4$model_setup$link, 'identity')
-  
 })
-
