@@ -2,7 +2,7 @@
 context("Preparing data")
 
 polygons <- list()
-n_polygon_per_side <- 7
+n_polygon_per_side <- 10
 n_polygons <- n_polygon_per_side * n_polygon_per_side
 n_pixels_per_side <- n_polygon_per_side * 2
 

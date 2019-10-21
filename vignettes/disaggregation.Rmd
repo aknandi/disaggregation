@@ -18,6 +18,10 @@ knitr::opts_chunk$set(
 )
 ```
 
+```{r, echo=FALSE}
+isINLA <- "INLA" %in% utils::installed.packages()
+```
+
 The **disaggregation** package contains functions to run Bayesian disaggregation models. Aggregated response data over large heterongenous regions can be used alongside fine-scale covariate information to predict fine-scale response across the region. The github page for this package can be found [here](https://github.com/aknandi/disaggregation).
 
 Install **disggregation** using:
@@ -130,7 +134,7 @@ The user can also specify the priors for the regression parameters and the iid e
 By default the model contains a spatial field and a polygon iid effect. These can be turned off in the `fit_model` function, using `field = FALSE` or `iid = FALSE`.
 
 
-```{r, fig.show='hold'}
+```{r, fig.show='hold', eval=isINLA}
 model_result <- fit_model(data_for_model,
                           its = 1000,
                           family = 'poisson',
@@ -145,14 +149,14 @@ model_result <- fit_model(data_for_model,
                                         prior_sigma_prob = 0.0001))
 ```
 
-```{r, fig.show='hold'}
+```{r, fig.show='hold', eval=isINLA}
 plot(model_result)
 ```
 
 Now we have the results from the model of the fitted parameters, we can predict Leukemia incidence rate at fine-scale (the scale of the covariate data) across New York. The `predict` function takes the model result and predicts both the mean raster surface and predicts and summarises `N` parameter draws, where `N` is set by the user (default 100). The uncertainty is summarirised via the confidence interval set by the user (default 95% CI).
 
 
-```{r, fig.show='hold'}
+```{r, fig.show='hold', eval=isINLA}
 preds <- predict(model_result, 
                  N = 100, 
                  CI = 0.95)

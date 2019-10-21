@@ -19,7 +19,9 @@ plot.disag.data <- function(x, ...) {
   
   plots$polygon <- plot_polygon_data(x$polygon_shapefile, x$shapefile_names)
   plots$covariates <- plot_covariate_data(x$covariate_rasters)
-  plots$mesh <- plot_inla_mesh(x$mesh)
+  if(!is.null(x$mesh)) {
+    plots$mesh <- plot_inla_mesh(x$mesh)
+  }
   
   return(invisible(plots))
 }

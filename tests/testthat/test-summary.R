@@ -1,7 +1,7 @@
 context("Summary functions")
 
 polygons <- list()
-n_polygon_per_side <- 7
+n_polygon_per_side <- 10
 n_polygons <- n_polygon_per_side * n_polygon_per_side
 n_pixels_per_side <- n_polygon_per_side * 2
 
@@ -47,7 +47,7 @@ test_that("Check summary.fit.model function works as expected", {
   skip_if_not_installed('INLA')
   skip_on_cran()
   
-  result <- fit_model(test_data)
+  result <- fit_model(test_data, its = 2)
   
   model_summary <- summary(result)
   
