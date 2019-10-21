@@ -23,6 +23,17 @@ r2 <- raster::setExtent(r2, raster::extent(spdf))
 r2[] <- sapply(1:raster::ncell(r), function(x) rnorm(1, ceiling(x/10), 3))
 cov_rasters <- raster::stack(r, r2)
 
+test_data <- prepare_data(polygon_shapefile = spdf, 
+                          covariate_rasters = cov_rasters)
+
+test_data2 <- prepare_data(polygon_shapefile = spdf2, 
+                           covariate_rasters = cov_rasters,
+                           response_var = 'n_positive')
+
+fit_result <- fit_model(test_data, its = 2)
+
+fit_result_nofield <- fit_model(test_data, its = 2, field = FALSE)
+
 
 test_that("Check plot_polygon_data function works as expected", {
   
@@ -37,15 +48,20 @@ test_that("Check plot_polygon_data function works as expected", {
 
 test_that("Check plot_covariate_data function works as expected", {
   
-  p <- plot_covariate_data(cov_rasters)
+  # Create raster stack
+  r <- raster::raster(ncol=20, nrow=20)
+  r[] <- sapply(1:raster::ncell(r), function(x) rnorm(1, ifelse(x %% 20 != 0, x %% 20, 20), 3))
+  r2 <- raster::raster(ncol=20, nrow=20)
+  r2[] <- sapply(1:raster::ncell(r), function(x) rnorm(1, ceiling(x/10), 3))
+  cov_stack <- raster::stack(r, r2)
+  
+  p <- plot_covariate_data(cov_stack)
   expect_error(plot_covariate_data(r))
   expect_is(p, 'trellis')
   
 })
 
 test_that("Check plot_inla_mesh function works as expected", {
-  
-  skip_on_cran()
   
   my_mesh <- build_mesh(spdf)
   
@@ -56,15 +72,6 @@ test_that("Check plot_inla_mesh function works as expected", {
 })
 
 test_that("Check plot.disag.data function works as expected", {
-  
-  skip_on_cran()
-  
-  test_data <- prepare_data(polygon_shapefile = spdf, 
-                            covariate_rasters = cov_rasters)
-  
-  test_data2 <- prepare_data(polygon_shapefile = spdf2, 
-                             covariate_rasters = cov_rasters,
-                             response_var = 'n_positive')
   
   p <- plot(test_data)
   
@@ -82,15 +89,6 @@ test_that("Check plot.disag.data function works as expected", {
 
 test_that("Check plot.fit.result function works as expected", {
   
-  skip_on_cran()
-  
-  test_data <- prepare_data(polygon_shapefile = spdf, 
-                            covariate_rasters = cov_rasters)
-  
-  fit_result <- fit_model(test_data, its = 2)
-  
-  fit_result_nofield <- fit_model(test_data, its = 2, field = FALSE)
-  
   p1 <- plot(fit_result)
   
   p2 <- plot(fit_result_nofield)
@@ -105,15 +103,6 @@ test_that("Check plot.fit.result function works as expected", {
 })
 
 test_that("Check plot.predictions function works as expected", {
-  
-  skip_on_cran()
-  
-  test_data <- prepare_data(polygon_shapefile = spdf, 
-                            covariate_rasters = cov_rasters)
-  
-  fit_result <- fit_model(test_data, its = 2)
-  
-  fit_result_nofield <- fit_model(test_data, its = 2, field = FALSE)
   
   preds <- predict_model(fit_result)
   p1 <- plot(preds)

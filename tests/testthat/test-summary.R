@@ -21,13 +21,11 @@ r2 <- raster::setExtent(r2, raster::extent(spdf))
 r2[] <- sapply(1:raster::ncell(r), function(x) rnorm(1, ceiling(x/10), 3))
 cov_stack <- raster::stack(r, r2)
 
+test_data <- prepare_data(polygon_shapefile = spdf, 
+                          covariate_rasters = cov_stack)
+
 
 test_that("Check summary.disag.data function works as expected", {
-  
-  skip_on_cran()
-  
-  test_data <- prepare_data(polygon_shapefile = spdf, 
-                            covariate_rasters = cov_stack)
   
   data_summary <- summary(test_data)
   
@@ -42,11 +40,6 @@ test_that("Check summary.disag.data function works as expected", {
 })
 
 test_that("Check summary.fit.model function works as expected", {
-  
-  skip_on_cran()
-  
-  test_data <- prepare_data(polygon_shapefile = spdf, 
-                            covariate_rasters = cov_stack)
   
   result <- fit_model(test_data)
   
