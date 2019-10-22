@@ -65,9 +65,9 @@ plot.fit.result <- function(x, ...){
     predicted_data = report$reportprediction_rate
     title <- 'In sample performance: prevalence rate'
   } else if(x$model_setup$family == 'poisson') {
-    observed_data = report$polygon_response_data
-    predicted_data = report$reportprediction_cases
-    title <- 'In sample performance: incidence count'
+    observed_data = report$polygon_response_data/report$reportnormalisation
+    predicted_data = report$reportprediction_rate
+    title <- 'In sample performance: incidence rate'
   }
   
   data <- data.frame(obs = observed_data, pred = predicted_data)
