@@ -2,22 +2,24 @@
 % Please edit documentation in R/extract.R
 \name{getPolygonData}
 \alias{getPolygonData}
-\title{Extract data from a SpatialPolygonsDataFrame into data.frame of correct structure}
+\title{Extract polygon id and response data into a data.frame from a SpatialPolygonsDataFrame}
 \usage{
 getPolygonData(shape, id_var = "area_id", response_var = "response",
   sample_size_var = NULL)
 }
 \arguments{
-\item{shape}{A shape object containing response data}
+\item{shape}{A SpatialPolygons object containing response data.}
 
-\item{id_var}{Name of column in shape object with the polygon id}
+\item{id_var}{Name of column in shape object with the polygon id. Default 'area_id'.}
 
-\item{response_var}{Name of column in shape object with the response data}
+\item{response_var}{Name of column in shape object with the response data. Default 'response'.}
 
-\item{sample_size_var}{For survey data, name of column in SpatialPolygonDataFrame object (if it exists) with the sample size data}
+\item{sample_size_var}{For survey data, name of column in SpatialPolygonDataFrame object (if it exists) with the sample size data. Default NULL.}
 }
 \description{
-Extract data from a SpatialPolygonsDataFrame into data.frame of correct structure
+Returns a data.frame with a row for each polygon in the SpatialPolygonDataFrame and columns: area_id, response and N, containing the id of the
+polygon, the values of the response for that polygon, and the sample size respectively. If the data is not survey data (the sample size does 
+not exist), this column will contain NAs.
 }
 \examples{
 {

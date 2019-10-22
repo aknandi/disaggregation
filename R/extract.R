@@ -93,12 +93,16 @@ parallelExtract <- function(raster, shape, fun = mean, id = 'OBJECTID',  ...){
 }
 
 
-#' Extract data from a SpatialPolygonsDataFrame into data.frame of correct structure
+#' Extract polygon id and response data into a data.frame from a SpatialPolygonsDataFrame
 #' 
-#' @param shape A shape object containing response data
-#' @param id_var Name of column in shape object with the polygon id
-#' @param response_var Name of column in shape object with the response data
-#' @param sample_size_var For survey data, name of column in SpatialPolygonDataFrame object (if it exists) with the sample size data
+#' Returns a data.frame with a row for each polygon in the SpatialPolygonDataFrame and columns: area_id, response and N, containing the id of the
+#' polygon, the values of the response for that polygon, and the sample size respectively. If the data is not survey data (the sample size does 
+#' not exist), this column will contain NAs.
+#' 
+#' @param shape A SpatialPolygons object containing response data.
+#' @param id_var Name of column in shape object with the polygon id. Default 'area_id'.
+#' @param response_var Name of column in shape object with the response data. Default 'response'.
+#' @param sample_size_var For survey data, name of column in SpatialPolygonDataFrame object (if it exists) with the sample size data. Default NULL.
 #' 
 #' @export
 #' @examples {
