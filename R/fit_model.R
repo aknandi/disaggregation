@@ -147,6 +147,13 @@ fit_model <- function(data,
   cov_matrix <- as.matrix(data$covariate_data[, -c(1:2)])
   cov_matrix <- t(apply(cov_matrix, 1,as.numeric))
   
+  # Construct sensible default field hyperpriors
+  limits <- sp::bbox(data$polygon_shapefile)
+  hypontenuse <- sqrt((limits[1,2] - limits[1,1])^2 + (limits[2,2] - limits[2,1])^2)
+  prior_rho <- hypontenuse/3
+  
+  prior_sigma <- sd(data$polygon_data$response/mean(data$polygon_data$response))
+  
   # Default priors if they are not specified
   default_priors <- list(polygon_sd_mean = 0.1,
                          polygon_sd_sd = 0.1,
@@ -155,10 +162,10 @@ fit_model <- function(data,
                          priormean_slope = 0.0,
                          priorsd_slope = 0.5,
                          priorsd_iideffect = 0.05,
-                         prior_rho_min = 3,
-                         prior_rho_prob = 0.00001,
-                         prior_sigma_max = 1,
-                         prior_sigma_prob = 0.00001)
+                         prior_rho_min = prior_rho,
+                         prior_rho_prob = 0.1,
+                         prior_sigma_max = prior_sigma,
+                         prior_sigma_prob = 0.1)
   
   # Replace with any specified priors
   if(!is.null(priors)) {
