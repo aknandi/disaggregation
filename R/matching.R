@@ -1,4 +1,4 @@
-#' Function to match pixels to their correspondin polygon
+#' Function to match pixels to their corresponding polygon
 #' 
 #' From the covaraite data and polygon data, the function matches the polygon id between the two to find 
 #' which pixels from the covariate data are contained in each of the polygons

@@ -2,7 +2,7 @@
 % Please edit documentation in R/matching.R
 \name{getStartendindex}
 \alias{getStartendindex}
-\title{Function to match pixels to their correspondin polygon}
+\title{Function to match pixels to their corresponding polygon}
 \usage{
 getStartendindex(covariates, polygon_data, id_var = "area_id")
 }
