@@ -1,11 +1,11 @@
 #' Summary function for disaggregation fit result
 #' 
-#' Function that summarizes the fit result from the disaggregation model
+#' Function that summarises the fit result from the disaggregation model
 #' 
 #' Prints the negative log likelihood, model parameters and calculates metrics from in-sample performance
 #'
 #' @param object Object returned from fit_model
-#' @param ... Further arguments passed to or from other methods.
+#' @param ... Further arguments to \emph{summary} function.
 #' 
 #' @method summary fit.result
 #' 
@@ -66,7 +66,7 @@ summary.fit.result <- function(object, ...) {
 #' Prints the negative log likelihood, model parameters and calculates metrics from in-sample performance
 #'
 #' @param x Object returned from fit_model
-#' @param ... Further arguments passed to or from other methods.
+#' @param ... Further arguments to \emph{print} function.
 #' 
 #' @method print fit.result
 #' 
@@ -87,7 +87,7 @@ print.fit.result <- function(x, ...){
 #' Prints the number of polyons and pixels, the number of pixels in the largest and smallest polygons and summaries of the covariates
 #'
 #' @param object Object returned from fit_model
-#' @param ... Further arguments passed to or from other methods.
+#' @param ... Further arguments to \emph{summary} function.
 #' 
 #' @method summary disag.data
 #' 
@@ -127,7 +127,7 @@ summary.disag.data <- function(object, ...) {
 #' Prints the number of polyons and pixels, the number of pixels in the largest and smallest polygons and summaries of the covariates
 #'
 #' @param x Object returned from fit_model
-#' @param ... Further arguments passed to or from other methods.
+#' @param ... Further arguments to \emph{print} function.
 #' 
 #' @method print disag.data
 #' 

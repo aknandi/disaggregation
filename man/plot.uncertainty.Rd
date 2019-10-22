@@ -7,13 +7,13 @@
 \method{plot}{uncertainty}(x, ...)
 }
 \arguments{
-\item{x}{Object to be plotted}
+\item{x}{Object of class \emph{uncertainty} to be plotted}
 
-\item{...}{Further arguments passed to or from other methods.}
+\item{...}{Further arguments to \emph{plot} function.}
 }
 \description{
-Plotting function for class uncertainty (the uncertainty predictions of the disaggragation fitting)
+Plotting function for class \emph{uncertainty} (the uncertainty predictions of the disaggragation fitting)
 }
 \details{
-Produces plots of the realisations, and the upper and lower credible interval rasters
+Produces a plot of the upper and lower credible interval rasters
 }

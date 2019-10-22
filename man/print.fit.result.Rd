@@ -9,7 +9,7 @@
 \arguments{
 \item{x}{Object returned from fit_model}
 
-\item{...}{Further arguments passed to or from other methods.}
+\item{...}{Further arguments to \emph{print} function.}
 }
 \description{
 Function that prints the fit result from the disaggregation model
