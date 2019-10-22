@@ -14,9 +14,3 @@ extractCoordsForMesh(cov_rasters, selectIds = NULL)
 \description{
 Extract coordinates from raster to use constructing the INLA mesh
 }
-\examples{
-\dontrun{
-  extractCoordsForMesh(cov_rasters, selectIds)
- }
-
-}

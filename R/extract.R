@@ -167,12 +167,6 @@ getCovariateRasters <- function(directory, file_pattern = '.tif$', shape) {
 #' @param cov_rasters RasterStack of the covariate rasters
 #' @param selectIds numeric vector containing cell ids to retain. Default NULL retains all cell ids in the covariate rasters
 #' 
-#' @export
-#' @examples 
-#' \dontrun{
-#'   extractCoordsForMesh(cov_rasters, selectIds)
-#'  }
-#' 
 
 extractCoordsForMesh <- function(cov_rasters, selectIds = NULL) {
   
