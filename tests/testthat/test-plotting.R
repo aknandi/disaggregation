@@ -95,9 +95,9 @@ test_that("Check plot.fit.result function works as expected", {
   skip_if_not_installed('INLA')
   skip_on_cran()
   
-  fit_result <- fit_model(test_data, its = 2)
+  fit_result <- fit_model(test_data, iterations = 2)
   
-  fit_result_nofield <- fit_model(test_data, its = 2, field = FALSE)
+  fit_result_nofield <- fit_model(test_data, iterations = 2, field = FALSE)
   
   p1 <- plot(fit_result)
   
@@ -117,9 +117,9 @@ test_that("Check plot.predictions function works as expected", {
   skip_if_not_installed('INLA')
   skip_on_cran()
   
-  fit_result <- fit_model(test_data, its = 2)
+  fit_result <- fit_model(test_data, iterations = 2)
   
-  fit_result_nofield <- fit_model(test_data, its = 2, field = FALSE)
+  fit_result_nofield <- fit_model(test_data, iterations = 2, field = FALSE)
   
   preds <- predict_model(fit_result)
   p1 <- plot(preds)

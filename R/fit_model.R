@@ -35,7 +35,7 @@
 #' 
 #' The field and iid effect can be turned on or off via the \emph{field} and \emph{iid} logical flags. Both are default TRUE.
 #' 
-#' The \emph{its} argument specifies the maximum number of iterations the model can run for to find an optimal point.
+#' The \emph{iterations} argument specifies the maximum number of iterations the model can run for to find an optimal point.
 #' 
 #' The \emph{silent} argument can be used to publish/supress verbose output. Default TRUE.
 #' 
@@ -44,7 +44,7 @@
 #' @param priors list of prior values
 #' @param family likelihood function: \emph{gaussian}, \emph{binomial} or \emph{poisson}
 #' @param link link function: \emph{logit}, \emph{log} or \emph{identity}
-#' @param its number of iterations to run the optimisation for
+#' @param iterations number of iterations to run the optimisation for
 #' @param field logical. Flag the spatial field on or off
 #' @param iid logical. Flag the iid effect on or off
 #' @param silent logical. Suppress verbose output.
@@ -90,7 +90,7 @@
 #'  parallel::stopCluster(cl)
 #'  foreach::registerDoSEQ()
 #'                          
-#'  result <- fit_model(test_data, its = 2)
+#'  result <- fit_model(test_data, iterations = 2)
 #'  }
 #' 
 #' @export
@@ -99,14 +99,14 @@ fit_model <- function(data,
                       priors = NULL, 
                       family = 'gaussian', 
                       link = 'identity', 
-                      its = 10, 
+                      iterations = 100, 
                       field = TRUE, 
                       iid = TRUE,
                       silent = TRUE) {
   
   stopifnot(inherits(data, 'disag.data'))
   if(!is.null(priors)) stopifnot(inherits(priors, 'list'))
-  stopifnot(inherits(its, 'numeric'))
+  stopifnot(inherits(iterations, 'numeric'))
   
   # Check that binomial model has sample_size values supplied
   if(family == 'binomial') {
@@ -241,13 +241,13 @@ fit_model <- function(data,
     DLL = "disaggregation")
   
   message('Fitting model. This may be slow.')
-  opt <- stats::nlminb(obj$par, obj$fn, obj$gr, control = list(iter.max = its, trace = 0))
+  opt <- stats::nlminb(obj$par, obj$fn, obj$gr, control = list(iter.max = iterations, trace = 0))
   
   
   
   sd_out <- TMB::sdreport(obj, getJointPrecision = TRUE)
   
-  if(opt$convergence != 0) warning('The model did not converge. Try increasing its')
+  if(opt$convergence != 0) warning('The model did not converge. Try increasing the number of iterations')
   
   model_output <- list(obj = obj,
                        opt = opt,

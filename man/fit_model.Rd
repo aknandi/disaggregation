@@ -5,7 +5,7 @@
 \title{Fit the disaggregation model}
 \usage{
 fit_model(data, priors = NULL, family = "gaussian",
-  link = "identity", its = 10, field = TRUE, iid = TRUE,
+  link = "identity", iterations = 100, field = TRUE, iid = TRUE,
   silent = TRUE)
 }
 \arguments{
@@ -17,7 +17,7 @@ fit_model(data, priors = NULL, family = "gaussian",
 
 \item{link}{link function: \emph{logit}, \emph{log} or \emph{identity}}
 
-\item{its}{number of iterations to run the optimisation for}
+\item{iterations}{number of iterations to run the optimisation for}
 
 \item{field}{logical. Flag the spatial field on or off}
 
@@ -72,7 +72,7 @@ These are specified as strings
 
 The field and iid effect can be turned on or off via the \emph{field} and \emph{iid} logical flags. Both are default TRUE.
 
-The \emph{its} argument specifies the maximum number of iterations the model can run for to find an optimal point.
+The \emph{iterations} argument specifies the maximum number of iterations the model can run for to find an optimal point.
 
 The \emph{silent} argument can be used to publish/supress verbose output. Default TRUE.
 }
@@ -105,7 +105,7 @@ The \emph{silent} argument can be used to publish/supress verbose output. Defaul
  parallel::stopCluster(cl)
  foreach::registerDoSEQ()
                          
- result <- fit_model(test_data, its = 2)
+ result <- fit_model(test_data, iterations = 2)
  }
 
 }

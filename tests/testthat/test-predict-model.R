@@ -34,9 +34,9 @@ test_that("Check predict_model function works as expected", {
   skip_if_not_installed('INLA')
   skip_on_cran()
   
-  result <- fit_model(test_data, its = 2)
+  result <- fit_model(test_data, iterations = 2)
   
-  result_nofield <- fit_model(test_data, its = 2, field = FALSE)
+  result_nofield <- fit_model(test_data, iterations = 2, field = FALSE)
   
   preds <- predict_model(result)
   
@@ -77,9 +77,9 @@ test_that("Check predict_uncertainty function works as expected", {
   skip_if_not_installed('INLA')
   skip_on_cran()
   
-  result <- fit_model(test_data, its = 2)
+  result <- fit_model(test_data, iterations = 2)
   
-  result_nofield <- fit_model(test_data, its = 2, field = FALSE)
+  result_nofield <- fit_model(test_data, iterations = 2, field = FALSE)
   
   unc <- predict_uncertainty(result)
   
@@ -122,7 +122,7 @@ test_that("Check predict_model function works with newdata", {
   skip_if_not_installed('INLA')
   skip_on_cran()
   
-  result <- fit_model(test_data, field = FALSE, its = 2)
+  result <- fit_model(test_data, field = FALSE, iterations = 2)
   
   newdata <- raster::crop(raster::stack(r, r2), c(0, 10, 0, 10))
   preds1 <- predict_model(result)
@@ -145,7 +145,7 @@ test_that("Check predict_uncertainty function works with newdata as expected", {
   skip_if_not_installed('INLA')
   skip_on_cran()
   
-  result <- fit_model(test_data, field = FALSE, its = 2)
+  result <- fit_model(test_data, field = FALSE, iterations = 2)
   
   newdata <- raster::crop(raster::stack(r, r2), c(0, 10, 0, 10))
   unc1 <- predict_uncertainty(result, N = 5)
@@ -168,7 +168,7 @@ test_that('Check that predict.fit.model works', {
   skip_if_not_installed('INLA')
   skip_on_cran()
   
-  result <- fit_model(test_data, field = FALSE, its = 2)
+  result <- fit_model(test_data, field = FALSE, iterations = 2)
   
   preds <- predict(result, N = 5)
   
@@ -196,7 +196,7 @@ test_that('Check that check_newdata works', {
   skip_if_not_installed('INLA')
   skip_on_cran()
   
-  result <- fit_model(test_data, field = FALSE, its = 2)
+  result <- fit_model(test_data, field = FALSE, iterations = 2)
   
   newdata <- raster::crop(raster::stack(r, r2), c(0, 10, 0, 10))
   nd1 <- check_newdata(newdata, result)
@@ -221,7 +221,7 @@ test_that('Check that setup_objects works', {
   skip_if_not_installed('INLA')
   skip_on_cran()
   
-  result <- fit_model(test_data, its = 2)
+  result <- fit_model(test_data, iterations = 2)
   
   objects <- setup_objects(result)
   
@@ -255,7 +255,7 @@ test_that('Check that predict_single_raster works', {
   skip_if_not_installed('INLA')
   skip_on_cran()
   
-  result <- fit_model(test_data, its = 2)
+  result <- fit_model(test_data, iterations = 2)
   
   objects <- setup_objects(result)
   

@@ -43,7 +43,7 @@ test_that("fit_model produces errors whe expected", {
   skip_on_cran()
   
   expect_error(fit_model(list()))
-  expect_error(fit_model(test_data, its = 'its'))
+  expect_error(fit_model(test_data, iterations = 'iterations'))
   expect_error(fit_model(test_data, priors = list(polygon_sd_men = 0.3, polygon_sd_sd = 0.4)))
   expect_error(fit_model(test_data, priors = c(polygon_sd_mean = 1.2)))
   expect_error(fit_model(test_data, family = 'banana'))
@@ -57,7 +57,7 @@ test_that("fit_model behaves as expected", {
   skip_if_not_installed('INLA')
   skip_on_cran()
   
-  result <- fit_model(test_data, its = 2)
+  result <- fit_model(test_data, iterations = 2)
 
   expect_is(result, 'fit.result')
   expect_equal(length(result), 5)
@@ -71,11 +71,11 @@ test_that("user defined model setup is working as expected", {
   skip_if_not_installed('INLA')
   skip_on_cran()
   
-  result2 <- fit_model(test_data, its = 2, field = FALSE, family = 'poisson', link = 'log')
-  result3 <- fit_model(binom_data, its = 2, iid = FALSE, family = 'binomial', link = 'logit')
-  result4 <- fit_model(test_data, its = 2, field = FALSE, iid = FALSE, link = 'identity')
+  result2 <- fit_model(test_data, iterations = 2, field = FALSE, family = 'poisson', link = 'log')
+  result3 <- fit_model(binom_data, iterations = 2, iid = FALSE, family = 'binomial', link = 'logit')
+  result4 <- fit_model(test_data, iterations = 2, field = FALSE, iid = FALSE, link = 'identity')
   
-  expect_error(fit_model(test_data, its = 2, iid = FALSE, family = 'binomial', link = 'logit'))
+  expect_error(fit_model(test_data, iterations = 2, iid = FALSE, family = 'binomial', link = 'logit'))
   
   expect_is(result2, 'fit.result')
   expect_equal(length(result2), 5)
