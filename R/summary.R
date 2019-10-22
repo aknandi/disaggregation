@@ -108,9 +108,14 @@ summary.disag.data <- function(object, ...) {
   
   covariate_summary <- summary(object$covariate_data[ , names(object$covariate_rasters)])
   
-  return(list(number_polygons = n_polygons,
-              number_covariates = n_covariates,
-              covariate_summary = covariate_summary))
+  cat("\nCovariate summary:\n")
+  print(covariate_summary)
+  
+  summary <- list(number_polygons = n_polygons,
+                  number_covariates = n_covariates,
+                  covariate_summary = covariate_summary)
+  
+  return(invisible(summary))
   
 }
 
@@ -129,6 +134,5 @@ summary.disag.data <- function(object, ...) {
 #' @export
 print.disag.data <- function(x, ...){
   summary(x)
-  print(summary(x$covariate_data[ , names(x$covariate_rasters)]))
   return(NULL)
 }

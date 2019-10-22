@@ -14,16 +14,19 @@
 
 plot.disag.data <- function(x, ...) {
   
-  # Plot polygon data, covariate rasters and mesh
   plots <- list()
   
   plots$polygon <- plot_polygon_data(x$polygon_shapefile, x$shapefile_names)
-  plots$covariates <- plot_covariate_data(x$covariate_rasters)
+  
+  stopifnot(inherits(x$covariate_rasters, c('RasterStack', 'RasterBrick')))
+  plots$covariates <- sp::spplot(x$covariate_rasters, main = 'Covariate rasters')
+  
   if(!is.null(x$mesh)) {
-    plots$mesh <- plot_inla_mesh(x$mesh)
+    stopifnot(inherits(x$mesh, 'inla.mesh'))
+    INLA::plot.inla.mesh(x$mesh, main = 'INLA mesh for spatial field')
   }
   
-  return(invisible(plots))
+  return(plots)
 }
 
 #' Plot results of fitted model
@@ -169,41 +172,11 @@ plot_polygon_data <- function(x, names) {
   p <- ggplot(df, aes(long, lat, group = group, fill = response)) + 
     geom_polygon() +
     coord_equal() +
-    scale_fill_viridis_c(trans = 'identity')
+    scale_fill_viridis_c(trans = 'identity') +
+    ggtitle('Polygon response data')
   
   print(p)
   return(p)
 }
 
-#' Plot covariate data from RasterStack
-#'
-#' @import ggplot2 
-#' 
-#' @param x Object to be plotted
-#' @name plot_covariate_data
 
-plot_covariate_data <- function(x) {
-  
-  stopifnot(inherits(x, c('RasterStack', 'RasterBrick')))
-
-  p <- sp::spplot(x)
-  
-  print(p)
-  return(p)
-}
-
-#' Plot inla.mesh object
-#'
-#' @param x Object to be plotted
-#' @name plot_inla_mesh
-
-plot_inla_mesh <- function(x) {
-  
-  stopifnot(inherits(x, 'inla.mesh'))
-  
-  p <- INLA::plot.inla.mesh(x)
-  
-  print(p)
-  return(p)
-  
-}
