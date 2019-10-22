@@ -134,11 +134,13 @@ getPolygonData <- function(shape, id_var = 'area_id', response_var = 'response',
 }
 
 
-#' Get all covariate rasters in folder and stack them, and crop to polygon data
+#' Get a RasterStack of covariates from a folder containing .tif files
 #' 
-#' @param directory filepath containing the rasters
-#' @param file_pattern Pattern the filenames must match 
-#' @param shape A shape object containing response data
+#' Looks in a specified folder for raster files. Returns a RasterStack of the rasters cropped to the extent specified by the shape parameter
+#' 
+#' @param directory Filepath to the directory containing the rasters
+#' @param file_pattern Pattern the filenames must match. Default is all files ending in .tif 
+#' @param shape An object with an extent that the rasters will be cropped to.
 #' 
 #' @export
 #' @examples 
