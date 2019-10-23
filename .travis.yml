@@ -5,7 +5,9 @@ sudo: required
 warnings_are_errors: false
 
 # cache packages to speed up builds
-#cache: packages
+cache: 
+  packages: true
+
 before_install:
   - tlmgr install index
 
