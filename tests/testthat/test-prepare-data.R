@@ -63,9 +63,6 @@ test_that("Check prepare_data function works as expected", {
 
 test_that("Check prepare_data function with sample size works as expected", {
   
-  skip_if_not_installed('INLA')
-  skip_on_cran()
-  
   result <- prepare_data(polygon_shapefile = spdf_binom, 
                          covariate_rasters = cov_stack,
                          sample_size_var = 'sample_size',
@@ -92,9 +89,6 @@ test_that("Check prepare_data function with sample size works as expected", {
 })
 
 test_that("Check prepare_data function deals with NAs as expected", {
-  
-  skip_if_not_installed('INLA')
-  skip_on_cran()
   
   cov_stack_na <- cov_stack
   cov_stack_na[[1]][c(1:10)] <- NA
@@ -155,8 +149,6 @@ test_that("Check as.disag.data function works as expected", {
   
   startendindex <- getStartendindex(cov_data, polygon_data, 'area_id')
   
-  mesh <- build_mesh(spdf)
-
   result <- as.disag.data(spdf, 
                           list('area_id', 'response'),
                           cov_stack,
@@ -165,8 +157,8 @@ test_that("Check as.disag.data function works as expected", {
                           aggregation_data,
                           coordsForFit, 
                           coordsForPrediction,
-                          startendindex, 
-                          mesh)
+                          startendindex,
+                          mesh = NULL)
   
   expect_is(result, 'disag.data')
   expect_equal(length(result), 10)
@@ -181,7 +173,7 @@ test_that("Check as.disag.data function works as expected", {
   expect_is(result$coordsForFit, 'matrix')
   expect_is(result$coordsForPrediction, 'matrix')
   expect_is(result$startendindex, 'matrix')
-  expect_is(result$mesh, 'inla.mesh')
+  expect_true(is.null(result$mesh))
   expect_equal(nrow(result$polygon_data), nrow(result$startendindex))
   expect_equal(nrow(result$covariate_data), nrow(result$coordsForFit))
   

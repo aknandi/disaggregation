@@ -222,7 +222,7 @@ as.disag.data <- function(polygon_shapefile,
                           coordsForFit, 
                           coordsForPrediction,
                           startendindex, 
-                          mesh) {
+                          mesh = NULL) {
   
   stopifnot(inherits(polygon_shapefile, 'SpatialPolygonsDataFrame'))
   stopifnot(inherits(shapefile_names, 'list'))
@@ -233,7 +233,9 @@ as.disag.data <- function(polygon_shapefile,
   stopifnot(inherits(coordsForFit, 'matrix'))
   stopifnot(inherits(coordsForPrediction, 'matrix'))
   stopifnot(inherits(startendindex, 'matrix'))
-  stopifnot(inherits(mesh, 'inla.mesh'))
+  if(!is.null(mesh)) {
+    stopifnot(inherits(mesh, 'inla.mesh'))
+  }
   
   disag_data <- list(polygon_shapefile = polygon_shapefile,
                      shapefile_names = shapefile_names,

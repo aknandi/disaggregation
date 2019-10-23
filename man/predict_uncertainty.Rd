@@ -24,7 +24,7 @@ If this is a raster stack or brick, predictions will be made over this data. Def
 \emph{disaggregation::fit_model} and predicts upper and lower credible interval maps.
 }
 \details{
-Function returns rasters of the upper and lower credible intervals.
+Function returns a RasterStack of the realisations as well as the upper and lower credible interval rasters.
 
 To predict over a different spatial extent to that used in the model, 
 a RasterStack covering the region to make predictions over is passed to the argument \emph{newdata}. 
