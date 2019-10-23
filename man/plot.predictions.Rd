@@ -7,13 +7,13 @@
 \method{plot}{predictions}(x, ...)
 }
 \arguments{
-\item{x}{Object of class \emph{predictions} to be plotted}
+\item{x}{Object of class \emph{predictions} to be plotted.}
 
 \item{...}{Further arguments to \emph{plot} function.}
 }
 \description{
-Plotting function for class \emph{predictions} (the mean predictions of the disaggragation fitting)
+Plotting function for class \emph{predictions} (the mean predictions of the disaggragation fitting).
 }
 \details{
-Produces plots of the mean prediction, and the covariate, field  and iid contribution to the linear predictor
+Produces plots of the mean prediction, and the covariate, field  and iid contribution to the linear predictor.
 }

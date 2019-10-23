@@ -12,23 +12,23 @@ prepare_data(polygon_shapefile, covariate_rasters,
 \arguments{
 \item{polygon_shapefile}{SpatialPolygonDataFrame  containing at least two columns: one with the id for the polygons (\emph{id_var}) and one with the response count data (\emph{response_var}); for binomial data, i.e survey data, it can also contain a sample size column (\emph{sample_size_var}).}
 
-\item{covariate_rasters}{RasterStack of covariate rasters to be used in the model}
+\item{covariate_rasters}{RasterStack of covariate rasters to be used in the model.}
 
-\item{aggregation_raster}{Raster to aggregate pixel level predictions to polygon level e.g. population to aggregate prevalence. If this is not supplied a uniform raster will be used}
+\item{aggregation_raster}{Raster to aggregate pixel level predictions to polygon level e.g. population to aggregate prevalence. If this is not supplied a uniform raster will be used.}
 
-\item{id_var}{Name of column in SpatialPolygonDataFrame object with the polygon id}
+\item{id_var}{Name of column in SpatialPolygonDataFrame object with the polygon id.}
 
-\item{response_var}{Name of column in SpatialPolygonDataFrame object with the response data}
+\item{response_var}{Name of column in SpatialPolygonDataFrame object with the response data.}
 
-\item{sample_size_var}{For survey data, name of column in SpatialPolygonDataFrame object (if it exists) with the sample size data}
+\item{sample_size_var}{For survey data, name of column in SpatialPolygonDataFrame object (if it exists) with the sample size data.}
 
-\item{mesh.args}{list of parameters that control the mesh structure with the same names as used by INLA}
+\item{mesh.args}{list of parameters that control the mesh structure with the same names as used by INLA.}
 
-\item{na.action}{logical. If TRUE, NAs in response will be removed, covariate NAs will be given the median value, aggregation NAs will be set to zero. Default FALSE (NAs in response or covariate data within the polygons will give errors)}
+\item{na.action}{logical. If TRUE, NAs in response will be removed, covariate NAs will be given the median value, aggregation NAs will be set to zero. Default FALSE (NAs in response or covariate data within the polygons will give errors).}
 
 \item{makeMesh}{logical. If TRUE, build INLA mesh, takes some time. Default TRUE.}
 
-\item{ncores}{Number of cores used to perform covariate extraction}
+\item{ncores}{Number of cores used to perform covariate extraction.}
 }
 \value{
 A list is returned of class \code{disag.data}. 
@@ -46,26 +46,31 @@ The list  of class \code{disag.data} contains:
 }
 \description{
 \emph{prepare_data} function is used to extract all the data required for fitting a disaggregation model. 
-Designed to be used in the \emph{disaggregation::fit_model} function
+Designed to be used in the \emph{disaggregation::fit_model} function.
 }
 \details{
 Takes a SpatialPolygonDataFrame with the response data and a RasterStack of covariates.
 
-Extract the values of the covariates (as well as the aggregation raster, if given) at each pixel within the polygons (\emph{parallelExtract} function). 
-This is done in parallel and \emph{n.cores} argument is used to set the number of cores to use for covariate extraction. This can be the number of covariates used in the model.
+Extract the values of the covariates (as well as the aggregation raster, if given) at each pixel within the polygons 
+(\emph{parallelExtract} function). This is done in parallel and \emph{n.cores} argument is used to set the number of cores 
+to use for covariate extraction. This can be the number of covariates used in the model.
 
 The aggregation raster defines how the pixels within each polygon are aggregated. 
 The disaggregation model performs a weighted sum of the pixel prediction, weighted by the pixel values in the aggregation raster.
-For disease incidence rate you use the population raster to aggregate pixel incidence rate by summing the number of cases (rate weighted by population)
-If not aggregation raster is provided a uniform distribution is assumed, i.e. the pixel predictions are aggregated to polygon level by summing the pixel values.
+For disease incidence rate you use the population raster to aggregate pixel incidence rate by summing the number of cases 
+(rate weighted by population). If no aggregation raster is provided a uniform distribution is assumed, i.e. the pixel predictions 
+are aggregated to polygon level by summing the pixel values.
 
-Makes a matrix that contains the start and end pixel index for each polygon. Builds an INLA mesh to use for the spatial field (\emph{getStartendindex} function)
+Makes a matrix that contains the start and end pixel index for each polygon. Builds an INLA mesh to use for the spatial field 
+(\emph{getStartendindex} function).
 
-The \emph{mesh.args} argument allows you to supply a list of INLA mesh parameters to control the mesh used for the spatial field (\emph{build_mesh} function).
+The \emph{mesh.args} argument allows you to supply a list of INLA mesh parameters to control the mesh used for the spatial field 
+(\emph{build_mesh} function).
 
-The \emph{na.action} flag is automatically off. If there are any NAs in the response or covariate data within the polygons the \emph{prepare_data} method will error. 
-Ideally the NAs in the data would be dealt with beforehand, however, setting na.action = TRUE will automatically deal with NAs. 
-It removes any polygons that have NAs as a response, sets any aggregation pixels with NA to zero and sets covariate NAs pixels to the median value for the that covariate.
+The \emph{na.action} flag is automatically off. If there are any NAs in the response or covariate data within the polygons the 
+\emph{prepare_data} method will error. Ideally the NAs in the data would be dealt with beforehand, however, setting na.action = TRUE 
+will automatically deal with NAs. It removes any polygons that have NAs as a response, sets any aggregation pixels with NA to zero 
+and sets covariate NAs pixels to the median value for the that covariate.
 }
 \examples{
 \dontrun{

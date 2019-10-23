@@ -7,14 +7,14 @@
 getCovariateRasters(directory, file_pattern = ".tif$", shape)
 }
 \arguments{
-\item{directory}{Filepath to the directory containing the rasters}
+\item{directory}{Filepath to the directory containing the rasters.}
 
-\item{file_pattern}{Pattern the filenames must match. Default is all files ending in .tif}
+\item{file_pattern}{Pattern the filenames must match. Default is all files ending in .tif .}
 
 \item{shape}{An object with an extent that the rasters will be cropped to.}
 }
 \description{
-Looks in a specified folder for raster files. Returns a RasterStack of the rasters cropped to the extent specified by the shape parameter
+Looks in a specified folder for raster files. Returns a RasterStack of the rasters cropped to the extent specified by the shape parameter.
 }
 \examples{
 \dontrun{

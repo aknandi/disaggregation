@@ -7,13 +7,13 @@
 \method{summary}{disag.data}(object, ...)
 }
 \arguments{
-\item{object}{Object returned from fit_model}
+\item{object}{Object returned from fit_model.}
 
 \item{...}{Further arguments to \emph{summary} function.}
 }
 \description{
-Function that summarizes the input data from the disaggregation model
+Function that summarizes the input data from the disaggregation model.
 }
 \details{
-Prints the number of polyons and pixels, the number of pixels in the largest and smallest polygons and summaries of the covariates
+Prints the number of polyons and pixels, the number of pixels in the largest and smallest polygons and summaries of the covariates.
 }

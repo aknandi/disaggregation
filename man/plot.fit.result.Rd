@@ -7,13 +7,13 @@
 \method{plot}{fit.result}(x, ...)
 }
 \arguments{
-\item{x}{Object of class \emph{fit.result} to be plotted}
+\item{x}{Object of class \emph{fit.result} to be plotted.}
 
 \item{...}{Further arguments to \emph{plot} function.}
 }
 \description{
-Plotting function for class \emph{fit.result} (the result of the disaggragation fitting)
+Plotting function for class \emph{fit.result} (the result of the disaggragation fitting).
 }
 \details{
-Produces two plots: results of the fixed effects and in-sample observed vs predicted plot
+Produces two plots: results of the fixed effects and in-sample observed vs predicted plot.
 }

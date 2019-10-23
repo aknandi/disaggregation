@@ -7,11 +7,11 @@
 #' it only makes sense to parallelise in this way.
 #'
 #' 
-#' @param raster A raster brick or stack
-#' @param shape A shape object 
+#' @param raster A RasterBrick or RasterStack object.
+#' @param shape A SpatialPolygons object.
 #' @param fun The function used to aggregate the pixel data. If NULL, raw pixel data is returned.
 #' @param id Name of column in shape object to be used to bind an ID column to output.
-#' @param ... Other arguments to raster::extract
+#' @param ... Other arguments to raster::extract.
 #' 
 #' @importFrom foreach %dopar%
 #' @importFrom parallel stopCluster
@@ -140,10 +140,10 @@ getPolygonData <- function(shape, id_var = 'area_id', response_var = 'response',
 
 #' Get a RasterStack of covariates from a folder containing .tif files
 #' 
-#' Looks in a specified folder for raster files. Returns a RasterStack of the rasters cropped to the extent specified by the shape parameter
+#' Looks in a specified folder for raster files. Returns a RasterStack of the rasters cropped to the extent specified by the shape parameter.
 #' 
-#' @param directory Filepath to the directory containing the rasters
-#' @param file_pattern Pattern the filenames must match. Default is all files ending in .tif 
+#' @param directory Filepath to the directory containing the rasters.
+#' @param file_pattern Pattern the filenames must match. Default is all files ending in .tif .
 #' @param shape An object with an extent that the rasters will be cropped to.
 #' 
 #' @export
@@ -170,8 +170,8 @@ getCovariateRasters <- function(directory, file_pattern = '.tif$', shape) {
 
 #' Extract coordinates from raster to use constructing the INLA mesh
 #' 
-#' @param cov_rasters RasterStack of the covariate rasters
-#' @param selectIds numeric vector containing cell ids to retain. Default NULL retains all cell ids in the covariate rasters
+#' @param cov_rasters RasterStack of the covariate rasters.
+#' @param selectIds numeric vector containing cell ids to retain. Default NULL retains all cell ids in the covariate rasters.
 #' 
 
 extractCoordsForMesh <- function(cov_rasters, selectIds = NULL) {

@@ -7,13 +7,13 @@
 \method{print}{disag.data}(x, ...)
 }
 \arguments{
-\item{x}{Object returned from fit_model}
+\item{x}{Object returned from fit_model.}
 
 \item{...}{Further arguments to \emph{print} function.}
 }
 \description{
-Function that prints the input data from the disaggregation model
+Function that prints the input data from the disaggregation model.
 }
 \details{
-Prints the number of polyons and pixels, the number of pixels in the largest and smallest polygons and summaries of the covariates
+Prints the number of polyons and pixels, the number of pixels in the largest and smallest polygons and summaries of the covariates.
 }

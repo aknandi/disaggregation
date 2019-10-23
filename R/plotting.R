@@ -1,10 +1,10 @@
 #' Plot input data for disaggregation
 #'
-#' Plotting function for class \emph{disag.data} (the input data for disaggragation)
+#' Plotting function for class \emph{disag.data} (the input data for disaggragation).
 #' 
-#' Produces three plots: polygon response data, covariate rasters and INLA mesh
+#' Produces three plots: polygon response data, covariate rasters and INLA mesh.
 #'
-#' @param x Object of class \emph{disag.data} to be plotted
+#' @param x Object of class \emph{disag.data} to be plotted.
 #' @param ... Further arguments to \emph{plot} function.
 #' 
 #' @import ggplot2
@@ -31,11 +31,11 @@ plot.disag.data <- function(x, ...) {
 
 #' Plot results of fitted model
 #'
-#' Plotting function for class \emph{fit.result} (the result of the disaggragation fitting)
+#' Plotting function for class \emph{fit.result} (the result of the disaggragation fitting).
 #' 
-#' Produces two plots: results of the fixed effects and in-sample observed vs predicted plot
+#' Produces two plots: results of the fixed effects and in-sample observed vs predicted plot.
 #' 
-#' @param x Object of class \emph{fit.result} to be plotted
+#' @param x Object of class \emph{fit.result} to be plotted.
 #' @param ... Further arguments to \emph{plot} function.
 #' 
 #' @import ggplot2
@@ -88,11 +88,11 @@ plot.fit.result <- function(x, ...){
 
 #' Plot predictions from the disaggregation model results
 #'
-#' Plotting function for class \emph{predictions} (the mean predictions of the disaggragation fitting)
+#' Plotting function for class \emph{predictions} (the mean predictions of the disaggragation fitting).
 #' 
-#' Produces plots of the mean prediction, and the covariate, field  and iid contribution to the linear predictor
+#' Produces plots of the mean prediction, and the covariate, field  and iid contribution to the linear predictor.
 #'
-#' @param x Object of class \emph{predictions} to be plotted
+#' @param x Object of class \emph{predictions} to be plotted.
 #' @param ... Further arguments to \emph{plot} function.
 #' 
 #' @method plot predictions
@@ -126,11 +126,11 @@ plot.predictions <- function(x, ...) {
 
 #' Plot uncertainty predictions from the disaggregation model results
 #'
-#' Plotting function for class \emph{uncertainty} (the uncertainty predictions of the disaggragation fitting)
+#' Plotting function for class \emph{uncertainty} (the uncertainty predictions of the disaggragation fitting).
 #' 
-#' Produces a plot of the upper and lower credible interval rasters
+#' Produces a plot of the upper and lower credible interval rasters.
 #' 
-#' @param x Object of class \emph{uncertainty} to be plotted
+#' @param x Object of class \emph{uncertainty} to be plotted.
 #' @param ... Further arguments to \emph{plot} function.
 #' 
 #' @method plot uncertainty

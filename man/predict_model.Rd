@@ -10,9 +10,9 @@ predict_model(model_output, newdata = NULL, predict_iid = FALSE)
 \item{model_output}{fit.result object returned by fit_model function}
 
 \item{newdata}{If NULL, predictions are made using the data in model_output. 
-If this is a raster stack or brick, predictions will be made over this data. Default NULL}
+If this is a raster stack or brick, predictions will be made over this data. Default NULL.}
 
-\item{predict_iid}{If TRUE, any polygon iid effect from the model will be used in the prediction. Default FALSE}
+\item{predict_iid}{If TRUE, any polygon iid effect from the model will be used in the prediction. Default FALSE.}
 }
 \description{
 \emph{predict_model} function takes a \emph{fit.result} object created by 

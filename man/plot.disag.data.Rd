@@ -7,13 +7,13 @@
 \method{plot}{disag.data}(x, ...)
 }
 \arguments{
-\item{x}{Object of class \emph{disag.data} to be plotted}
+\item{x}{Object of class \emph{disag.data} to be plotted.}
 
 \item{...}{Further arguments to \emph{plot} function.}
 }
 \description{
-Plotting function for class \emph{disag.data} (the input data for disaggragation)
+Plotting function for class \emph{disag.data} (the input data for disaggragation).
 }
 \details{
-Produces three plots: polygon response data, covariate rasters and INLA mesh
+Produces three plots: polygon response data, covariate rasters and INLA mesh.
 }
