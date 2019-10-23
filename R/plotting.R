@@ -20,13 +20,14 @@ plot.disag.data <- function(x, ...) {
   
   stopifnot(inherits(x$covariate_rasters, c('RasterStack', 'RasterBrick')))
   plots$covariates <- sp::spplot(x$covariate_rasters, main = 'Covariate rasters')
+  print(plots$covariates)
   
   if(!is.null(x$mesh)) {
     stopifnot(inherits(x$mesh, 'inla.mesh'))
     INLA::plot.inla.mesh(x$mesh, main = 'INLA mesh for spatial field')
   }
   
-  return(plots)
+  return(invisible(plots))
 }
 
 #' Plot results of fitted model
@@ -140,7 +141,7 @@ plot.predictions <- function(x, ...) {
 
 plot.uncertainty <- function(x, ...) {
   
-  unc_plot <- sp::spplot(x$predictions_ci, main=list(label = c('lower CI', 'upper CI')))
+  unc_plot <- sp::spplot(x$predictions_ci, main = 'uncertainty predictions')
   
   print(unc_plot)
   

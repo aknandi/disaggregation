@@ -105,7 +105,7 @@ predict_model <- function(model_output, newdata = NULL, predict_iid = FALSE) {
 #' \emph{predict_uncertainty} function takes a \emph{fit.result} object created by 
 #' \emph{disaggregation::fit_model} and predicts upper and lower credible interval maps. 
 #' 
-#' Function returns rasters of the upper and lower credible intervals.
+#' Function returns a RasterStack of the realisations as well as the upper and lower credible interval rasters.
 #' 
 #' To predict over a different spatial extent to that used in the model, 
 #' a RasterStack covering the region to make predictions over is passed to the argument \emph{newdata}. 
@@ -158,6 +158,7 @@ predict_uncertainty <- function(model_output, newdata = NULL, predict_iid = FALS
   
   probs <- c((1 - CI) / 2, 1 - (1 - CI) / 2)
   predictions_ci <- raster::calc(predictions, function(x) stats::quantile(x, probs = probs, na.rm = TRUE))
+  names(predictions_ci) <- c('lower CI', 'upper CI')
   
   uncertainty <- list(realisations = predictions,
                       predictions_ci = predictions_ci)
