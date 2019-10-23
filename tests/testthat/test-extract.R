@@ -30,6 +30,11 @@ r2 <- raster::setExtent(r2, raster::extent(spdf))
 r2[] <- sapply(1:raster::ncell(r), function(x) rnorm(1, ceiling(x/n_pixels_per_side), 3))
 cov_stack <- raster::stack(r, r2)
 
+cl <- parallel::makeCluster(2)
+doParallel::registerDoParallel(cl)
+cov_data <- parallelExtract(cov_stack, spdf, fun = NULL, id = 'area_id')
+parallel::stopCluster(cl)
+foreach::registerDoSEQ()
 
 test_that("parallelExtract gives errors when it should", {
   
@@ -43,26 +48,13 @@ test_that("parallelExtract gives errors when it should", {
   foreach::registerDoSEQ()
 })
 
-test_that("parallelExtract give the right for of output", {
+test_that("parallelExtract give the right form of output", {
   
-  cl <- parallel::makeCluster(2)
-  doParallel::registerDoParallel(cl)
-  result1 <- parallelExtract(cov_stack, spdf, fun = NULL, id = 'area_id')
-  result2 <- parallelExtract(cov_stack, spdf, fun = sum, id = 'area_id')
-  parallel::stopCluster(cl)
-  foreach::registerDoSEQ()
-  
-  expect_is(result1, 'data.frame')
-  expect_equal(sort(as.numeric(unique(result1$area_id))), spdf$area_id)#
-  expect_equal(ncol(result1), raster::nlayers(cov_stack) + 2)#
-  expect_equal(names(cov_stack), names(result1)[-c(1,2)])#
-  expect_equal(length(unique(result1$area_id)), length(spdf))
-  
-  expect_is(result2, 'data.frame')
-  expect_equal(sort(as.numeric(result2$area_id)), spdf$area_id)#
-  expect_equal(ncol(result2), raster::nlayers(cov_stack) + 1)#
-  expect_equal(names(cov_stack), names(result2)[-c(1)])
-  expect_equal(length(unique(result2$area_id)), length(spdf))
+  expect_is(cov_data, 'data.frame')
+  expect_equal(sort(as.numeric(unique(cov_data$area_id))), spdf$area_id)#
+  expect_equal(ncol(cov_data), raster::nlayers(cov_stack) + 2)#
+  expect_equal(names(cov_stack), names(cov_data)[-c(1,2)])#
+  expect_equal(length(unique(cov_data$area_id)), length(spdf))
   
 })
 
@@ -109,12 +101,6 @@ test_that("getCovariateData function gives errors when it should", {
 
 test_that("extractCoordsForMesh function behaves as it should", {
 
-  cl <- parallel::makeCluster(2)
-  doParallel::registerDoParallel(cl)
-  cov_data <- parallelExtract(cov_stack, spdf, fun = NULL, id = 'area_id')
-  parallel::stopCluster(cl)
-  foreach::registerDoSEQ()
-  
   result <- extractCoordsForMesh(cov_stack, cov_data$cellid)
   
   result2 <- extractCoordsForMesh(cov_stack)

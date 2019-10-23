@@ -8,7 +8,7 @@
 #' 
 #' Six mesh parameters can be specified as arguments: \emph{convex}, \emph{concave} and \emph{resolution},
 #' to control the boundary of the inner mesh, and \emph{max.edge}, \emph{cut} and \emph{offset}, to control the  mesh itself,
-#' with the names meaing the same as used by INLA functions \code{\link[INLA]{inla.convex.hull}} and \code{\link[INLA]{inla.mesh.2d}}.
+#' with the names meaing the same as used by INLA functions \emph{inla.convex.hull} and \emph{inla.mesh.2d}.
 #' 
 #' Defaults are:
 #' pars <- list(convex = -0.01, concave = -0.5, resolution = 300, max.edge = c(3.0, 8),  cut = 0.4, offset = c(1, 15)).
@@ -16,7 +16,7 @@
 #' @param shapes shapefile covering the region under investigation.
 #' @param mesh.args list of parameters that control the mesh structure. \emph{convex}, \emph{concave} and \emph{resolution},
 #' to control the boundary of the inner mesh, and \emph{max.edge}, \emph{cut} and \emph{offset}, to control the  mesh itself,
-#' with the parameters hacing the same meaning as in the INLA functions \code{\link[INLA]{inla.convex.hull}} and \code{\link[INLA]{inla.mesh.2d}}.
+#' with the parameters having the same meaning as in the INLA functions \emph{inla.convex.hull} and \emph{inla.mesh.2d}.
 #'
 #' @name build_mesh
 #'

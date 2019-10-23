@@ -48,7 +48,6 @@ test_that("fit_model produces errors whe expected", {
   expect_error(fit_model(test_data, priors = c(polygon_sd_mean = 1.2)))
   expect_error(fit_model(test_data, family = 'banana'))
   expect_error(fit_model(test_data, link = 'apple'))
-  expect_is(fit_model(test_data, priors = list(polygon_sd_mean = 0.3, polygon_sd_mean = 0.2)), 'fit.result')
   
 })
 
