@@ -165,7 +165,9 @@ fit_model <- function(data,
                          prior_rho_min = prior_rho,
                          prior_rho_prob = 0.1,
                          prior_sigma_max = prior_sigma,
-                         prior_sigma_prob = 0.1)
+                         prior_sigma_prob = 0.1,
+                         prior_iideffect_sd_max = 0.1,
+                         prior_iideffect_sd_prob = 0.01)
   
   # Replace with any specified priors
   if(!is.null(priors)) {
@@ -193,6 +195,7 @@ fit_model <- function(data,
                      slope = rep(0, ncol(cov_matrix)),
                      polygon_sd = 0.1,
                      iideffect = rep(0, nrow(data$polygon_data)),
+                     iideffect_log_tau = 1,
                      log_sigma = 0,
                      log_rho = 4,
                      nodemean = rep(0, n_s))

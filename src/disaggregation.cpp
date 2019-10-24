@@ -68,11 +68,16 @@ Type objective_function<Type>::operator()()
   DATA_SCALAR(polygon_sd_mean);
   DATA_SCALAR(polygon_sd_sd);
   
-  // iid random effect for each polygon
   PARAMETER_VECTOR(iideffect);
+  PARAMETER(iideffect_log_tau);
+  Type iideffect_tau = exp(iideffect_log_tau);
+  Type iideffect_sd = 1 / sqrt(iideffect_tau);
   
-  Type priormean_iideffect = 0.0;
-  DATA_SCALAR(priorsd_iideffect);
+  Type iideffect_mean = 0.0;
+  
+  // Priors on iid random effect for polygons
+  DATA_SCALAR(prior_iideffect_sd_max);
+  DATA_SCALAR(prior_iideffect_sd_prob);
   
   // spde hyperparameters
   PARAMETER(log_sigma);
@@ -116,9 +121,15 @@ Type objective_function<Type>::operator()()
   }
   
   if(iid) {
-    for(int s = 0; s < iideffect.size(); s++){
-      nll -= dnorm(iideffect[s], priormean_iideffect, priorsd_iideffect, true);
-    } 
+    // Likelihood of hyperparameter of polygon iid random effect.
+    Type lambda = -log(prior_iideffect_sd_prob) / prior_iideffect_sd_max;
+    Type pcdensityiid = lambda / 2 * pow(iideffect_tau, -3/2) * exp( - lambda * pow(iideffect_tau, -1/2));
+    nll -= log(pcdensityiid);
+    
+    // Likelihood of random effect for polygons
+    for(int p = 0; p < iideffect.size(); p++) {
+      nll -= dnorm(iideffect[p], iideffect_mean, iideffect_sd, true);
+    }
   }
   
   nll -= dnorm(polygon_sd, polygon_sd_mean, polygon_sd_sd, true);
@@ -223,9 +234,6 @@ Type objective_function<Type>::operator()()
   REPORT(reportnormalisation);
   REPORT(reportnll);
   REPORT(polygon_response_data);
-  if(iid) {
-    REPORT(iideffect);
-  }
   REPORT(nll_priors);
   REPORT(nll);
   
