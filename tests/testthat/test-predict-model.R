@@ -116,7 +116,7 @@ test_that("Check predict_model and predict_uncertainty function works with newda
   
   newdata <- raster::crop(raster::stack(r, r2), c(0, 10, 0, 10))
   preds1 <- predict_model(result)
-  preds2 <- predict_model(result, newdata, iid = TRUE)
+  preds2 <- predict_model(result, newdata, predict_iid = TRUE)
   
   expect_is(preds2, 'predictions')
   expect_equal(length(preds2), 4)
