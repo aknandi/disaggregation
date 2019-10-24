@@ -34,7 +34,8 @@ coverage:
   status:
     project:
       default:
-        threshold: 5
+        threshold: 5%
+        target: 80%
 
 after_success:
  - Rscript -e 'library(covr);codecov()'
