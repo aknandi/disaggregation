@@ -7,12 +7,26 @@
 build_mesh(shapes, mesh.args = NULL)
 }
 \arguments{
-\item{shapes}{shapefile covering the region under investigation}
+\item{shapes}{shapefile covering the region under investigation.}
 
-\item{mesh.args}{list of parameters that control the mesh structure with the same names as used by INLA}
+\item{mesh.args}{list of parameters that control the mesh structure. \emph{convex}, \emph{concave} and \emph{resolution},
+to control the boundary of the inner mesh, and \emph{max.edge}, \emph{cut} and \emph{offset}, to control the  mesh itself,
+with the parameters having the same meaning as in the INLA functions \emph{inla.convex.hull} and \emph{inla.mesh.2d}.}
 }
 \description{
-Build mesh for disaggregaton model
+\emph{build_mesh} function takes a SpatialPolygons object and mesh arguments to build an appropriate mesh for the spatial field.
+}
+\details{
+The mesh is created by finding a tight boundary around the polygon data, and creating a fine mesh within the boundary 
+and a coarser mesh outside. This speeds up computation time by only having a very fine mesh within the area of interest 
+and having a small region outside with a coarser mesh to avoid edge effects.
+
+Six mesh parameters can be specified as arguments: \emph{convex}, \emph{concave} and \emph{resolution},
+to control the boundary of the inner mesh, and \emph{max.edge}, \emph{cut} and \emph{offset}, to control the  mesh itself,
+with the names meaing the same as used by INLA functions \emph{inla.convex.hull} and \emph{inla.mesh.2d}.
+
+Defaults are:
+pars <- list(convex = -0.01, concave = -0.5, resolution = 300, max.edge = c(3.0, 8),  cut = 0.4, offset = c(1, 15)).
 }
 \examples{
 \dontrun{

@@ -1,11 +1,11 @@
 #' Plot input data for disaggregation
 #'
-#' Plotting function for class disag.data (the input data for disaggragation)
+#' Plotting function for class \emph{disag.data} (the input data for disaggragation).
 #' 
-#' Produces three plots: polygon response data, covariates and INLA mesh
+#' Produces three plots: polygon response data, covariate rasters and INLA mesh.
 #'
-#' @param x Object to be plotted
-#' @param ... Further arguments passed to or from other methods.
+#' @param x Object of class \emph{disag.data} to be plotted.
+#' @param ... Further arguments to \emph{plot} function.
 #' 
 #' @import ggplot2
 #' @method plot disag.data
@@ -14,13 +14,17 @@
 
 plot.disag.data <- function(x, ...) {
   
-  # Plot polygon data, covariate rasters and mesh
   plots <- list()
   
   plots$polygon <- plot_polygon_data(x$polygon_shapefile, x$shapefile_names)
-  plots$covariates <- plot_covariate_data(x$covariate_rasters)
+  
+  stopifnot(inherits(x$covariate_rasters, c('RasterStack', 'RasterBrick')))
+  plots$covariates <- sp::spplot(x$covariate_rasters, main = 'Covariate rasters')
+  print(plots$covariates)
+  
   if(!is.null(x$mesh)) {
-    plots$mesh <- plot_inla_mesh(x$mesh)
+    stopifnot(inherits(x$mesh, 'inla.mesh'))
+    INLA::plot.inla.mesh(x$mesh, main = 'INLA mesh for spatial field')
   }
   
   return(invisible(plots))
@@ -28,12 +32,12 @@ plot.disag.data <- function(x, ...) {
 
 #' Plot results of fitted model
 #'
-#' Plotting function for class fit.result (the result of the disaggragation fitting)
+#' Plotting function for class \emph{fit.result} (the result of the disaggragation fitting).
 #' 
-#' Produces two plots: results of the fixed effects and in-sample observed vs predicted plot
+#' Produces two plots: results of the fixed effects and in-sample observed vs predicted plot.
 #' 
-#' @param x Object to be plotted
-#' @param ... Further arguments passed to or from other methods.
+#' @param x Object of class \emph{fit.result} to be plotted.
+#' @param ... Further arguments to \emph{plot} function.
 #' 
 #' @import ggplot2
 #' @method plot fit.result
@@ -65,9 +69,9 @@ plot.fit.result <- function(x, ...){
     predicted_data = report$reportprediction_rate
     title <- 'In sample performance: prevalence rate'
   } else if(x$model_setup$family == 'poisson') {
-    observed_data = report$polygon_response_data
-    predicted_data = report$reportprediction_cases
-    title <- 'In sample performance: incidence count'
+    observed_data = report$polygon_response_data/report$reportnormalisation
+    predicted_data = report$reportprediction_rate
+    title <- 'In sample performance: incidence rate'
   }
   
   data <- data.frame(obs = observed_data, pred = predicted_data)
@@ -85,12 +89,12 @@ plot.fit.result <- function(x, ...){
 
 #' Plot predictions from the disaggregation model results
 #'
-#' Plotting function for class predictions (the mean predictions of the disaggragation fitting)
+#' Plotting function for class \emph{predictions} (the mean predictions of the disaggragation fitting).
 #' 
-#' Produces plots of the mean prediction, and the covariate, field  and iid contribution to the linear predictor
+#' Produces plots of the mean prediction, and the covariate, field  and iid contribution to the linear predictor.
 #'
-#' @param x Object to be plotted
-#' @param ... Further arguments passed to or from other methods.
+#' @param x Object of class \emph{predictions} to be plotted.
+#' @param ... Further arguments to \emph{plot} function.
 #' 
 #' @method plot predictions
 #' 
@@ -123,12 +127,12 @@ plot.predictions <- function(x, ...) {
 
 #' Plot uncertainty predictions from the disaggregation model results
 #'
-#' Plotting function for class uncertainty (the uncertainty predictions of the disaggragation fitting)
+#' Plotting function for class \emph{uncertainty} (the uncertainty predictions of the disaggragation fitting).
 #' 
-#' Produces plots of the realisations, and the upper and lower credible interval rasters
+#' Produces a plot of the upper and lower credible interval rasters.
 #' 
-#' @param x Object to be plotted
-#' @param ... Further arguments passed to or from other methods.
+#' @param x Object of class \emph{uncertainty} to be plotted.
+#' @param ... Further arguments to \emph{plot} function.
 #' 
 #' @method plot uncertainty
 #' 
@@ -137,7 +141,7 @@ plot.predictions <- function(x, ...) {
 
 plot.uncertainty <- function(x, ...) {
   
-  unc_plot <- sp::spplot(x$predictions_ci, main=list(label = c('lower CI', 'upper CI')))
+  unc_plot <- sp::spplot(x$predictions_ci, main = 'uncertainty predictions')
   
   print(unc_plot)
   
@@ -169,41 +173,11 @@ plot_polygon_data <- function(x, names) {
   p <- ggplot(df, aes(long, lat, group = group, fill = response)) + 
     geom_polygon() +
     coord_equal() +
-    scale_fill_viridis_c(trans = 'identity')
+    scale_fill_viridis_c(trans = 'identity') +
+    ggtitle('Polygon response data')
   
   print(p)
   return(p)
 }
 
-#' Plot covariate data from RasterStack
-#'
-#' @import ggplot2 
-#' 
-#' @param x Object to be plotted
-#' @name plot_covariate_data
 
-plot_covariate_data <- function(x) {
-  
-  stopifnot(inherits(x, c('RasterStack', 'RasterBrick')))
-
-  p <- sp::spplot(x)
-  
-  print(p)
-  return(p)
-}
-
-#' Plot inla.mesh object
-#'
-#' @param x Object to be plotted
-#' @name plot_inla_mesh
-
-plot_inla_mesh <- function(x) {
-  
-  stopifnot(inherits(x, 'inla.mesh'))
-  
-  p <- INLA::plot.inla.mesh(x)
-  
-  print(p)
-  return(p)
-  
-}

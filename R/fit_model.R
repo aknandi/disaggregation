@@ -1,26 +1,26 @@
 #' Fit the disaggregation model
 #' 
-#' \emph{fit_model} function takes a \emph{disag.data} object created by \code{\link{prepare_data}} and performs a Bayesian disaggregation fit
+#' \emph{fit_model} function takes a \emph{disag.data} object created by \code{\link{prepare_data}} and performs a Bayesian disaggregation fit.
 #' 
-#' The model definition
+#' \strong{The model definition}
 #' 
 #' The disaggregation model make predictions at the pixel level:
 #' \deqn{link(pred_i) = \beta_0 + \beta X + GP(s_i) + u_i}{ link(predi) = \beta 0 + \beta X + GP + u}
 #' 
-#' And then aggregates these predictions to the polygon level using the weighted sum (via the aggregation raster, \eqn{agg_i}):
+#' And then aggregates these predictions to the polygon level using the weighted sum (via the aggregation raster, \eqn{agg_i}{aggi}):
 #' \deqn{cases_j = \sum_{i \epsilon j} pred_i \times agg_i}{ casesj = \sum (predi x aggi)}
 #' \deqn{rate_j = \frac{\sum_{i \epsilon j} pred_i \times agg_i}{\sum_{i \epsilon j} agg_i}}{ratej = \sum(predi x aggi) / \sum (aggi)}
 #' 
-#' The different likelihood correspond to slightly different models (\eqn{y_j} is the repsonse count data):
+#' The different likelihood correspond to slightly different models (\eqn{y_j}{yi} is the repsonse count data):
 #' \itemize{
 #'   \item Gaussian: 
 #'    \eqn{\sigma} is the dispersion of the normal likelihood 
-#'    \deqn{dnorm(y_j/\sum agg_i, rate_j, \sigma)}{dnorm(yj / \sum aggi, ratej, \sigma)} - predicts incidence rate
+#'    \deqn{dnorm(y_j/\sum agg_i, rate_j, \sigma)}{dnorm(yj / \sum aggi, ratej, \sigma)} - predicts incidence rate.
 #'   \item Binomial: 
-#'    For a survey in polygon j, \eqn{y_j}{yj} is the number positive and N_j is the number tested
-#'    \deqn{dbinom(y_j, N_j, rate_j)}{dbinom(yj, Nj, ratej)} - predicts prevalence rate
+#'    For a survey in polygon j, \eqn{y_j}{yj} is the number positive and \eqn{N_j}{Nj} is the number tested.
+#'    \deqn{dbinom(y_j, N_j, rate_j)}{dbinom(yj, Nj, ratej)} - predicts prevalence rate.
 #'   \item Poisson: 
-#'    \deqn{dpois(y_j, cases_j)}{dpois(yj, casesj)} - predicts incidence count
+#'    \deqn{dpois(y_j, cases_j)}{dpois(yj, casesj)} - predicts incidence count.
 #' }
 #' 
 #' Specify priors for the regression parameters, field and iid effect as a single list. Hyperpriors for the field 
@@ -31,11 +31,11 @@
 #' The \emph{family} and \emph{link} arguments are used to specify the likelihood and link function respectively. 
 #' The likelihood function can be one of \emph{gaussian}, \emph{poisson} or \emph{binomial}. 
 #' The link function can be one of \emph{logit}, \emph{log} or \emph{identity}.
-#' These are specified as strings
+#' These are specified as strings.
 #' 
 #' The field and iid effect can be turned on or off via the \emph{field} and \emph{iid} logical flags. Both are default TRUE.
 #' 
-#' The \emph{its} argument specifies the maximum number of iterations the model can run for to find an optimal point.
+#' The \emph{iterations} argument specifies the maximum number of iterations the model can run for to find an optimal point.
 #' 
 #' The \emph{silent} argument can be used to publish/supress verbose output. Default TRUE.
 #' 
@@ -44,7 +44,7 @@
 #' @param priors list of prior values
 #' @param family likelihood function: \emph{gaussian}, \emph{binomial} or \emph{poisson}
 #' @param link link function: \emph{logit}, \emph{log} or \emph{identity}
-#' @param its number of iterations to run the optimisation for
+#' @param iterations number of iterations to run the optimisation for
 #' @param field logical. Flag the spatial field on or off
 #' @param iid logical. Flag the iid effect on or off
 #' @param silent logical. Suppress verbose output.
@@ -90,7 +90,7 @@
 #'  parallel::stopCluster(cl)
 #'  foreach::registerDoSEQ()
 #'                          
-#'  result <- fit_model(test_data, its = 2)
+#'  result <- fit_model(test_data, iterations = 2)
 #'  }
 #' 
 #' @export
@@ -99,14 +99,14 @@ fit_model <- function(data,
                       priors = NULL, 
                       family = 'gaussian', 
                       link = 'identity', 
-                      its = 10, 
+                      iterations = 100, 
                       field = TRUE, 
                       iid = TRUE,
                       silent = TRUE) {
   
   stopifnot(inherits(data, 'disag.data'))
   if(!is.null(priors)) stopifnot(inherits(priors, 'list'))
-  stopifnot(inherits(its, 'numeric'))
+  stopifnot(inherits(iterations, 'numeric'))
   
   # Check that binomial model has sample_size values supplied
   if(family == 'binomial') {
@@ -147,6 +147,13 @@ fit_model <- function(data,
   cov_matrix <- as.matrix(data$covariate_data[, -c(1:2)])
   cov_matrix <- t(apply(cov_matrix, 1,as.numeric))
   
+  # Construct sensible default field hyperpriors
+  limits <- sp::bbox(data$polygon_shapefile)
+  hypontenuse <- sqrt((limits[1,2] - limits[1,1])^2 + (limits[2,2] - limits[2,1])^2)
+  prior_rho <- hypontenuse/3
+  
+  prior_sigma <- sd(data$polygon_data$response/mean(data$polygon_data$response))
+  
   # Default priors if they are not specified
   default_priors <- list(polygon_sd_mean = 0.1,
                          polygon_sd_sd = 0.1,
@@ -155,10 +162,10 @@ fit_model <- function(data,
                          priormean_slope = 0.0,
                          priorsd_slope = 0.5,
                          priorsd_iideffect = 0.05,
-                         prior_rho_min = 3,
-                         prior_rho_prob = 0.00001,
-                         prior_sigma_max = 1,
-                         prior_sigma_prob = 0.00001)
+                         prior_rho_min = prior_rho,
+                         prior_rho_prob = 0.1,
+                         prior_sigma_max = prior_sigma,
+                         prior_sigma_prob = 0.1)
   
   # Replace with any specified priors
   if(!is.null(priors)) {
@@ -234,13 +241,13 @@ fit_model <- function(data,
     DLL = "disaggregation")
   
   message('Fitting model. This may be slow.')
-  opt <- stats::nlminb(obj$par, obj$fn, obj$gr, control = list(iter.max = its, trace = 0))
+  opt <- stats::nlminb(obj$par, obj$fn, obj$gr, control = list(iter.max = iterations, trace = 0))
   
   
   
   sd_out <- TMB::sdreport(obj, getJointPrecision = TRUE)
   
-  if(opt$convergence != 0) warning('The model did not converge. Try increasing its')
+  if(opt$convergence != 0) warning('The model did not converge. Try increasing the number of iterations')
   
   model_output <- list(obj = obj,
                        opt = opt,

@@ -7,16 +7,10 @@
 extractCoordsForMesh(cov_rasters, selectIds = NULL)
 }
 \arguments{
-\item{cov_rasters}{RasterStack of the covariate rasters}
+\item{cov_rasters}{RasterStack of the covariate rasters.}
 
-\item{selectIds}{numeric vector containing cell ids to retain. Default NULL retains all cell ids in the covariate rasters}
+\item{selectIds}{numeric vector containing cell ids to retain. Default NULL retains all cell ids in the covariate rasters.}
 }
 \description{
 Extract coordinates from raster to use constructing the INLA mesh
-}
-\examples{
-\dontrun{
-  extractCoordsForMesh(cov_rasters, selectIds)
- }
-
 }

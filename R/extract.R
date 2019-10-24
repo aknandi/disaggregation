@@ -7,11 +7,11 @@
 #' it only makes sense to parallelise in this way.
 #'
 #' 
-#' @param raster A raster brick or stack
-#' @param shape A shape object 
+#' @param raster A RasterBrick or RasterStack object.
+#' @param shape A SpatialPolygons object.
 #' @param fun The function used to aggregate the pixel data. If NULL, raw pixel data is returned.
 #' @param id Name of column in shape object to be used to bind an ID column to output.
-#' @param ... Other arguments to raster::extract
+#' @param ... Other arguments to raster::extract.
 #' 
 #' @importFrom foreach %dopar%
 #' @importFrom parallel stopCluster
@@ -93,12 +93,16 @@ parallelExtract <- function(raster, shape, fun = mean, id = 'OBJECTID',  ...){
 }
 
 
-#' Extract data from a SpatialPolygonsDataFrame into data.frame of correct structure
+#' Extract polygon id and response data into a data.frame from a SpatialPolygonsDataFrame
 #' 
-#' @param shape A shape object containing response data
-#' @param id_var Name of column in shape object with the polygon id
-#' @param response_var Name of column in shape object with the response data
-#' @param sample_size_var For survey data, name of column in SpatialPolygonDataFrame object (if it exists) with the sample size data
+#' Returns a data.frame with a row for each polygon in the SpatialPolygonDataFrame and columns: area_id, response and N, containing the id of the
+#' polygon, the values of the response for that polygon, and the sample size respectively. If the data is not survey data (the sample size does 
+#' not exist), this column will contain NAs.
+#' 
+#' @param shape A SpatialPolygons object containing response data.
+#' @param id_var Name of column in shape object with the polygon id. Default 'area_id'.
+#' @param response_var Name of column in shape object with the response data. Default 'response'.
+#' @param sample_size_var For survey data, name of column in SpatialPolygonDataFrame object (if it exists) with the sample size data. Default NULL.
 #' 
 #' @export
 #' @examples {
@@ -134,11 +138,13 @@ getPolygonData <- function(shape, id_var = 'area_id', response_var = 'response',
 }
 
 
-#' Get all covariate rasters in folder and stack them, and crop to polygon data
+#' Get a RasterStack of covariates from a folder containing .tif files
 #' 
-#' @param directory filepath containing the rasters
-#' @param file_pattern Pattern the filenames must match 
-#' @param shape A shape object containing response data
+#' Looks in a specified folder for raster files. Returns a RasterStack of the rasters cropped to the extent specified by the shape parameter.
+#' 
+#' @param directory Filepath to the directory containing the rasters.
+#' @param file_pattern Pattern the filenames must match. Default is all files ending in .tif .
+#' @param shape An object with an extent that the rasters will be cropped to.
 #' 
 #' @export
 #' @examples 
@@ -164,14 +170,8 @@ getCovariateRasters <- function(directory, file_pattern = '.tif$', shape) {
 
 #' Extract coordinates from raster to use constructing the INLA mesh
 #' 
-#' @param cov_rasters RasterStack of the covariate rasters
-#' @param selectIds numeric vector containing cell ids to retain. Default NULL retains all cell ids in the covariate rasters
-#' 
-#' @export
-#' @examples 
-#' \dontrun{
-#'   extractCoordsForMesh(cov_rasters, selectIds)
-#'  }
+#' @param cov_rasters RasterStack of the covariate rasters.
+#' @param selectIds numeric vector containing cell ids to retain. Default NULL retains all cell ids in the covariate rasters.
 #' 
 
 extractCoordsForMesh <- function(cov_rasters, selectIds = NULL) {

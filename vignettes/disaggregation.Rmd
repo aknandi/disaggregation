@@ -136,7 +136,7 @@ By default the model contains a spatial field and a polygon iid effect. These ca
 
 ```{r, fig.show='hold', eval=isINLA}
 model_result <- fit_model(data_for_model,
-                          its = 1000,
+                          iterations = 1000,
                           family = 'poisson',
                           link = 'log',
                           priors = list(priormean_intercept = 0,

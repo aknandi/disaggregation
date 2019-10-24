@@ -5,7 +5,7 @@
 \title{Fit the disaggregation model}
 \usage{
 fit_model(data, priors = NULL, family = "gaussian",
-  link = "identity", its = 10, field = TRUE, iid = TRUE,
+  link = "identity", iterations = 100, field = TRUE, iid = TRUE,
   silent = TRUE)
 }
 \arguments{
@@ -17,7 +17,7 @@ fit_model(data, priors = NULL, family = "gaussian",
 
 \item{link}{link function: \emph{logit}, \emph{log} or \emph{identity}}
 
-\item{its}{number of iterations to run the optimisation for}
+\item{iterations}{number of iterations to run the optimisation for}
 
 \item{field}{logical. Flag the spatial field on or off}
 
@@ -36,28 +36,28 @@ The list  of class \code{fit.result} contains:
  \item{model_setup }{A list of information on the model setup. Likelihood function (\emph{family}), link function(\emph{link}), logical: whether a field was used (\emph{field}) and logical: whether an iid effect was used (\emph{iid}).}
 }
 \description{
-\emph{fit_model} function takes a \emph{disag.data} object created by \code{\link{prepare_data}} and performs a Bayesian disaggregation fit
+\emph{fit_model} function takes a \emph{disag.data} object created by \code{\link{prepare_data}} and performs a Bayesian disaggregation fit.
 }
 \details{
-The model definition
+\strong{The model definition}
 
 The disaggregation model make predictions at the pixel level:
 \deqn{link(pred_i) = \beta_0 + \beta X + GP(s_i) + u_i}{ link(predi) = \beta 0 + \beta X + GP + u}
 
-And then aggregates these predictions to the polygon level using the weighted sum (via the aggregation raster, \eqn{agg_i}):
+And then aggregates these predictions to the polygon level using the weighted sum (via the aggregation raster, \eqn{agg_i}{aggi}):
 \deqn{cases_j = \sum_{i \epsilon j} pred_i \times agg_i}{ casesj = \sum (predi x aggi)}
 \deqn{rate_j = \frac{\sum_{i \epsilon j} pred_i \times agg_i}{\sum_{i \epsilon j} agg_i}}{ratej = \sum(predi x aggi) / \sum (aggi)}
 
-The different likelihood correspond to slightly different models (\eqn{y_j} is the repsonse count data):
+The different likelihood correspond to slightly different models (\eqn{y_j}{yi} is the repsonse count data):
 \itemize{
   \item Gaussian: 
    \eqn{\sigma} is the dispersion of the normal likelihood 
-   \deqn{dnorm(y_j/\sum agg_i, rate_j, \sigma)}{dnorm(yj / \sum aggi, ratej, \sigma)} - predicts incidence rate
+   \deqn{dnorm(y_j/\sum agg_i, rate_j, \sigma)}{dnorm(yj / \sum aggi, ratej, \sigma)} - predicts incidence rate.
   \item Binomial: 
-   For a survey in polygon j, \eqn{y_j}{yj} is the number positive and N_j is the number tested
-   \deqn{dbinom(y_j, N_j, rate_j)}{dbinom(yj, Nj, ratej)} - predicts prevalence rate
+   For a survey in polygon j, \eqn{y_j}{yj} is the number positive and \eqn{N_j}{Nj} is the number tested.
+   \deqn{dbinom(y_j, N_j, rate_j)}{dbinom(yj, Nj, ratej)} - predicts prevalence rate.
   \item Poisson: 
-   \deqn{dpois(y_j, cases_j)}{dpois(yj, casesj)} - predicts incidence count
+   \deqn{dpois(y_j, cases_j)}{dpois(yj, casesj)} - predicts incidence count.
 }
 
 Specify priors for the regression parameters, field and iid effect as a single list. Hyperpriors for the field 
@@ -68,11 +68,11 @@ where \eqn{P(\sigma > \sigma_{min}) = \sigma_{prob}}.
 The \emph{family} and \emph{link} arguments are used to specify the likelihood and link function respectively. 
 The likelihood function can be one of \emph{gaussian}, \emph{poisson} or \emph{binomial}. 
 The link function can be one of \emph{logit}, \emph{log} or \emph{identity}.
-These are specified as strings
+These are specified as strings.
 
 The field and iid effect can be turned on or off via the \emph{field} and \emph{iid} logical flags. Both are default TRUE.
 
-The \emph{its} argument specifies the maximum number of iterations the model can run for to find an optimal point.
+The \emph{iterations} argument specifies the maximum number of iterations the model can run for to find an optimal point.
 
 The \emph{silent} argument can be used to publish/supress verbose output. Default TRUE.
 }
@@ -105,7 +105,7 @@ The \emph{silent} argument can be used to publish/supress verbose output. Defaul
  parallel::stopCluster(cl)
  foreach::registerDoSEQ()
                          
- result <- fit_model(test_data, its = 2)
+ result <- fit_model(test_data, iterations = 2)
  }
 
 }

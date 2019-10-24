@@ -7,13 +7,13 @@
 \method{summary}{fit.result}(object, ...)
 }
 \arguments{
-\item{object}{Object returned from fit_model}
+\item{object}{Object returned from fit_model.}
 
-\item{...}{Further arguments passed to or from other methods.}
+\item{...}{Further arguments to \emph{summary} function.}
 }
 \description{
-Function that summarizes the fit result from the disaggregation model
+Function that summarises the fit result from the disaggregation model.
 }
 \details{
-Prints the negative log likelihood, model parameters and calculates metrics from in-sample performance
+Prints the negative log likelihood, model parameters and calculates metrics from in-sample performance.
 }

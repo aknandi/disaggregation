@@ -46,34 +46,6 @@ test_that("Check plot_polygon_data function works as expected", {
   
 })
 
-test_that("Check plot_covariate_data function works as expected", {
-  
-  # Create raster stack
-  r <- raster::raster(ncol=20, nrow=20)
-  r[] <- sapply(1:raster::ncell(r), function(x) rnorm(1, ifelse(x %% 20 != 0, x %% 20, 20), 3))
-  r2 <- raster::raster(ncol=20, nrow=20)
-  r2[] <- sapply(1:raster::ncell(r), function(x) rnorm(1, ceiling(x/10), 3))
-  cov_stack <- raster::stack(r, r2)
-  
-  p <- plot_covariate_data(cov_stack)
-  expect_error(plot_covariate_data(r))
-  expect_is(p, 'trellis')
-  
-})
-
-test_that("Check plot_inla_mesh function works as expected", {
-  
-  skip_if_not_installed('INLA')
-  skip_on_cran()
-  
-  my_mesh <- build_mesh(spdf)
-  
-  p <- plot_inla_mesh(my_mesh)
-  expect_error(plot_inla_mesh(spdf))
-  expect_is(p, 'NULL')
-  
-})
-
 test_that("Check plot.disag.data function works as expected", {
   
   p <- plot(test_data)
@@ -95,9 +67,9 @@ test_that("Check plot.fit.result function works as expected", {
   skip_if_not_installed('INLA')
   skip_on_cran()
   
-  fit_result <- fit_model(test_data, its = 2)
+  fit_result <- fit_model(test_data, iterations = 2)
   
-  fit_result_nofield <- fit_model(test_data, its = 2, field = FALSE)
+  fit_result_nofield <- fit_model(test_data, iterations = 2, field = FALSE)
   
   p1 <- plot(fit_result)
   
@@ -117,9 +89,9 @@ test_that("Check plot.predictions function works as expected", {
   skip_if_not_installed('INLA')
   skip_on_cran()
   
-  fit_result <- fit_model(test_data, its = 2)
+  fit_result <- fit_model(test_data, iterations = 2)
   
-  fit_result_nofield <- fit_model(test_data, its = 2, field = FALSE)
+  fit_result_nofield <- fit_model(test_data, iterations = 2, field = FALSE)
   
   preds <- predict_model(fit_result)
   p1 <- plot(preds)

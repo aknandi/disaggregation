@@ -7,15 +7,15 @@
 parallelExtract(raster, shape, fun = mean, id = "OBJECTID", ...)
 }
 \arguments{
-\item{raster}{A raster brick or stack}
+\item{raster}{A RasterBrick or RasterStack object.}
 
-\item{shape}{A shape object}
+\item{shape}{A SpatialPolygons object.}
 
 \item{fun}{The function used to aggregate the pixel data. If NULL, raw pixel data is returned.}
 
 \item{id}{Name of column in shape object to be used to bind an ID column to output.}
 
-\item{...}{Other arguments to raster::extract}
+\item{...}{Other arguments to raster::extract.}
 }
 \description{
 Parallelisation is performed across rasters, not shapes. 

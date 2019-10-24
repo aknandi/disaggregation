@@ -2,19 +2,19 @@
 % Please edit documentation in R/extract.R
 \name{getCovariateRasters}
 \alias{getCovariateRasters}
-\title{Get all covariate rasters in folder and stack them, and crop to polygon data}
+\title{Get a RasterStack of covariates from a folder containing .tif files}
 \usage{
 getCovariateRasters(directory, file_pattern = ".tif$", shape)
 }
 \arguments{
-\item{directory}{filepath containing the rasters}
+\item{directory}{Filepath to the directory containing the rasters.}
 
-\item{file_pattern}{Pattern the filenames must match}
+\item{file_pattern}{Pattern the filenames must match. Default is all files ending in .tif .}
 
-\item{shape}{A shape object containing response data}
+\item{shape}{An object with an extent that the rasters will be cropped to.}
 }
 \description{
-Get all covariate rasters in folder and stack them, and crop to polygon data
+Looks in a specified folder for raster files. Returns a RasterStack of the rasters cropped to the extent specified by the shape parameter.
 }
 \examples{
 \dontrun{
