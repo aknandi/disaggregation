@@ -130,9 +130,6 @@ test_that("Check prepare_data function deals with NAs as expected", {
 
 test_that("Check as.disag.data function works as expected", {
   
-  skip_if_not_installed('INLA')
-  skip_on_cran()
-  
   polygon_data <- getPolygonData(spdf, id_var = 'area_id', response_var = 'response')
   
   cl <- parallel::makeCluster(2)
