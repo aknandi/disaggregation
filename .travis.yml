@@ -5,8 +5,7 @@ sudo: required
 warnings_are_errors: false
 
 # cache packages to speed up builds
-cache: 
-  packages: true
+cache: packages
 
 before_install:
   - tlmgr install index
@@ -30,7 +29,13 @@ r_packages:
  - stats
  - TMB
  - RcppEigen
- 
+
+coverage:
+  status:
+    project:
+      default:
+        threshold: 5
+
 after_success:
  - Rscript -e 'library(covr);codecov()'
 
