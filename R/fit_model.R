@@ -221,8 +221,8 @@ fit_model <- function(data,
                                nodemean = factor(rep(NA, n_s))))
   }
   if(!iid) {
-    tmb_map <- c(tmb_map, list(iideffect = factor(rep(NA, nrow(data$polygon_data))),
-                               iideffect_log_tau = as.factor(NA)))
+    tmb_map <- c(tmb_map, list(iideffect_log_tau = as.factor(NA),
+                               iideffect = factor(rep(NA, nrow(data$polygon_data)))))
   }
   if(family_id != 0) { # if not gaussian do not need a dispersion in likelihood
     tmb_map <- c(tmb_map, list(polygon_sd = as.factor(NA)))
