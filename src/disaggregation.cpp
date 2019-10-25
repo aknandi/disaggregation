@@ -63,10 +63,12 @@ Type objective_function<Type>::operator()()
   DATA_SCALAR(priormean_slope);
   DATA_SCALAR(priorsd_slope);
   
-  // Priors for liklihood
-  PARAMETER(polygon_sd);
-  DATA_SCALAR(polygon_sd_mean);
-  DATA_SCALAR(polygon_sd_sd);
+  // Priors for likelihood
+  PARAMETER(log_gaussian_sd);
+  Type gaussian_sd = exp(log_gaussian_sd);
+  
+  Type prior_log_gaussian_sd_mean = -4.0;
+  Type prior_log_gaussian_sd_sd = 0.5;
   
   PARAMETER_VECTOR(iideffect);
   PARAMETER(iideffect_log_tau);
@@ -132,7 +134,7 @@ Type objective_function<Type>::operator()()
     }
   }
   
-  nll -= dnorm(polygon_sd, polygon_sd_mean, polygon_sd_sd, true);
+  nll -= dnorm(log_gaussian_sd, prior_log_gaussian_sd_mean, prior_log_gaussian_sd_sd, true);
   
   if(field) {
     // Likelihood of hyperparameters for field
@@ -215,8 +217,8 @@ Type objective_function<Type>::operator()()
       // Calculate normal likelihood in rate space
       polygon_response = polygon_response_data(polygon);
       normalised_polygon_response = polygon_response/normalisation_total;
-      nll -= dnorm(normalised_polygon_response, pred_polygonrate, polygon_sd, true);
-      reportnll[polygon] = -dnorm(normalised_polygon_response, pred_polygonrate, polygon_sd, true);
+      nll -= dnorm(normalised_polygon_response, pred_polygonrate, gaussian_sd, true);
+      reportnll[polygon] = -dnorm(normalised_polygon_response, pred_polygonrate, gaussian_sd, true);
     } else if(family == 1) {
       nll -= dbinom(polygon_response_data[polygon], response_sample_size[polygon], pred_polygonrate, true);
       reportnll[polygon] = -dbinom(polygon_response_data[polygon], response_sample_size[polygon], pred_polygonrate, true);

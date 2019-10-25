@@ -155,13 +155,10 @@ fit_model <- function(data,
   prior_sigma <- sd(data$polygon_data$response/mean(data$polygon_data$response))
   
   # Default priors if they are not specified
-  default_priors <- list(polygon_sd_mean = 0.1,
-                         polygon_sd_sd = 0.1,
-                         priormean_intercept = -4.0,
+  default_priors <- list(priormean_intercept = -4.0,
                          priorsd_intercept = 2.0,
                          priormean_slope = 0.0,
                          priorsd_slope = 0.5,
-                         priorsd_iideffect = 0.05,
                          prior_rho_min = prior_rho,
                          prior_rho_prob = 0.1,
                          prior_sigma_max = prior_sigma,
@@ -193,7 +190,7 @@ fit_model <- function(data,
 
   parameters <- list(intercept = -5,
                      slope = rep(0, ncol(cov_matrix)),
-                     polygon_sd = 0.1,
+                     log_gaussian_sd = -4,
                      iideffect = rep(0, nrow(data$polygon_data)),
                      iideffect_log_tau = 1,
                      log_sigma = 0,
@@ -225,7 +222,7 @@ fit_model <- function(data,
                                iideffect = factor(rep(NA, nrow(data$polygon_data)))))
   }
   if(family_id != 0) { # if not gaussian do not need a dispersion in likelihood
-    tmb_map <- c(tmb_map, list(polygon_sd = as.factor(NA)))
+    tmb_map <- c(tmb_map, list(log_gaussian_sd = as.factor(NA)))
   }
   
   random_effects <- c()
