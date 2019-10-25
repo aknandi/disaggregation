@@ -14,8 +14,9 @@
 #' The different likelihood correspond to slightly different models (\eqn{y_j}{yi} is the repsonse count data):
 #' \itemize{
 #'   \item Gaussian: 
-#'    \eqn{\sigma} is the dispersion of the normal likelihood 
-#'    \deqn{dnorm(y_j/\sum agg_i, rate_j, \sigma)}{dnorm(yj / \sum aggi, ratej, \sigma)} - predicts incidence rate.
+#'    If \eqn{\sigma} is the dispersion of the pixel data, \eqn{\sigma_j}{\sigmaj} is the dispersion of the polygon data, where 
+#'    \eqn{\sigma_j = \sigma \sqrt{\sum agg_i^2} / \sum agg_i }{\sigmaj = \sigma x { \sqrt \sum (aggi ^ 2) } / \sum aggi}
+#'    \deqn{dnorm(y_j/\sum agg_i, rate_j, \sigma_j)}{dnorm(yj / \sum aggi, ratej, \sigmaj)} - predicts incidence rate.
 #'   \item Binomial: 
 #'    For a survey in polygon j, \eqn{y_j}{yj} is the number positive and \eqn{N_j}{Nj} is the number tested.
 #'    \deqn{dbinom(y_j, N_j, rate_j)}{dbinom(yj, Nj, ratej)} - predicts prevalence rate.
@@ -26,7 +27,7 @@
 #' Specify priors for the regression parameters, field and iid effect as a single list. Hyperpriors for the field 
 #' are given as penalised complexity priors you specify \eqn{\rho_{min}} and \eqn{\rho_{prob}} for the range of the field 
 #' where \eqn{P(\rho < \rho_{min}) = \rho_{prob}}, and \eqn{\sigma_{min}$ and $\sigma_{prob}} for the variation of the field 
-#' where \eqn{P(\sigma > \sigma_{min}) = \sigma_{prob}}.
+#' where \eqn{P(\sigma > \sigma_{min}) = \sigma_{prob}}. Also, specify pc priors for the iid effect
 #' 
 #' The \emph{family} and \emph{link} arguments are used to specify the likelihood and link function respectively. 
 #' The likelihood function can be one of \emph{gaussian}, \emph{poisson} or \emph{binomial}. 

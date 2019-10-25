@@ -129,7 +129,7 @@ $dbinom(y_j, N_j, rate_j)$
 
 $dpois(y_j, cases_j)$
 
-The user can also specify the priors for the regression parameters and the iid effect. For the field, the user specifies the pc priors for the range, $\rho_{min}$ and $\rho_{prob}$, where $P(\rho < \rho_{min}) = \rho_{prob}$, and the variation, $\sigma_{min}$ and $\sigma_{prob}$, where $P(\sigma > \sigma_{min}) = \sigma_{prob}$, in the field.
+The user can also specify the priors for the regression parameters. For the field, the user specifies the pc priors for the range, $\rho_{min}$ and $\rho_{prob}$, where $P(\rho < \rho_{min}) = \rho_{prob}$, and the variation, $\sigma_{min}$ and $\sigma_{prob}$, where $P(\sigma > \sigma_{min}) = \sigma_{prob}$, in the field. For the iid effect, the user also specifies pc priors.
 
 By default the model contains a spatial field and a polygon iid effect. These can be turned off in the `fit_model` function, using `field = FALSE` or `iid = FALSE`.
 
@@ -146,7 +146,9 @@ model_result <- fit_model(data_for_model,
                                         prior_rho_min = 3,
                                         prior_rho_prob = 0.0001,
                                         prior_sigma_max = 1,
-                                        prior_sigma_prob = 0.0001))
+                                        prior_sigma_prob = 0.0001,
+                                        prior_iideffect_sd_max = 0.05,
+                                        prior_iideffect_sd_prob = 0.01))
 ```
 
 ```{r, fig.show='hold', eval=isINLA}
