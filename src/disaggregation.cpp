@@ -64,11 +64,12 @@ Type objective_function<Type>::operator()()
   DATA_SCALAR(priorsd_slope);
   
   // Priors for likelihood
-  PARAMETER(log_gaussian_sd);
-  Type gaussian_sd = exp(log_gaussian_sd);
+  PARAMETER(log_tau_gaussian);
+  Type tau_gaussian = exp(log_tau_gaussian);
+  Type gaussian_sd = 1 / sqrt(tau_gaussian);
   
-  Type prior_log_gaussian_sd_mean = -4.0;
-  Type prior_log_gaussian_sd_sd = 0.5;
+  Type prior_log_gamma_shape = 1;
+  Type prior_log_gamma_rate = 5e-05;
   
   PARAMETER_VECTOR(iideffect);
   PARAMETER(iideffect_log_tau);
@@ -134,7 +135,8 @@ Type objective_function<Type>::operator()()
     }
   }
   
-  nll -= dnorm(log_gaussian_sd, prior_log_gaussian_sd_mean, prior_log_gaussian_sd_sd, true);
+  // Likelihood from the gaussian prior. log(prec) ~ loggamma
+  nll -= dgamma(tau_gaussian, prior_log_gamma_shape, prior_log_gamma_rate, true);
   
   if(field) {
     // Likelihood of hyperparameters for field

@@ -191,7 +191,7 @@ fit_model <- function(data,
 
   parameters <- list(intercept = -5,
                      slope = rep(0, ncol(cov_matrix)),
-                     log_gaussian_sd = -4,
+                     log_tau_gaussian = 8,
                      iideffect = rep(0, nrow(data$polygon_data)),
                      iideffect_log_tau = 1,
                      log_sigma = 0,
@@ -223,7 +223,7 @@ fit_model <- function(data,
                                iideffect = factor(rep(NA, nrow(data$polygon_data)))))
   }
   if(family_id != 0) { # if not gaussian do not need a dispersion in likelihood
-    tmb_map <- c(tmb_map, list(log_gaussian_sd = as.factor(NA)))
+    tmb_map <- c(tmb_map, list(log_tau_gaussian = as.factor(NA)))
   }
   
   random_effects <- c()
