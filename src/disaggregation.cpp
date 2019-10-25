@@ -174,6 +174,7 @@ Type objective_function<Type>::operator()()
   Type normalisation_total;
   Type pred_polygoncases;
   Type pred_polygonrate;
+  Type polygon_sd;
   vector<Type> pixel_pred;
   vector<Type> numerator_pixels;
   vector<Type> normalisation_pixels;
@@ -181,6 +182,7 @@ Type objective_function<Type>::operator()()
   vector<Type> reportprediction_cases(n_polygons);
   vector<Type> reportprediction_rate(n_polygons);
   vector<Type> reportnll(n_polygons);
+  vector<Type> reportpolygonsd(n_polygons);
   
   // For each shape get pixel predictions within and aggregate to polygon level
   for (int polygon = 0; polygon < n_polygons; polygon++) {
@@ -214,11 +216,14 @@ Type objective_function<Type>::operator()()
     
     // Use correct likelihood function
     if(family == 0) {
+      // Scale the pixel sd to polygon level
+      polygon_sd = gaussian_sd * sqrt((normalisation_pixels * normalisation_pixels).sum()) / normalisation_total;
+      reportpolygonsd[polygon] = polygon_sd;
       // Calculate normal likelihood in rate space
       polygon_response = polygon_response_data(polygon);
       normalised_polygon_response = polygon_response/normalisation_total;
-      nll -= dnorm(normalised_polygon_response, pred_polygonrate, gaussian_sd, true);
-      reportnll[polygon] = -dnorm(normalised_polygon_response, pred_polygonrate, gaussian_sd, true);
+      nll -= dnorm(normalised_polygon_response, pred_polygonrate, polygon_sd, true);
+      reportnll[polygon] = -dnorm(normalised_polygon_response, pred_polygonrate, polygon_sd, true);
     } else if(family == 1) {
       nll -= dbinom(polygon_response_data[polygon], response_sample_size[polygon], pred_polygonrate, true);
       reportnll[polygon] = -dbinom(polygon_response_data[polygon], response_sample_size[polygon], pred_polygonrate, true);
@@ -238,6 +243,9 @@ Type objective_function<Type>::operator()()
   REPORT(polygon_response_data);
   REPORT(nll_priors);
   REPORT(nll);
+  if(family == 0) {
+    REPORT(reportpolygonsd);
+  }
   
   return nll;
   }
