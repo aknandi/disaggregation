@@ -65,6 +65,7 @@ r2 <- raster::raster(ncol = n_pixels_x, nrow = n_pixels_y)
 r2 <- raster::setExtent(r2, raster::extent(polygon_data))
 r2[] <- sapply(1:raster::ncell(r), function(x) rnorm(1, ceiling(x/n_pixels_y), 3))
 cov_stack <- raster::stack(r, r2)
+cov_stack <- raster::scale(cov_stack)
 ```
 
 We also create a population raster. This is to allow the model to correctly aggregated the pixel values to the polygon level. For this simple example we assume that the population within each polygon is uniformly distributed.
