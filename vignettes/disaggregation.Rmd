@@ -117,9 +117,12 @@ $rate_j = \frac{\sum_{i \epsilon j} pred_i \times agg_i}{\sum_{i \epsilon j} agg
 
 The different likelihood correspond to slightly different models ($y_j$ is the repsonse count data):
 
-**Gaussian** ($\sigma$ is the dispersion of the normal likelihood)
+**Gaussian** ($\sigma_j$ is the dispersion of the polygon data), 
 
-$dnorm(y_j/\sum agg_i, rate_j, \sigma)$
+$dnorm(y_j/\sum agg_i, rate_j, \sigma_j)$
+
+Here $\sigma_j = \sigma \sqrt{\sum agg_i^2} / \sum agg_i$, where $\sigma$ is the dispersion of the pixel data, a parameter learnt by the model.
+
 
 **Binomial** (For a survey in polygon j, $y_j$ is the number positive and $N_j$ is the number tested)
 
