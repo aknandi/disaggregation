@@ -136,6 +136,11 @@ fit_model <- function(data,
     stop(paste(link, "is not a valid link function"))
   }
   
+  if(family == 'gaussian' & iid) {
+    warning('You are using both a gaussian likeihood and an iid effect. Using both of these is redundant as they are 
+            having the same effect on the model. Consider setting iid = FALSE.')
+  }
+  
   if(is.null(data$mesh)) {
     stop('Your data object must contain an INLA mesh.')
   }
