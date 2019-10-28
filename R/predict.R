@@ -294,9 +294,22 @@ predict_single_raster <- function(model_parameters, objects, link_function) {
   
   if(!is.null(objects$iid_objects)) {
     iid_ras <- objects$iid_objects$shapefile_raster
+    iideffect_sd <- 1/sqrt(exp(model_parameters$iideffect_log_tau))
     for(i in seq_along(model_parameters$iideffect)) {
       iid_ras@data@values[which(objects$iid_objects$shapefile_raster@data@values == objects$iid_objects$shapefile_ids[i])] <- 
         model_parameters$iideffect[i]
+      na_pixels <- which(is.na(iid_ras@data@values))
+      na_iid_values <- stats::rnorm(length(na_pixels), 0, iideffect_sd)
+      iid_ras@data@values[na_pixels] <- na_iid_values
+    }
+    if(raster::extent(iid_ras) != raster::extent(linear_pred)) {
+      # Extent of prediction space is different to the original model. Keep any overlapping iid values but predict to the new extent
+      raster_new_extent <- linear_pred
+      raster_new_extent@data@values <- NA
+      iid_ras <- raster::merge(iid_ras, raster_new_extent, ext = raster::extent(raster_new_extent))
+      missing_pixels <- which(is.na(iid_ras@data@values))
+      missing_iid_values <- stats::rnorm(length(missing_pixels), 0, iideffect_sd)
+      iid_ras@data@values[missing_pixels] <- missing_iid_values
     }
     linear_pred <- linear_pred + iid_ras
   } else {

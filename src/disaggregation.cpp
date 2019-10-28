@@ -63,16 +63,24 @@ Type objective_function<Type>::operator()()
   DATA_SCALAR(priormean_slope);
   DATA_SCALAR(priorsd_slope);
   
-  // Priors for liklihood
-  PARAMETER(polygon_sd);
-  DATA_SCALAR(polygon_sd_mean);
-  DATA_SCALAR(polygon_sd_sd);
+  // Priors for likelihood
+  PARAMETER(log_tau_gaussian);
+  Type tau_gaussian = exp(log_tau_gaussian);
+  Type gaussian_sd = 1 / sqrt(tau_gaussian);
   
-  // iid random effect for each polygon
+  Type prior_log_gamma_shape = 1;
+  Type prior_log_gamma_rate = 5e-05;
+  
   PARAMETER_VECTOR(iideffect);
+  PARAMETER(iideffect_log_tau);
+  Type iideffect_tau = exp(iideffect_log_tau);
+  Type iideffect_sd = 1 / sqrt(iideffect_tau);
   
-  Type priormean_iideffect = 0.0;
-  DATA_SCALAR(priorsd_iideffect);
+  Type iideffect_mean = 0.0;
+  
+  // Priors on iid random effect for polygons
+  DATA_SCALAR(prior_iideffect_sd_max);
+  DATA_SCALAR(prior_iideffect_sd_prob);
   
   // spde hyperparameters
   PARAMETER(log_sigma);
@@ -116,12 +124,19 @@ Type objective_function<Type>::operator()()
   }
   
   if(iid) {
-    for(int s = 0; s < iideffect.size(); s++){
-      nll -= dnorm(iideffect[s], priormean_iideffect, priorsd_iideffect, true);
-    } 
+    // Likelihood of hyperparameter of polygon iid random effect.
+    Type lambda = -log(prior_iideffect_sd_prob) / prior_iideffect_sd_max;
+    Type pcdensityiid = lambda / 2 * pow(iideffect_tau, -3/2) * exp( - lambda * pow(iideffect_tau, -1/2));
+    nll -= log(pcdensityiid);
+    
+    // Likelihood of random effect for polygons
+    for(int p = 0; p < iideffect.size(); p++) {
+      nll -= dnorm(iideffect[p], iideffect_mean, iideffect_sd, true);
+    }
   }
   
-  nll -= dnorm(polygon_sd, polygon_sd_mean, polygon_sd_sd, true);
+  // Likelihood from the gaussian prior. log(prec) ~ loggamma
+  nll -= dgamma(tau_gaussian, prior_log_gamma_shape, prior_log_gamma_rate, true);
   
   if(field) {
     // Likelihood of hyperparameters for field
@@ -161,6 +176,7 @@ Type objective_function<Type>::operator()()
   Type normalisation_total;
   Type pred_polygoncases;
   Type pred_polygonrate;
+  Type polygon_sd;
   vector<Type> pixel_pred;
   vector<Type> numerator_pixels;
   vector<Type> normalisation_pixels;
@@ -168,6 +184,7 @@ Type objective_function<Type>::operator()()
   vector<Type> reportprediction_cases(n_polygons);
   vector<Type> reportprediction_rate(n_polygons);
   vector<Type> reportnll(n_polygons);
+  vector<Type> reportpolygonsd(n_polygons);
   
   // For each shape get pixel predictions within and aggregate to polygon level
   for (int polygon = 0; polygon < n_polygons; polygon++) {
@@ -201,6 +218,9 @@ Type objective_function<Type>::operator()()
     
     // Use correct likelihood function
     if(family == 0) {
+      // Scale the pixel sd to polygon level
+      polygon_sd = gaussian_sd * sqrt((normalisation_pixels * normalisation_pixels).sum()) / normalisation_total;
+      reportpolygonsd[polygon] = polygon_sd;
       // Calculate normal likelihood in rate space
       polygon_response = polygon_response_data(polygon);
       normalised_polygon_response = polygon_response/normalisation_total;
@@ -223,11 +243,11 @@ Type objective_function<Type>::operator()()
   REPORT(reportnormalisation);
   REPORT(reportnll);
   REPORT(polygon_response_data);
-  if(iid) {
-    REPORT(iideffect);
-  }
   REPORT(nll_priors);
   REPORT(nll);
+  if(family == 0) {
+    REPORT(reportpolygonsd);
+  }
   
   return nll;
   }

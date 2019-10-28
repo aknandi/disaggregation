@@ -65,6 +65,7 @@ r2 <- raster::raster(ncol = n_pixels_x, nrow = n_pixels_y)
 r2 <- raster::setExtent(r2, raster::extent(polygon_data))
 r2[] <- sapply(1:raster::ncell(r), function(x) rnorm(1, ceiling(x/n_pixels_y), 3))
 cov_stack <- raster::stack(r, r2)
+cov_stack <- raster::scale(cov_stack)
 ```
 
 We also create a population raster. This is to allow the model to correctly aggregated the pixel values to the polygon level. For this simple example we assume that the population within each polygon is uniformly distributed.
@@ -117,9 +118,12 @@ $rate_j = \frac{\sum_{i \epsilon j} pred_i \times agg_i}{\sum_{i \epsilon j} agg
 
 The different likelihood correspond to slightly different models ($y_j$ is the repsonse count data):
 
-**Gaussian** ($\sigma$ is the dispersion of the normal likelihood)
+**Gaussian** ($\sigma_j$ is the dispersion of the polygon data), 
 
-$dnorm(y_j/\sum agg_i, rate_j, \sigma)$
+$dnorm(y_j/\sum agg_i, rate_j, \sigma_j)$
+
+Here $\sigma_j = \sigma \sqrt{\sum agg_i^2} / \sum agg_i$, where $\sigma$ is the dispersion of the pixel data, a parameter learnt by the model.
+
 
 **Binomial** (For a survey in polygon j, $y_j$ is the number positive and $N_j$ is the number tested)
 
@@ -129,7 +133,7 @@ $dbinom(y_j, N_j, rate_j)$
 
 $dpois(y_j, cases_j)$
 
-The user can also specify the priors for the regression parameters and the iid effect. For the field, the user specifies the pc priors for the range, $\rho_{min}$ and $\rho_{prob}$, where $P(\rho < \rho_{min}) = \rho_{prob}$, and the variation, $\sigma_{min}$ and $\sigma_{prob}$, where $P(\sigma > \sigma_{min}) = \sigma_{prob}$, in the field.
+The user can also specify the priors for the regression parameters. For the field, the user specifies the pc priors for the range, $\rho_{min}$ and $\rho_{prob}$, where $P(\rho < \rho_{min}) = \rho_{prob}$, and the variation, $\sigma_{min}$ and $\sigma_{prob}$, where $P(\sigma > \sigma_{min}) = \sigma_{prob}$, in the field. For the iid effect, the user also specifies pc priors.
 
 By default the model contains a spatial field and a polygon iid effect. These can be turned off in the `fit_model` function, using `field = FALSE` or `iid = FALSE`.
 
@@ -146,7 +150,9 @@ model_result <- fit_model(data_for_model,
                                         prior_rho_min = 3,
                                         prior_rho_prob = 0.0001,
                                         prior_sigma_max = 1,
-                                        prior_sigma_prob = 0.0001))
+                                        prior_sigma_prob = 0.0001,
+                                        prior_iideffect_sd_max = 0.05,
+                                        prior_iideffect_sd_prob = 0.01))
 ```
 
 ```{r, fig.show='hold', eval=isINLA}

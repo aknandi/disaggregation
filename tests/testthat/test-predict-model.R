@@ -112,18 +112,18 @@ test_that("Check predict_model and predict_uncertainty function works with newda
   skip_if_not_installed('INLA')
   skip_on_cran()
   
-  result <- fit_model(test_data, field = FALSE, iterations = 2)
+  result <- fit_model(test_data, field = FALSE, iid = TRUE, iterations = 2)
   
   newdata <- raster::crop(raster::stack(r, r2), c(0, 10, 0, 10))
   preds1 <- predict_model(result)
-  preds2 <- predict_model(result, newdata)
+  preds2 <- predict_model(result, newdata, predict_iid = TRUE)
   
   expect_is(preds2, 'predictions')
   expect_equal(length(preds2), 4)
   expect_equal(names(preds2), c('prediction', 'field', 'iid', 'covariates'))
   expect_is(preds2$prediction, 'Raster')
   expect_true(is.null(preds2$field))
-  expect_true(is.null(preds2$iid))
+  expect_is(preds2$iid, 'Raster')
   expect_is(preds2$covariates, 'Raster')
 
   expect_false(identical(raster::extent(preds1$prediction), raster::extent(preds2$prediction)))
