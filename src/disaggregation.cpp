@@ -141,7 +141,9 @@ Type objective_function<Type>::operator()()
   // Likelihood from the gaussian prior. 
   // log(prec) ~ loggamma
   // prec ~ gamma
-  nll -= dgamma(tau_gaussian, prior_gamma_shape, prior_gamma_rate, true);
+  if(family == 0) {
+    nll -= dgamma(tau_gaussian, prior_gamma_shape, prior_gamma_rate, true);
+  }
   
   if(field) {
     // Likelihood of hyperparameters for field
