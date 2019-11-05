@@ -8,7 +8,7 @@ warnings_are_errors: false
 cache: packages
 
 before_install:
-  - sudo tlmgr install index
+  - tlmgr install index
 
 addons:
   apt:
