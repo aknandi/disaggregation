@@ -1,7 +1,7 @@
 Disaggregation
 ==============
 
-[![Build Status](https://travis-ci.org/aknandi/disaggregation.svg)](https://travis-ci.org/aknandi/disaggregation)
+[![Build Status](https://api.travis-ci.org/aknandi/disaggregation.svg?branch=master)](https://travis-ci.org/aknandi/disaggregation?branch=master)
 [![codecov.io](https://codecov.io/github/aknandi/disaggregation/coverage.svg?branch=master)](https://codecov.io/github/aknandi/disaggregation?branch=master)
 
 A package containing useful functions for disaggregation modelling
