@@ -4,9 +4,6 @@
 
 // Data: Spatial field mesh and matrices, polygon data, covariate pixel data
 
-// The model:
-// response = inv.logit( raster covariates + spatial field 2016)
-// polygon response = sum(pixel pop x response) / sum(pixel pop) + normal or gamma error
 
 #define TMB_LIB_INIT R_init_disaggregation
 #include <TMB.hpp>
@@ -257,4 +254,4 @@ Type objective_function<Type>::operator()()
   }
   
   return nll;
-  }
+}
