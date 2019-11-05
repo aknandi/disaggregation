@@ -170,7 +170,7 @@ Type objective_function<Type>::operator()()
   
   if(field) {
     // Calculate field for pixel data
-    vector<Type> logit_prevalence_field;
+    vector<Type> logit_prevalence_field(n_pixels);
     logit_prevalence_field = Apixel * nodemean;
     pixel_linear_pred += logit_prevalence_field.array();
   }
