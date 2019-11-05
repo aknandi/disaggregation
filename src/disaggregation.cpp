@@ -68,8 +68,11 @@ Type objective_function<Type>::operator()()
   Type tau_gaussian = exp(log_tau_gaussian);
   Type gaussian_sd = 1 / sqrt(tau_gaussian);
   
-  Type prior_log_gamma_shape = 1;
-  Type prior_log_gamma_rate = 5e-05;
+  // INLA defines a loggamma prior on log tau. 
+  // We evaluate a gamma prior on tau, but the parameters are 
+  // therefore the same.
+  Type prior_gamma_shape = 1;
+  Type prior_gamma_rate = 5e-05;
   
   PARAMETER_VECTOR(iideffect);
   PARAMETER(iideffect_log_tau);
@@ -135,8 +138,10 @@ Type objective_function<Type>::operator()()
     }
   }
   
-  // Likelihood from the gaussian prior. log(prec) ~ loggamma
-  nll -= dgamma(tau_gaussian, prior_log_gamma_shape, prior_log_gamma_rate, true);
+  // Likelihood from the gaussian prior. 
+  // log(prec) ~ loggamma
+  // prec ~ gamma
+  nll -= dgamma(tau_gaussian, prior_gamma_shape, prior_gamma_rate, true);
   
   if(field) {
     // Likelihood of hyperparameters for field
