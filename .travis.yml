@@ -8,7 +8,10 @@ warnings_are_errors: false
 cache: packages
 
 before_install:
-  - tlmgr install index
+  - if [[ "$OSTYPE" != "linux-gnu" ]];
+    then sudo tlmgr install index;
+    else tlmgr install index;
+    fi
 
 addons:
   apt:
@@ -48,8 +51,6 @@ matrix:
     - r: devel
       r_github_packages: andrewzm/INLA
       os: linux
-    - r: devel
-      os: osx
     - r: devel
       env: _R_CHECK_FORCE_SUGGESTS_=false
       install: R -e 'install.packages("devtools", dep = TRUE);devtools::install_deps(dep = c("Depends", "Imports"));install.packages("SpatialEpi")'
