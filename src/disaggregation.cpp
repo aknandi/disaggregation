@@ -4,9 +4,6 @@
 
 // Data: Spatial field mesh and matrices, polygon data, covariate pixel data
 
-// The model:
-// response = inv.logit( raster covariates + spatial field 2016)
-// polygon response = sum(pixel pop x response) / sum(pixel pop) + normal or gamma error
 
 #define TMB_LIB_INIT R_init_disaggregation
 #include <TMB.hpp>
@@ -68,8 +65,11 @@ Type objective_function<Type>::operator()()
   Type tau_gaussian = exp(log_tau_gaussian);
   Type gaussian_sd = 1 / sqrt(tau_gaussian);
   
-  Type prior_log_gamma_shape = 1;
-  Type prior_log_gamma_rate = 5e-05;
+  // INLA defines a loggamma prior on log tau. 
+  // We evaluate a gamma prior on tau, but the parameters are 
+  // therefore the same.
+  Type prior_gamma_shape = 1;
+  Type prior_gamma_rate = 5e-05;
   
   PARAMETER_VECTOR(iideffect);
   PARAMETER(iideffect_log_tau);
@@ -135,8 +135,12 @@ Type objective_function<Type>::operator()()
     }
   }
   
-  // Likelihood from the gaussian prior. log(prec) ~ loggamma
-  nll -= dgamma(tau_gaussian, prior_log_gamma_shape, prior_log_gamma_rate, true);
+  // Likelihood from the gaussian prior. 
+  // log(prec) ~ loggamma
+  // prec ~ gamma
+  if(family == 0) {
+    nll -= dgamma(tau_gaussian, prior_gamma_shape, prior_gamma_rate, true);
+  }
   
   if(field) {
     // Likelihood of hyperparameters for field
@@ -163,9 +167,9 @@ Type objective_function<Type>::operator()()
   
   if(field) {
     // Calculate field for pixel data
-    vector<Type> logit_prevalence_field;
-    logit_prevalence_field = Apixel * nodemean;
-    pixel_linear_pred += logit_prevalence_field.array();
+    vector<Type> linear_pred_field(n_pixels);
+    linear_pred_field = Apixel * nodemean;
+    pixel_linear_pred += linear_pred_field.array();
   }
   
   // recalculate startendindices to be in the form start, n
@@ -250,4 +254,4 @@ Type objective_function<Type>::operator()()
   }
   
   return nll;
-  }
+}
