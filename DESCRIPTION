@@ -8,8 +8,8 @@ Authors@R: c(
     person("Rohan", "Arambepola", email = "rarambepola@gmail.com", role = "aut"),
     person("Andre", "Python", email = "python.andre@gmail.com", role = "aut", comment = c(ORCID = "0000-0001-8094-7226"))
     )
-Description: Fits disaggregation regression models using TMB (Template Model
-    Builder). When the response data are aggregated to polygon level but
+Description: Fits disaggregation regression models using 'TMB' ('Template Model
+    Builder'). When the response data are aggregated to polygon level but
     the predictor variables are at a higher resolution, these models can be
     useful. Regression models with spatial random fields.
 License: MIT + file LICENSE
