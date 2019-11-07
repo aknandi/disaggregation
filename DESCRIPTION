@@ -23,6 +23,7 @@ Imports:
     sp,
     parallel,
     doParallel,
+    rgeos,
     Matrix,
     stats,
     TMB,
