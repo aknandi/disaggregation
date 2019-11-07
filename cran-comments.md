@@ -29,7 +29,7 @@ There were 3 NOTEs:
     sub-directories of 1Mb or more:
       libs  12.5Mb
 
-  Packages based on C++ can have large compiled libraries
+  Packages based on C++ can have large compiled libraries. This is as small as it can be, hope that is ok.
 
 * checking compilation flags used ... NOTE
   Compilation used the following non-portable flag(s):
