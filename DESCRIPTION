@@ -24,6 +24,7 @@ Imports:
     parallel,
     doParallel,
     rgeos,
+    rgdal,
     Matrix,
     stats,
     TMB,
