@@ -11,7 +11,8 @@ Authors@R: c(
 Description: Fits disaggregation regression models using 'TMB' ('Template Model
     Builder'). When the response data are aggregated to polygon level but
     the predictor variables are at a higher resolution, these models can be
-    useful. Regression models with spatial random fields.
+    useful. Regression models with spatial random fields. A useful reference for disaggregation modelling is 
+    Lucas et al. (2019) <doi:10.1101/548719>.
 License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
