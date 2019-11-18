@@ -39,3 +39,25 @@ There were 3 NOTEs:
 
 ## Downstream dependencies
 There are currently no downstream dependencies for this package
+
+## Resubmission
+This is a resubmission. In this version I have:
+
+* Omitted the redundant and rather unspecific part "Useful Functions for" in the DESCRIPTION title.
+
+* Added a useful reference for disaggregation modelling in the Description field of the DESCRIPTION file
+
+  A useful reference for disaggregation modelling is Lucas et al. (2019) <doi:10.1101/548719>.
+  
+* Added missing Rd-tags: \value
+  
+  Affects: build_mesh, parallelExtract, getPolygonData, getCovariateRasters, getStartendindex, predict_model, predict_uncertatinty,
+  as.disag.data, plotting functions and summary functions
+
+* Remove Roxygen comments from functions that are not exported
+  
+  Affects: extractCoordsForMesh, plot_polygon_data, getCoords and getAmatrix
+
+* Replaced the installed.packages() function with requireNamespace()
+  
+  Affects: prepare_data function and vignettes/disaggregation.Rmd
