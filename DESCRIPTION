@@ -1,6 +1,6 @@
 Package: disaggregation
 Type: Package
-Title: Useful Functions for Disaggregation Modelling
+Title: Disaggregation Modelling
 Version: 0.1.0
 Authors@R: c(
     person("Anita", "Nandi", email = "anita.k.nandi@gmail.com", role = c("aut", "cre"), comment = c(ORCID = "0000-0002-5087-2494")),
