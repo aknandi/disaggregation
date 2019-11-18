@@ -182,13 +182,13 @@ predict_uncertainty <- function(model_output, newdata = NULL, predict_iid = FALS
   return(uncertainty)
 }
 
-#' Get coordinates from raster
-#'
-#' @param data disag.data object 
-#' 
-#' @return A matrix of the coordinates of the raster
-#' 
-#' @name getCoords
+# Get coordinates from raster
+#
+# @param data disag.data object 
+# 
+# @return A matrix of the coordinates of the raster
+# 
+# @name getCoords
 
 getCoords <- function(data) {
   
@@ -200,14 +200,14 @@ getCoords <- function(data) {
   return(coords)
 }
 
-#' Get Amatrix for field
-#'
-#' @param mesh mesh used in the model fitting
-#' @param coords coordinates extracted from raster
-#' 
-#' @return An Amatrix object for the field
-#' 
-#' @name getAmatrix
+# Get Amatrix for field
+#
+# @param mesh mesh used in the model fitting
+# @param coords coordinates extracted from raster
+# 
+# @return An Amatrix object for the field
+# 
+# @name getAmatrix
 
 getAmatrix <- function(mesh, coords) {
   

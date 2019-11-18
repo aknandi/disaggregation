@@ -157,14 +157,14 @@ plot.uncertainty <- function(x, ...) {
   return(invisible(unc_plot))
 }
 
-#' Plot polygon data from SpatialPolygonDataFrame
-#'
-#' @param x Object to be plotted
-#' @param names list of 2 names: polygon id variable and response variable names
-#' 
-#' @return A ggplot of the polygon data
-#' 
-#' @name plot_polygon_data
+# Plot polygon data from SpatialPolygonDataFrame
+#
+# @param x Object to be plotted
+# @param names list of 2 names: polygon id variable and response variable names
+# 
+# @return A ggplot of the polygon data
+# 
+# @name plot_polygon_data
 
 plot_polygon_data <- function(x, names) {
 

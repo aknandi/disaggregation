@@ -176,12 +176,12 @@ getCovariateRasters <- function(directory, file_pattern = '.tif$', shape) {
   return(covariate_stack)
 }
 
-#' Extract coordinates from raster to use constructing the INLA mesh
-#' 
-#' @param cov_rasters RasterStack of the covariate rasters.
-#' @param selectIds numeric vector containing cell ids to retain. Default NULL retains all cell ids in the covariate rasters.
-#' 
-#' @return A matrix containing the coordinates used to make the mesh
+# Extract coordinates from raster to use constructing the INLA mesh
+# 
+# @param cov_rasters RasterStack of the covariate rasters.
+# @param selectIds numeric vector containing cell ids to retain. Default NULL retains all cell ids in the covariate rasters.
+# 
+# @return A matrix containing the coordinates used to make the mesh
 
 extractCoordsForMesh <- function(cov_rasters, selectIds = NULL) {
   
