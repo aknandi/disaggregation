@@ -14,13 +14,17 @@ There were 3 NOTEs:
   New submission
 
   Possibly mis-spelled words in DESCRIPTION:
-    TMB (11:58)
-    disaggregation (3:29, 11:19)
+    Disaggregation (3:8)
+    al (15:14)
+    disaggregation (11:19, 14:82)
+    et (15:11)
 
   Suggests or Enhances not in mainstream repositories:
     INLA
   Availability using Additional_repositories specification:
     INLA   yes   https://inla.r-inla-download.org/R/stable
+
+  The Title field starts with the package name.
   
   I have not submitted a package before. These are not mis-spelled words. The package uses INLA, my understanding of this NOTE is that it is fine.
 
