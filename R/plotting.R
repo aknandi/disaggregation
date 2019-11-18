@@ -7,6 +7,8 @@
 #' @param x Object of class \emph{disag.data} to be plotted.
 #' @param ... Further arguments to \emph{plot} function.
 #' 
+#' @return A list of two plots: the polygon plot (ggplot) and covariate plot (spplot)
+#' 
 #' @import ggplot2
 #' @method plot disag.data
 #' 
@@ -38,6 +40,8 @@ plot.disag.data <- function(x, ...) {
 #' 
 #' @param x Object of class \emph{fit.result} to be plotted.
 #' @param ... Further arguments to \emph{plot} function.
+#' 
+#' @return A list of two ggplot plots: results of the fixed effects and an in-sample observed vs predicted plot 
 #' 
 #' @import ggplot2
 #' @method plot fit.result
@@ -96,6 +100,9 @@ plot.fit.result <- function(x, ...){
 #' @param x Object of class \emph{predictions} to be plotted.
 #' @param ... Further arguments to \emph{plot} function.
 #' 
+#' @return A list of plots of rasters from the prediction: mean prediction, covariate contribution, field contribution (if used) 
+#' and the iid contribution (if used)
+#' 
 #' @method plot predictions
 #' 
 #' @export
@@ -129,10 +136,12 @@ plot.predictions <- function(x, ...) {
 #'
 #' Plotting function for class \emph{uncertainty} (the uncertainty predictions of the disaggragation fitting).
 #' 
-#' Produces a plot of the upper and lower credible interval rasters.
+#' Produces a plot of the lower and upper credible interval rasters.
 #' 
 #' @param x Object of class \emph{uncertainty} to be plotted.
 #' @param ... Further arguments to \emph{plot} function.
+#' 
+#' @return A plot of the lower and upper credible interval rasters
 #' 
 #' @method plot uncertainty
 #' 
@@ -152,6 +161,9 @@ plot.uncertainty <- function(x, ...) {
 #'
 #' @param x Object to be plotted
 #' @param names list of 2 names: polygon id variable and response variable names
+#' 
+#' @return A ggplot of the polygon data
+#' 
 #' @name plot_polygon_data
 
 plot_polygon_data <- function(x, names) {

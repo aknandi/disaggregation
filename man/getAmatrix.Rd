@@ -11,6 +11,9 @@ getAmatrix(mesh, coords)
 
 \item{coords}{coordinates extracted from raster}
 }
+\value{
+An Amatrix object for the field
+}
 \description{
 Get Amatrix for field
 }

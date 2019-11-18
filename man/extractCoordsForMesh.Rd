@@ -11,6 +11,9 @@ extractCoordsForMesh(cov_rasters, selectIds = NULL)
 
 \item{selectIds}{numeric vector containing cell ids to retain. Default NULL retains all cell ids in the covariate rasters.}
 }
+\value{
+A matrix containing the coordinates used to make the mesh
+}
 \description{
 Extract coordinates from raster to use constructing the INLA mesh
 }

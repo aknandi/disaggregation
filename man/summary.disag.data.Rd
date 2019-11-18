@@ -11,6 +11,9 @@
 
 \item{...}{Further arguments to \emph{summary} function.}
 }
+\value{
+A list of the number of polyons, the number of covariates and summaries of the covariates.
+}
 \description{
 Function that summarizes the input data from the disaggregation model.
 }

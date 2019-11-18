@@ -18,6 +18,8 @@
 #' to control the boundary of the inner mesh, and \emph{max.edge}, \emph{cut} and \emph{offset}, to control the  mesh itself,
 #' with the parameters having the same meaning as in the INLA functions \emph{inla.convex.hull} and \emph{inla.mesh.2d}.
 #'
+#' @return An inla.mesh object
+#' 
 #' @name build_mesh
 #'
 #' @examples 

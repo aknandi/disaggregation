@@ -11,6 +11,9 @@
 
 \item{...}{Further arguments to \emph{plot} function.}
 }
+\value{
+A list of two ggplot plots: results of the fixed effects and an in-sample observed vs predicted plot
+}
 \description{
 Plotting function for class \emph{fit.result} (the result of the disaggragation fitting).
 }

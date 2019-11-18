@@ -13,6 +13,11 @@ getStartendindex(covariates, polygon_data, id_var = "area_id")
 
 \item{id_var}{string with the name of the column in the covariate data.frame containing the polygon id.}
 }
+\value{
+A matrix with two columns and one row for each polygon. The first column is the index of the first row in
+covariate data that corresponds to that polygon, the second column is the index of the last row in
+covariate data that corresponds to that polygon.
+}
 \description{
 From the covaraite data and polygon data, the function matches the polygon id between the two to find 
 which pixels from the covariate data are contained in each of the polygons.

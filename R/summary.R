@@ -7,6 +7,8 @@
 #' @param object Object returned from fit_model.
 #' @param ... Further arguments to \emph{summary} function.
 #' 
+#' @return A list of the model parameters, negative log likelihood and metrics from in-sample performance.
+#' 
 #' @method summary fit.result
 #' 
 #' @export
@@ -68,6 +70,8 @@ summary.fit.result <- function(object, ...) {
 #' @param x Object returned from fit_model.
 #' @param ... Further arguments to \emph{print} function.
 #' 
+#' @return NULL
+#' 
 #' @method print fit.result
 #' 
 #' @export
@@ -88,6 +92,8 @@ print.fit.result <- function(x, ...){
 #'
 #' @param object Object returned from fit_model.
 #' @param ... Further arguments to \emph{summary} function.
+#' 
+#' @return A list of the number of polyons, the number of covariates and summaries of the covariates.
 #' 
 #' @method summary disag.data
 #' 
@@ -128,6 +134,8 @@ summary.disag.data <- function(object, ...) {
 #'
 #' @param x Object returned from fit_model.
 #' @param ... Further arguments to \emph{print} function.
+#' 
+#' @return NULL
 #' 
 #' @method print disag.data
 #' 

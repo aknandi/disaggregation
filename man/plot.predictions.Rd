@@ -11,6 +11,10 @@
 
 \item{...}{Further arguments to \emph{plot} function.}
 }
+\value{
+A list of plots of rasters from the prediction: mean prediction, covariate contribution, field contribution (if used) 
+and the iid contribution (if used)
+}
 \description{
 Plotting function for class \emph{predictions} (the mean predictions of the disaggragation fitting).
 }

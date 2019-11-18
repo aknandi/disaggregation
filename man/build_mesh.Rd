@@ -13,6 +13,9 @@ build_mesh(shapes, mesh.args = NULL)
 to control the boundary of the inner mesh, and \emph{max.edge}, \emph{cut} and \emph{offset}, to control the  mesh itself,
 with the parameters having the same meaning as in the INLA functions \emph{inla.convex.hull} and \emph{inla.mesh.2d}.}
 }
+\value{
+An inla.mesh object
+}
 \description{
 \emph{build_mesh} function takes a SpatialPolygons object and mesh arguments to build an appropriate mesh for the spatial field.
 }

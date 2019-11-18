@@ -11,6 +11,9 @@ plot_polygon_data(x, names)
 
 \item{names}{list of 2 names: polygon id variable and response variable names}
 }
+\value{
+A ggplot of the polygon data
+}
 \description{
 Plot polygon data from SpatialPolygonDataFrame
 }

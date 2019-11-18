@@ -9,6 +9,9 @@ getCoords(data)
 \arguments{
 \item{data}{disag.data object}
 }
+\value{
+A matrix of the coordinates of the raster
+}
 \description{
 Get coordinates from raster
 }
