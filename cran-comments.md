@@ -20,6 +20,10 @@ This is a resubmission. In this version I have:
   
   Affects: prepare_data function and vignettes/disaggregation.Rmd
 
+* Skipped tests on CRAN as they were taking too long
+
+  Affects: tests/testthat.R
+
 ## Test environments
 * local Windows 10, R 3.6.1
 * Ubuntu 16.04.6 LTS (on travis-ci, devel and release) 
