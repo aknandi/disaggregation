@@ -1,8 +1,5 @@
 library(testthat)
 library(disaggregation)
 
-not_cran <- function() identical(Sys.getenv("NOT_CRAN"), "true")
+test_check("disaggregation")
 
-if(not_cran()) {
-  test_check("disaggregation")
-}

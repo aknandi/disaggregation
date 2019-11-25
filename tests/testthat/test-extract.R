@@ -30,13 +30,9 @@ r2 <- raster::setExtent(r2, raster::extent(spdf))
 r2[] <- sapply(1:raster::ncell(r), function(x) rnorm(1, ceiling(x/n_pixels_per_side), 3))
 cov_stack <- raster::stack(r, r2)
 
-cl <- parallel::makeCluster(2)
-doParallel::registerDoParallel(cl)
-cov_data <- parallelExtract(cov_stack, spdf, fun = NULL, id = 'area_id')
-parallel::stopCluster(cl)
-foreach::registerDoSEQ()
-
 test_that("parallelExtract gives errors when it should", {
+  
+  skip_on_cran()
   
   cl <- parallel::makeCluster(2)
   doParallel::registerDoParallel(cl)
@@ -50,6 +46,14 @@ test_that("parallelExtract gives errors when it should", {
 
 test_that("parallelExtract give the right form of output", {
   
+  skip_on_cran()
+  
+  cl <- parallel::makeCluster(2)
+  doParallel::registerDoParallel(cl)
+  cov_data <- parallelExtract(cov_stack, spdf, fun = NULL, id = 'area_id')
+  parallel::stopCluster(cl)
+  foreach::registerDoSEQ()
+  
   expect_is(cov_data, 'data.frame')
   expect_equal(sort(as.numeric(unique(cov_data$area_id))), spdf$area_id)#
   expect_equal(ncol(cov_data), raster::nlayers(cov_stack) + 2)#
@@ -59,6 +63,8 @@ test_that("parallelExtract give the right form of output", {
 })
 
 test_that("getPolygonData function", {
+  
+  skip_on_cran()
   
   expect_error(getPolygonData(spdf, id_var = 'id', response_var = 'response'))
   expect_error(getPolygonData(spdf, id_var = 'area_id', response_var = 'data'))
@@ -84,6 +90,8 @@ test_that("getPolygonData function", {
 
 test_that("getCovariateData function gives errors when it should", {
   
+  skip_on_cran()
+  
   expect_error(getCovariateRasters('/home/rasters', '.tif$', spdf))
   
   # Save .tif files in tempdir()
@@ -101,6 +109,14 @@ test_that("getCovariateData function gives errors when it should", {
 
 test_that("extractCoordsForMesh function behaves as it should", {
 
+  skip_on_cran()
+  
+  cl <- parallel::makeCluster(2)
+  doParallel::registerDoParallel(cl)
+  cov_data <- parallelExtract(cov_stack, spdf, fun = NULL, id = 'area_id')
+  parallel::stopCluster(cl)
+  foreach::registerDoSEQ()
+  
   result <- extractCoordsForMesh(cov_stack, cov_data$cellid)
   
   result2 <- extractCoordsForMesh(cov_stack)
