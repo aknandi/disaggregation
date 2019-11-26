@@ -32,6 +32,8 @@ test_data <- prepare_data(polygon_shapefile = spdf,
 
 test_that("Check plot_polygon_data function works as expected", {
   
+  skip_on_cran()
+  
   p <- plot_polygon_data(spdf, list(id_var = 'area_id', response_var = 'response'))
   expect_error(plot_polygon_data(polys, list(id_var = 'area_id', response_var = 'response')))
   expect_is(p, 'ggplot')
