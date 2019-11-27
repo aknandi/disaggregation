@@ -22,7 +22,12 @@ This is a resubmission. In this version I have:
 
 * Skipped tests on CRAN as they were taking too long
 
-  Affects: tests/testthat.R
+  The timings used to be:
+  ** running tests for arch 'i386' ... [298s] OK
+  ** running tests for arch 'x64' ... [305s] OK
+  I have now reduced this by more than half:
+  ** running tests for arch 'i386' ... [106s] OK
+  ** running tests for arch 'x64' ... [101s] OK
 
 ## Test environments
 * local Windows 10, R 3.6.1
