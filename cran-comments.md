@@ -29,6 +29,11 @@ This is a resubmission. In this version I have:
   ** running tests for arch 'i386' ... [106s] OK
   ** running tests for arch 'x64' ... [101s] OK
 
+* \dontrun{} is only used if the example really cannot be executed. 
+
+Examples that are the most interesting use INLA so we don't run these examples. 
+One example takes longer than 5 seconds and so \donttest{} is used instead.
+
 ## Test environments
 * local Windows 10, R 3.6.1
 * Ubuntu 16.04.6 LTS (on travis-ci, devel and release) 
