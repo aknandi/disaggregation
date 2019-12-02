@@ -46,9 +46,3 @@ The list  of class \code{disag.data} contains:
 \description{
 Function to fit the disaggregation model
 }
-\examples{
-\dontrun{
-  as.disag.data(polygon_data, covariate_data, coords, startendindex, mesh)
- }
-
-}

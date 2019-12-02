@@ -53,7 +53,7 @@
 #' @name prepare_data
 #'
 #' @examples 
-#' \dontrun{
+#' \donttest{
 #'  polygons <- list()
 #'  for(i in 1:100) {
 #'   row <- ceiling(i/10)
@@ -217,11 +217,6 @@ prepare_data <- function(polygon_shapefile,
 #'  \item{mesh }{A INLA mesh to be used for the spatial field of the disaggregation model.}
 #'
 #' @name as.disag.data
-#'
-#' @examples 
-#' \dontrun{
-#'   as.disag.data(polygon_data, covariate_data, coords, startendindex, mesh)
-#'  }
 #' 
 #' @export
 

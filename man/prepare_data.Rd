@@ -73,7 +73,7 @@ will automatically deal with NAs. It removes any polygons that have NAs as a res
 and sets covariate NAs pixels to the median value for the that covariate.
 }
 \examples{
-\dontrun{
+\donttest{
  polygons <- list()
  for(i in 1:100) {
   row <- ceiling(i/10)
@@ -96,6 +96,6 @@ and sets covariate NAs pixels to the median value for the that covariate.
 
  test_data <- prepare_data(polygon_shapefile = spdf, 
                            covariate_rasters = cov_rasters)
-} 
+}
                    
 }
