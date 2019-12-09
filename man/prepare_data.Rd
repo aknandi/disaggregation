@@ -96,6 +96,6 @@ and sets covariate NAs pixels to the median value for the that covariate.
 
  test_data <- prepare_data(polygon_shapefile = spdf, 
                            covariate_rasters = cov_rasters)
-}
+} 
                    
 }

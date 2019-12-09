@@ -1,6 +1,14 @@
 ## Resubmission
 This is a resubmission. In this version I have:
 
+* Version 0.1.0 was accepted but subsequently failed some builds. These errors have now been fixed, details below. The version is now 0.1.1
+
+  disaggregation.cpp:207:18: warning: explicitly assigning value of variable of type 'vector<Type>' to itself [-Wself-assign-overloaded]
+  This line has been removed
+  disaggregation.cpp:99:22: error: call of overloaded 'sqrt(int)' is ambiguous
+    Type kappa = sqrt(8) / rho;
+  Changed this to Type kappa = sqrt(8.0) / rho;
+
 * Omitted the redundant and rather unspecific part "Useful Functions for" in the DESCRIPTION title.
 
 * Added a useful reference for disaggregation modelling in the Description field of the DESCRIPTION file
@@ -31,8 +39,8 @@ This is a resubmission. In this version I have:
 
 * \dontrun{} is only used if the example really cannot be executed. 
 
-Examples that are the most interesting use INLA so we don't run these examples. 
-One example takes longer than 5 seconds and so \donttest{} is used instead.
+  Examples that are the most interesting use INLA so we don't run these examples. 
+  One example takes longer than 5 seconds and so \donttest{} is used instead.
 
 ## Test environments
 * local Windows 10, R 3.6.1
