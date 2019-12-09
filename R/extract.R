@@ -13,6 +13,8 @@
 #' @param id Name of column in shape object to be used to bind an ID column to output.
 #' @param ... Other arguments to raster::extract.
 #' 
+#' @return A data.frame with columns of polygon id, cell id (if fun = NULL) and a column for each raster in the stack
+#' 
 #' @importFrom foreach %dopar%
 #' @importFrom parallel stopCluster
 #' @importFrom parallel makeCluster
@@ -104,6 +106,10 @@ parallelExtract <- function(raster, shape, fun = mean, id = 'OBJECTID',  ...){
 #' @param response_var Name of column in shape object with the response data. Default 'response'.
 #' @param sample_size_var For survey data, name of column in SpatialPolygonDataFrame object (if it exists) with the sample size data. Default NULL.
 #' 
+#' @return A data.frame with a row for each polygon in the SpatialPolygonDataFrame and columns: area_id, response and N, containing the id of the
+#' polygon, the values of the response for that polygon, and the sample size respectively. If the data is not survey data (the sample size does 
+#' not exist), this column will contain NAs.
+#' 
 #' @export
 #' @examples {
 #'  polygons <- list()
@@ -146,6 +152,8 @@ getPolygonData <- function(shape, id_var = 'area_id', response_var = 'response',
 #' @param file_pattern Pattern the filenames must match. Default is all files ending in .tif .
 #' @param shape An object with an extent that the rasters will be cropped to.
 #' 
+#' @return A RasterStack of the raster files in the directory
+#' 
 #' @export
 #' @examples 
 #' \dontrun{
@@ -168,11 +176,12 @@ getCovariateRasters <- function(directory, file_pattern = '.tif$', shape) {
   return(covariate_stack)
 }
 
-#' Extract coordinates from raster to use constructing the INLA mesh
-#' 
-#' @param cov_rasters RasterStack of the covariate rasters.
-#' @param selectIds numeric vector containing cell ids to retain. Default NULL retains all cell ids in the covariate rasters.
-#' 
+# Extract coordinates from raster to use constructing the INLA mesh
+# 
+# @param cov_rasters RasterStack of the covariate rasters.
+# @param selectIds numeric vector containing cell ids to retain. Default NULL retains all cell ids in the covariate rasters.
+# 
+# @return A matrix containing the coordinates used to make the mesh
 
 extractCoordsForMesh <- function(cov_rasters, selectIds = NULL) {
   

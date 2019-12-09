@@ -11,6 +11,9 @@
 
 \item{...}{Further arguments to \emph{plot} function.}
 }
+\value{
+A list of two plots: the polygon plot (ggplot) and covariate plot (spplot)
+}
 \description{
 Plotting function for class \emph{disag.data} (the input data for disaggragation).
 }

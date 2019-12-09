@@ -11,9 +11,12 @@
 
 \item{...}{Further arguments to \emph{plot} function.}
 }
+\value{
+A plot of the lower and upper credible interval rasters
+}
 \description{
 Plotting function for class \emph{uncertainty} (the uncertainty predictions of the disaggragation fitting).
 }
 \details{
-Produces a plot of the upper and lower credible interval rasters.
+Produces a plot of the lower and upper credible interval rasters.
 }

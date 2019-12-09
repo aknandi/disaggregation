@@ -74,6 +74,14 @@ predict.fit.result <- function(object, newdata = NULL, predict_iid = FALSE, N = 
 #'   If this is a raster stack or brick, predictions will be made over this data. Default NULL.
 #' @param predict_iid If TRUE, any polygon iid effect from the model will be used in the prediction. Default FALSE.
 #'
+#' @return The mean_predictions, a list of class \emph{predictions}:
+#'   \itemize{
+#'    \item \emph{predictions} Raster of mean predictions based.
+#'    \item \emph{field} Raster of the field component of the linear predictor.
+#'    \item \emph{iid} Raster of the iid component of the linear predictor.
+#'    \item \emph{covariates} Raster of the covariate component of the linear predictor.
+#'   }
+#'    
 #' @name predict_model
 #'
 #' @examples 
@@ -123,6 +131,12 @@ predict_model <- function(model_output, newdata = NULL, predict_iid = FALSE) {
 #' @param N number of realisations. Default: 100.
 #' @param CI confidence interval. Default: 0.95.
 #' 
+#' @return The uncertainty_predictions, a list of class \emph{uncertainty}:
+#'   \itemize{
+#'    \item \emph{realisations} RasterStack of realisations of predictions. Number of realisations defined by argument \emph{N}.
+#'    \item \emph{predictions_ci} RasterStack of the upper and lower credible intervals. Defined by argument \emph{CI}.
+#'   }
+#'   
 #' @name predict_uncertainty
 #'
 #' @examples 
@@ -168,10 +182,13 @@ predict_uncertainty <- function(model_output, newdata = NULL, predict_iid = FALS
   return(uncertainty)
 }
 
-#' Get coordinates from raster
-#'
-#' @param data disag.data object 
-#' @name getCoords
+# Get coordinates from raster
+#
+# @param data disag.data object 
+# 
+# @return A matrix of the coordinates of the raster
+# 
+# @name getCoords
 
 getCoords <- function(data) {
   
@@ -183,12 +200,14 @@ getCoords <- function(data) {
   return(coords)
 }
 
-#' Get Amatrix for field
-#'
-#' @param mesh mesh used in the model fitting
-#' @param coords coordinates extracted from raster
-#' 
-#' @name getAmatrix
+# Get Amatrix for field
+#
+# @param mesh mesh used in the model fitting
+# @param coords coordinates extracted from raster
+# 
+# @return An Amatrix object for the field
+# 
+# @name getAmatrix
 
 getAmatrix <- function(mesh, coords) {
   

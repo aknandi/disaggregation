@@ -1,3 +1,39 @@
+## Resubmission
+This is a resubmission. In this version I have:
+
+* Omitted the redundant and rather unspecific part "Useful Functions for" in the DESCRIPTION title.
+
+* Added a useful reference for disaggregation modelling in the Description field of the DESCRIPTION file
+
+  A useful reference for disaggregation modelling is Lucas et al. (2019) <doi:10.1101/548719>.
+  
+* Added missing Rd-tags: \value
+  
+  Affects: build_mesh, parallelExtract, getPolygonData, getCovariateRasters, getStartendindex, predict_model, predict_uncertatinty,
+  as.disag.data, plotting functions and summary functions
+
+* Remove Roxygen comments from functions that are not exported
+  
+  Affects: extractCoordsForMesh, plot_polygon_data, getCoords and getAmatrix
+
+* Replaced the installed.packages() function with requireNamespace()
+  
+  Affects: prepare_data function and vignettes/disaggregation.Rmd
+
+* Skipped tests on CRAN as they were taking too long
+
+  The timings used to be:
+  ** running tests for arch 'i386' ... [298s] OK
+  ** running tests for arch 'x64' ... [305s] OK
+  I have now reduced this by more than half:
+  ** running tests for arch 'i386' ... [106s] OK
+  ** running tests for arch 'x64' ... [101s] OK
+
+* \dontrun{} is only used if the example really cannot be executed. 
+
+Examples that are the most interesting use INLA so we don't run these examples. 
+One example takes longer than 5 seconds and so \donttest{} is used instead.
+
 ## Test environments
 * local Windows 10, R 3.6.1
 * Ubuntu 16.04.6 LTS (on travis-ci, devel and release) 
@@ -14,13 +50,17 @@ There were 3 NOTEs:
   New submission
 
   Possibly mis-spelled words in DESCRIPTION:
-    TMB (11:58)
-    disaggregation (3:29, 11:19)
+    Disaggregation (3:8)
+    al (15:14)
+    disaggregation (11:19, 14:82)
+    et (15:11)
 
   Suggests or Enhances not in mainstream repositories:
     INLA
   Availability using Additional_repositories specification:
     INLA   yes   https://inla.r-inla-download.org/R/stable
+
+  The Title field starts with the package name.
   
   I have not submitted a package before. These are not mis-spelled words. The package uses INLA, my understanding of this NOTE is that it is fine.
 

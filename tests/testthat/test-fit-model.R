@@ -33,10 +33,6 @@ cov_stack <- raster::stack(r, r2)
 test_data <- prepare_data(polygon_shapefile = spdf, 
                           covariate_rasters = cov_stack)
 
-binom_data <- prepare_data(polygon_shapefile = spdf_binom, 
-                           covariate_rasters = cov_stack,
-                           sample_size_var = 'sample_size')
-
 test_that("fit_model produces errors whe expected", {
   
   skip_if_not_installed('INLA')
@@ -69,6 +65,10 @@ test_that("user defined model setup is working as expected", {
   
   skip_if_not_installed('INLA')
   skip_on_cran()
+  
+  binom_data <- prepare_data(polygon_shapefile = spdf_binom, 
+                             covariate_rasters = cov_stack,
+                             sample_size_var = 'sample_size')
   
   result2 <- fit_model(test_data, iterations = 2, field = FALSE, family = 'poisson', link = 'log')
   result3 <- fit_model(binom_data, iterations = 2, iid = FALSE, family = 'binomial', link = 'logit')

@@ -17,6 +17,9 @@ parallelExtract(raster, shape, fun = mean, id = "OBJECTID", ...)
 
 \item{...}{Other arguments to raster::extract.}
 }
+\value{
+A data.frame with columns of polygon id, cell id (if fun = NULL) and a column for each raster in the stack
+}
 \description{
 Parallelisation is performed across rasters, not shapes. 
 So this function is only useful if you are extracting 

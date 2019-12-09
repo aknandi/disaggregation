@@ -30,12 +30,9 @@ cov_stack <- raster::stack(r, r2)
 test_data <- prepare_data(polygon_shapefile = spdf, 
                           covariate_rasters = cov_stack)
 
-test_data2 <- prepare_data(polygon_shapefile = spdf2, 
-                           covariate_rasters = cov_stack,
-                           response_var = 'n_positive')
-
-
 test_that("Check plot_polygon_data function works as expected", {
+  
+  skip_on_cran()
   
   p <- plot_polygon_data(spdf, list(id_var = 'area_id', response_var = 'response'))
   expect_error(plot_polygon_data(polys, list(id_var = 'area_id', response_var = 'response')))
@@ -47,6 +44,12 @@ test_that("Check plot_polygon_data function works as expected", {
 })
 
 test_that("Check plot.disag.data function works as expected", {
+  
+  skip_on_cran()
+  
+  test_data2 <- prepare_data(polygon_shapefile = spdf2, 
+                             covariate_rasters = cov_stack,
+                             response_var = 'n_positive')
   
   p <- plot(test_data)
   

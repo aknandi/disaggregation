@@ -16,6 +16,11 @@ getPolygonData(shape, id_var = "area_id", response_var = "response",
 
 \item{sample_size_var}{For survey data, name of column in SpatialPolygonDataFrame object (if it exists) with the sample size data. Default NULL.}
 }
+\value{
+A data.frame with a row for each polygon in the SpatialPolygonDataFrame and columns: area_id, response and N, containing the id of the
+polygon, the values of the response for that polygon, and the sample size respectively. If the data is not survey data (the sample size does 
+not exist), this column will contain NAs.
+}
 \description{
 Returns a data.frame with a row for each polygon in the SpatialPolygonDataFrame and columns: area_id, response and N, containing the id of the
 polygon, the values of the response for that polygon, and the sample size respectively. If the data is not survey data (the sample size does 

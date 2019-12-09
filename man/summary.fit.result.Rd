@@ -11,6 +11,9 @@
 
 \item{...}{Further arguments to \emph{summary} function.}
 }
+\value{
+A list of the model parameters, negative log likelihood and metrics from in-sample performance.
+}
 \description{
 Function that summarises the fit result from the disaggregation model.
 }

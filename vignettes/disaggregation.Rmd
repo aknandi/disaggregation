@@ -19,7 +19,7 @@ knitr::opts_chunk$set(
 ```
 
 ```{r, echo=FALSE}
-isINLA <- "INLA" %in% utils::installed.packages()
+isINLA <- requireNamespace('INLA', quietly = TRUE)
 ```
 
 The **disaggregation** package contains functions to run Bayesian disaggregation models. Aggregated response data over large heterongenous regions can be used alongside fine-scale covariate information to predict fine-scale response across the region. The github page for this package can be found [here](https://github.com/aknandi/disaggregation).

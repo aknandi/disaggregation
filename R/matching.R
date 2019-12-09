@@ -14,6 +14,10 @@
 #' @param covariates data.frame with each covariate as a column an and id column.
 #' @param polygon_data data.frame with polygon id and response data.
 #' @param id_var string with the name of the column in the covariate data.frame containing the polygon id.
+#' 
+#' @return A matrix with two columns and one row for each polygon. The first column is the index of the first row in
+#' covariate data that corresponds to that polygon, the second column is the index of the last row in
+#' covariate data that corresponds to that polygon.
 #'
 #' @name getStartendindex
 #'
