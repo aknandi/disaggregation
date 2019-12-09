@@ -95,8 +95,7 @@ Type objective_function<Type>::operator()()
   DATA_SCALAR(prior_sigma_prob);
   
   // Convert hyperparameters to natural scale
-  // todo
-  Type kappa = sqrt(8) / rho;
+  Type kappa = sqrt(8.0) / rho;
   Type nu = 1;
   Type tau = sigma * pow(kappa, nu) * sqrt(4 * M_PI);
   
@@ -204,7 +203,7 @@ Type objective_function<Type>::operator()()
     } else if(link == 1) {
       pixel_pred = exp(pixel_pred);
     } else if(link == 2){
-      pixel_pred = pixel_pred;
+      // Don't need to do anything, i.e. pixel_pred = pixel_pred;
     } else {
       error("Link function not implemented.");
     }
