@@ -1,6 +1,11 @@
 ## Resubmission
 This is a resubmission. In this version I have:
 
+* Version 0.1.1 was accepted but subsequently failed a single build (r-devel-windows-ix86+x86_64-gcc8). These errors have now been fixed, details below. The version is now 0.1.2
+
+  In tests, prepare_data function explicity only builds mesh if not on CRAN (if(identical(Sys.getenv("NOT_CRAN"), "true")))
+  Affects: test-fit-model, test-plotting, test-predict-model
+  
 * Version 0.1.0 was accepted but subsequently failed some builds. These errors have now been fixed, details below. The version is now 0.1.1
 
   disaggregation.cpp:207:18: warning: explicitly assigning value of variable of type 'vector<Type>' to itself [-Wself-assign-overloaded]
