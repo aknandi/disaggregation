@@ -25,9 +25,14 @@ r2 <- raster::setExtent(r2, raster::extent(spdf))
 r2[] <- sapply(1:raster::ncell(r), function(x) rnorm(1, ceiling(x/n_pixels_per_side), 3))
 cov_stack <- raster::stack(r, r2)
 
-test_data <- prepare_data(polygon_shapefile = spdf, 
-                          covariate_rasters = cov_stack)
-
+if(identical(Sys.getenv("NOT_CRAN"), "true")) {
+  test_data <- prepare_data(polygon_shapefile = spdf, 
+                            covariate_rasters = cov_stack)
+} else {
+  test_data <- prepare_data(polygon_shapefile = spdf, 
+                            covariate_rasters = cov_stack,
+                            makeMesh = FALSE)
+}
 
 test_that("Check predict_model and predict_uncertainty function works as expected", {
   
