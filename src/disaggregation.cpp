@@ -97,7 +97,6 @@ Type objective_function<Type>::operator()()
   // Convert hyperparameters to natural scale
   Type kappa = sqrt(8.0) / rho;
   Type nu = 1;
-  Type tau = sigma * pow(kappa, nu) * sqrt(4 * M_PI);
   
   // Random effect parameters
   PARAMETER_VECTOR(nodemean);
@@ -126,7 +125,8 @@ Type objective_function<Type>::operator()()
     // Likelihood of hyperparameter of polygon iid random effect.
     Type lambda = -log(prior_iideffect_sd_prob) / prior_iideffect_sd_max;
     Type pcdensityiid = lambda / 2 * pow(iideffect_tau, -3/2) * exp( - lambda * pow(iideffect_tau, -1/2));
-    nll -= log(pcdensityiid);
+    // log(iideffect_sd) from the Jacobian
+    nll -= log(pcdensityiid) + log(iideffect_sd);
     
     // Likelihood of random effect for polygons
     for(int p = 0; p < iideffect.size(); p++) {
@@ -146,13 +146,17 @@ Type objective_function<Type>::operator()()
     Type lambdatilde1 = -log(prior_rho_prob) * prior_rho_min;
     Type lambdatilde2 = -log(prior_sigma_prob) / prior_sigma_max;
     Type pcdensity = lambdatilde1 * lambdatilde2 * pow(rho, -2) * exp(-lambdatilde1 * pow(rho, -1) - lambdatilde2 * sigma);
-    nll -= log(pcdensity);
+    // log_rho and log_sigma from the Jacobian
+    nll -= log(pcdensity) + log_rho + log_sigma;
     
     // Build spde matrix
     SparseMatrix<Type> Q = Q_spde(spde, kappa);
     
+    // From Lindgren (2011) https://doi.org/10.1111/j.1467-9868.2011.00777.x, see equation for the marginal variance
+    Type scaling_factor = sqrt(exp(lgamma(nu)) / (exp(lgamma(nu + 1)) * 4 * M_PI * pow(kappa, 2*nu)));
+    
     // Likelihood of the random field.
-    nll += SCALE(GMRF(Q), 1.0 / tau)(nodemean);
+    nll += SCALE(GMRF(Q), sigma / scaling_factor)(nodemean);
   }
 
   Type nll_priors = nll;
