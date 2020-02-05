@@ -4,15 +4,17 @@
 \alias{plot.disag.data}
 \title{Plot input data for disaggregation}
 \usage{
-\method{plot}{disag.data}(x, ...)
+\method{plot}{disag.data}(x, which = c(1, 2, 3), ...)
 }
 \arguments{
 \item{x}{Object of class \emph{disag.data} to be plotted.}
 
+\item{which}{If a subset of plots is requied, specify a subset of the numbers 1:3}
+
 \item{...}{Further arguments to \emph{plot} function.}
 }
 \value{
-A list of two plots: the polygon plot (ggplot) and covariate plot (spplot)
+A list of three plots: the polygon plot (ggplot), covariate plot (spplot) and INLA mesh plot (ggplot)
 }
 \description{
 Plotting function for class \emph{disag.data} (the input data for disaggragation).

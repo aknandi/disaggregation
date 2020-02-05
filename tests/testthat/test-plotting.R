@@ -51,6 +51,7 @@ test_that("Check plot_polygon_data function works as expected", {
 
 test_that("Check plot.disag.data function works as expected", {
   
+  skip_if_not_installed('INLA')
   skip_on_cran()
   
   test_data2 <- prepare_data(polygon_shapefile = spdf2, 
@@ -60,14 +61,20 @@ test_that("Check plot.disag.data function works as expected", {
   p <- plot(test_data)
   
   expect_is(p, 'list')
-  expect_equal(length(p), 2)
-  expect_equal(names(p), c('polygon', 'covariates'))
+  expect_equal(length(p), 3)
+  expect_equal(names(p), c('polygon', 'covariates', 'mesh'))
   
   p2 <- plot(test_data2)
   
   expect_is(p2, 'list')
-  expect_equal(length(p2), 2)
-  expect_equal(names(p2), c('polygon', 'covariates'))
+  expect_equal(length(p2), 3)
+  expect_equal(names(p2), c('polygon', 'covariates', 'mesh'))
+  
+  p3 <- plot(test_data, which = c(1,3))
+  
+  expect_is(p3, 'list')
+  expect_equal(length(p3), 2)
+  expect_equal(names(p3), c('polygon', 'mesh'))
   
 })
 
