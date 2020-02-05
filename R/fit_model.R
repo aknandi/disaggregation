@@ -109,6 +109,136 @@ fit_model <- function(data,
   if(!is.null(priors)) stopifnot(inherits(priors, 'list'))
   stopifnot(inherits(iterations, 'numeric'))
   
+  obj <- make_model_object(data = data, 
+                           priors = priors, 
+                           family = family, 
+                           link = link, 
+                           field = field, 
+                           iid = iid,
+                           silent = silent)
+  
+  message('Fitting model. This may be slow.')
+  opt <- stats::nlminb(obj$par, obj$fn, obj$gr, control = list(iter.max = iterations, trace = 0))
+  
+  
+  
+  sd_out <- TMB::sdreport(obj, getJointPrecision = TRUE)
+  
+  if(opt$convergence != 0) warning('The model did not converge. Try increasing the number of iterations')
+  
+  model_output <- list(obj = obj,
+                       opt = opt,
+                       sd_out = sd_out,
+                       data = data,
+                       model_setup = list(family = family, link = link, field = field, iid = iid))
+  
+  class(model_output) <- c('fit.result', 'list')
+  
+  return(model_output)
+  
+  
+}
+
+#' Create the TMB model object for the disaggregation model
+#' 
+#' \emph{make_model_object} function takes a \emph{disag.data} object created by \code{\link{prepare_data}} 
+#' and creates a TMB model object to be used in fitting.
+#' 
+#' \strong{The model definition}
+#' 
+#' The disaggregation model make predictions at the pixel level:
+#' \deqn{link(pred_i) = \beta_0 + \beta X + GP(s_i) + u_i}{ link(predi) = \beta 0 + \beta X + GP + u}
+#' 
+#' And then aggregates these predictions to the polygon level using the weighted sum (via the aggregation raster, \eqn{agg_i}{aggi}):
+#' \deqn{cases_j = \sum_{i \epsilon j} pred_i \times agg_i}{ casesj = \sum (predi x aggi)}
+#' \deqn{rate_j = \frac{\sum_{i \epsilon j} pred_i \times agg_i}{\sum_{i \epsilon j} agg_i}}{ratej = \sum(predi x aggi) / \sum (aggi)}
+#' 
+#' The different likelihood correspond to slightly different models (\eqn{y_j}{yi} is the repsonse count data):
+#' \itemize{
+#'   \item Gaussian: 
+#'    If \eqn{\sigma} is the dispersion of the pixel data, \eqn{\sigma_j}{\sigmaj} is the dispersion of the polygon data, where 
+#'    \eqn{\sigma_j = \sigma \sqrt{\sum agg_i^2} / \sum agg_i }{\sigmaj = \sigma x { \sqrt \sum (aggi ^ 2) } / \sum aggi}
+#'    \deqn{dnorm(y_j/\sum agg_i, rate_j, \sigma_j)}{dnorm(yj / \sum aggi, ratej, \sigmaj)} - predicts incidence rate.
+#'   \item Binomial: 
+#'    For a survey in polygon j, \eqn{y_j}{yj} is the number positive and \eqn{N_j}{Nj} is the number tested.
+#'    \deqn{dbinom(y_j, N_j, rate_j)}{dbinom(yj, Nj, ratej)} - predicts prevalence rate.
+#'   \item Poisson: 
+#'    \deqn{dpois(y_j, cases_j)}{dpois(yj, casesj)} - predicts incidence count.
+#' }
+#' 
+#' Specify priors for the regression parameters, field and iid effect as a single list. Hyperpriors for the field 
+#' are given as penalised complexity priors you specify \eqn{\rho_{min}} and \eqn{\rho_{prob}} for the range of the field 
+#' where \eqn{P(\rho < \rho_{min}) = \rho_{prob}}, and \eqn{\sigma_{min}$ and $\sigma_{prob}} for the variation of the field 
+#' where \eqn{P(\sigma > \sigma_{min}) = \sigma_{prob}}. Also, specify pc priors for the iid effect
+#' 
+#' The \emph{family} and \emph{link} arguments are used to specify the likelihood and link function respectively. 
+#' The likelihood function can be one of \emph{gaussian}, \emph{poisson} or \emph{binomial}. 
+#' The link function can be one of \emph{logit}, \emph{log} or \emph{identity}.
+#' These are specified as strings.
+#' 
+#' The field and iid effect can be turned on or off via the \emph{field} and \emph{iid} logical flags. Both are default TRUE.
+#' 
+#' The \emph{iterations} argument specifies the maximum number of iterations the model can run for to find an optimal point.
+#' 
+#' The \emph{silent} argument can be used to publish/supress verbose output. Default TRUE.
+#' 
+#'
+#' @param data disag.data object returned by \code{\link{prepare_data}} function that contains all the necessary objects for the model fitting
+#' @param priors list of prior values
+#' @param family likelihood function: \emph{gaussian}, \emph{binomial} or \emph{poisson}
+#' @param link link function: \emph{logit}, \emph{log} or \emph{identity}
+#' @param field logical. Flag the spatial field on or off
+#' @param iid logical. Flag the iid effect on or off
+#' @param silent logical. Suppress verbose output.
+#' 
+#' @return The TMB model object returned by \code{\link[TMB]{MakeADFun}}.
+#' 
+#' @name make_model_object
+#'
+#' @examples 
+#' \dontrun{
+#'  polygons <- list()
+#'  for(i in 1:100) {
+#'   row <- ceiling(i/10)
+#'   col <- ifelse(i %% 10 != 0, i %% 10, 10)
+#'   xmin = 2*(col - 1); xmax = 2*col; ymin = 2*(row - 1); ymax = 2*row
+#'   polygons[[i]] <- rbind(c(xmin, ymax), c(xmax,ymax), c(xmax, ymin), c(xmin,ymin))
+#'  }
+#' 
+#'  polys <- do.call(raster::spPolygons, polygons)
+#'  response_df <- data.frame(area_id = 1:100, response = runif(100, min = 0, max = 10))
+#'  spdf <- sp::SpatialPolygonsDataFrame(polys, response_df)
+#' 
+#'  r <- raster::raster(ncol=20, nrow=20)
+#'  r <- raster::setExtent(r, raster::extent(spdf))
+#'  r[] <- sapply(1:raster::ncell(r), function(x) rnorm(1, ifelse(x %% 20 != 0, x %% 20, 20), 3))
+#'  r2 <- raster::raster(ncol=20, nrow=20)
+#'  r2 <- raster::setExtent(r2, raster::extent(spdf))
+#'  r2[] <- sapply(1:raster::ncell(r), function(x) rnorm(1, ceiling(x/10), 3))
+#'  cov_rasters <- raster::stack(r, r2)
+#' 
+#'  cl <- parallel::makeCluster(2)
+#'  doParallel::registerDoParallel(cl)
+#'  test_data <- prepare_data(polygon_shapefile = spdf, 
+#'                            covariate_rasters = cov_rasters)
+#'  parallel::stopCluster(cl)
+#'  foreach::registerDoSEQ()
+#'                          
+#'  result <- make_model_object(test_data)
+#'  }
+#'  
+#' @export
+#' 
+
+make_model_object <- function(data, 
+                              priors = NULL, 
+                              family = 'gaussian', 
+                              link = 'identity', 
+                              field = TRUE, 
+                              iid = TRUE,
+                              silent = TRUE) {
+  
+  
   # Check that binomial model has sample_size values supplied
   if(family == 'binomial') {
     if(sum(is.na(data$polygon_data$N)) != 0) {
@@ -194,7 +324,7 @@ fit_model <- function(data,
   } else {
     final_priors <- default_priors
   }
-
+  
   parameters <- list(intercept = -5,
                      slope = rep(0, ncol(cov_matrix)),
                      log_tau_gaussian = 8,
@@ -249,24 +379,5 @@ fit_model <- function(data,
     silent = silent,
     DLL = "disaggregation")
   
-  message('Fitting model. This may be slow.')
-  opt <- stats::nlminb(obj$par, obj$fn, obj$gr, control = list(iter.max = iterations, trace = 0))
-  
-  
-  
-  sd_out <- TMB::sdreport(obj, getJointPrecision = TRUE)
-  
-  if(opt$convergence != 0) warning('The model did not converge. Try increasing the number of iterations')
-  
-  model_output <- list(obj = obj,
-                       opt = opt,
-                       sd_out = sd_out,
-                       data = data,
-                       model_setup = list(family = family, link = link, field = field, iid = iid))
-  
-  class(model_output) <- c('fit.result', 'list')
-  
-  return(model_output)
-  
-  
+  return(obj)
 }
