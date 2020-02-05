@@ -109,3 +109,15 @@ test_that("user defined model setup is working as expected", {
   expect_equal(result4$model_setup$family, 'gaussian')
   expect_equal(result4$model_setup$link, 'identity')
 })
+
+test_that("make_model_object behaves as expected", {
+  
+  skip_if_not_installed('INLA')
+  skip_on_cran()
+  
+  result <- make_model_object(test_data)
+  
+  expect_is(result, 'list')
+  expect_equal(sum(sapply(c("par", "fn", "gr", "report"), function(x) !(x %in% names(result)))), 0)
+  
+})
