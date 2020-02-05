@@ -95,8 +95,8 @@ Type objective_function<Type>::operator()()
   DATA_SCALAR(prior_sigma_prob);
   
   // Convert hyperparameters to natural scale
+  DATA_SCALAR(nu);
   Type kappa = sqrt(8.0) / rho;
-  Type nu = 1;
   
   // Random effect parameters
   PARAMETER_VECTOR(nodemean);
@@ -122,7 +122,8 @@ Type objective_function<Type>::operator()()
   }
   
   if(iid) {
-    // Likelihood of hyperparameter of polygon iid random effect.
+    // Likelihood of hyperparameter of polygon iid random effect. 
+    // From https://projecteuclid.org/euclid.ss/1491465621 (Eqn 3.3)
     Type lambda = -log(prior_iideffect_sd_prob) / prior_iideffect_sd_max;
     Type pcdensityiid = lambda / 2 * pow(iideffect_tau, -3/2) * exp( - lambda * pow(iideffect_tau, -1/2));
     // log(iideffect_sd) from the Jacobian
@@ -142,7 +143,8 @@ Type objective_function<Type>::operator()()
   }
   
   if(field) {
-    // Likelihood of hyperparameters for field
+    // Likelihood of hyperparameters for field. 
+    // From https://www.tandfonline.com/doi/full/10.1080/01621459.2017.1415907 (Theorem 2.6)
     Type lambdatilde1 = -log(prior_rho_prob) * prior_rho_min;
     Type lambdatilde2 = -log(prior_sigma_prob) / prior_sigma_max;
     Type pcdensity = lambdatilde1 * lambdatilde2 * pow(rho, -2) * exp(-lambdatilde1 * pow(rho, -1) - lambdatilde2 * sigma);

@@ -145,8 +145,9 @@ fit_model <- function(data,
     stop('Your data object must contain an INLA mesh.')
   }
   
+  nu = 1
   # Sort out mesh bits
-  spde <- (INLA::inla.spde2.matern(data$mesh, alpha = 2)$param.inla)[c("M0", "M1", "M2")]	
+  spde <- (INLA::inla.spde2.matern(data$mesh, alpha = nu + 1)$param.inla)[c("M0", "M1", "M2")]	
   Apix <- INLA::inla.mesh.project(data$mesh, loc = data$coordsForFit)$A
   n_s <- nrow(spde$M0)
   
@@ -212,6 +213,7 @@ fit_model <- function(data,
                      response_sample_size = data$polygon_data$N,
                      family = family_id,
                      link = link_id,
+                     nu = nu,
                      field = as.integer(field),
                      iid = as.integer(iid))
   
