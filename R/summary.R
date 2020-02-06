@@ -44,8 +44,13 @@ summary.fit.result <- function(object, ...) {
                               spearman = cor(pred, obs, method = 'spearman'),
                               log_pearson = cor(log1p(pred), log1p(obs), method = 'pearson'))
   
+  cat(paste('Likelihood function:', object$model_setup$family))
+  cat(paste('Link function:', object$model_setup$link, '\n'))
+  
   cat('Model parameters:\n')
   print(model_params)
+  
+  cat(paste0('\nModel convergence: ', object$opt$convergence, ' (', object$opt$message, ')'))
   
   cat(paste('\nNegative log likelihood: ', nll, '\n'))
   
@@ -78,9 +83,18 @@ summary.fit.result <- function(object, ...) {
 #' @importFrom stats cor quantile sd
 
 print.fit.result <- function(x, ...){
-  summary(x)
-  return(NULL)
   
+  model_params <- summary(x$sd_out, select = 'fixed')
+  
+  cat('Bayesian disaggregation model result\n')
+  cat('\n')
+  cat(paste('Likelihood function:', x$model_setup$family, '\n'))
+  cat(paste('Link function:', x$model_setup$link, '\n'))
+  
+  cat('\nParameter values:\n')
+  print(model_params[ , 1])
+  
+  return(invisible(x))
 }
 
 
@@ -103,7 +117,6 @@ summary.disag.data <- function(object, ...) {
 
   n_polygons <- nrow(object$polygon_shapefile)
   n_covariates <- raster::nlayers(object$covariate_rasters)
-  covariate_names <- names(object$covariate_rasters)
   
   cat(paste("They data contains", n_polygons, "polygons and", nrow(object$covariate_data), "pixels\n"))
   
@@ -140,7 +153,18 @@ summary.disag.data <- function(object, ...) {
 #' @method print disag.data
 #' 
 #' @export
+
 print.disag.data <- function(x, ...){
-  summary(x)
-  return(NULL)
+  
+  n_polygons <- nrow(x$polygon_shapefile)
+  n_covariates <- raster::nlayers(x$covariate_rasters)
+  
+  cat(paste("They data contains", n_polygons, "polygons and", nrow(x$covariate_data), "pixels\n"))
+  
+  cat(paste("The largest polygon contains", max(table(x$covariate_data[ , x$shapefile_names$id_var])), "pixels", 
+            "and the smallest polygon contains", min(table(x$covariate_data[ , x$shapefile_names$id_var])), "pixels\n"))
+  
+  cat(paste("There are", n_covariates, "covariates\n"))
+  
+  return(invisible(x))
 }
