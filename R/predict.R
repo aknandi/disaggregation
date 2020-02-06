@@ -20,15 +20,15 @@
 #' @param CI Confidence interval to be calculated from the realisations. Default: 0.95.
 #' @param ... Further arguments passed to or from other methods.
 #'
-#' @return A list of two objects is returned: 
-#'  \item{mean_predictions }{List of class \emph{predictions}:
+#' @return An object of class \emph{disag_predictions} which consists of a list of two objects: 
+#'  \item{mean_predictions }{List of:
 #'   \itemize{
 #'    \item \emph{predictions} Raster of mean predictions based.
 #'    \item \emph{field} Raster of the field component of the linear predictor.
 #'    \item \emph{iid} Raster of the iid component of the linear predictor.
 #'    \item \emph{covariates} Raster of the covariate component of the linear predictor.
 #'   }} 
-#'  \item{uncertainty_predictions }{List of class \emph{uncertainty}:
+#'  \item{uncertainty_predictions: }{List of:
 #'   \itemize{
 #'    \item \emph{realisations} RasterStack of realisations of predictions. Number of realisations defined by argument \emph{N}.
 #'    \item \emph{predictions_ci} RasterStack of the upper and lower credible intervals. Defined by argument \emph{CI}.
@@ -51,8 +51,12 @@ predict.fit.result <- function(object, newdata = NULL, predict_iid = FALSE, N = 
   
   uncertainty_predictions <- predict_uncertainty(object, newdata = newdata, predict_iid, N, CI)
   
-  return(list(mean_predictions = mean_predictions,
-              uncertainty_predictions = uncertainty_predictions))
+  predictions <- list(mean_predictions = mean_predictions,
+                      uncertainty_predictions = uncertainty_predictions)
+  
+  class(predictions) <- c('disag_predictions', 'list')
+  
+  return(predictions)
 }
 
 #' Function to predict mean from the model result
@@ -74,7 +78,7 @@ predict.fit.result <- function(object, newdata = NULL, predict_iid = FALSE, N = 
 #'   If this is a raster stack or brick, predictions will be made over this data. Default NULL.
 #' @param predict_iid If TRUE, any polygon iid effect from the model will be used in the prediction. Default FALSE.
 #'
-#' @return The mean_predictions, a list of class \emph{predictions}:
+#' @return The mean predictions, which is a list of:
 #'   \itemize{
 #'    \item \emph{predictions} Raster of mean predictions based.
 #'    \item \emph{field} Raster of the field component of the linear predictor.
@@ -102,8 +106,6 @@ predict_model <- function(model_output, newdata = NULL, predict_iid = FALSE) {
                                        objects_for_prediction,
                                        link_function = model_output$model_setup$link) 
 
-  class(predictions) <- c('predictions', 'list')
-  
   return(predictions)
   
 }
@@ -131,7 +133,7 @@ predict_model <- function(model_output, newdata = NULL, predict_iid = FALSE) {
 #' @param N number of realisations. Default: 100.
 #' @param CI confidence interval. Default: 0.95.
 #' 
-#' @return The uncertainty_predictions, a list of class \emph{uncertainty}:
+#' @return The uncertainty predictions, which is a list of:
 #'   \itemize{
 #'    \item \emph{realisations} RasterStack of realisations of predictions. Number of realisations defined by argument \emph{N}.
 #'    \item \emph{predictions_ci} RasterStack of the upper and lower credible intervals. Defined by argument \emph{CI}.
@@ -176,8 +178,6 @@ predict_uncertainty <- function(model_output, newdata = NULL, predict_iid = FALS
   
   uncertainty <- list(realisations = predictions,
                       predictions_ci = predictions_ci)
-  
-  class(uncertainty) <- c('uncertainty', 'list')
   
   return(uncertainty)
 }

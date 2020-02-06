@@ -101,71 +101,32 @@ plot.fit.result <- function(x, ...){
   return(invisible(plots))
 }
 
-#' Plot predictions from the disaggregation model results
+#' Plot mean and uncertainty predictions from the disaggregation model results
 #'
-#' Plotting function for class \emph{predictions} (the mean predictions of the disaggragation fitting).
+#' Plotting function for class \emph{disag_predictions} (the mean and uncertainty predictions of the disaggragation fitting).
 #' 
-#' Produces plots of the mean prediction, and the covariate, field  and iid contribution to the linear predictor.
+#' Produces raster plots of the mean prediction, and the lower and upper confidence intervals.
 #'
-#' @param x Object of class \emph{predictions} to be plotted.
+#' @param x Object of class \emph{disag_predictions} to be plotted.
 #' @param ... Further arguments to \emph{plot} function.
 #' 
-#' @return A list of plots of rasters from the prediction: mean prediction, covariate contribution, field contribution (if used) 
-#' and the iid contribution (if used)
+#' @return A list of plots of rasters from the prediction: mean prediction, lower CI and upper CI.
 #' 
-#' @method plot predictions
+#' @method plot disag_predictions
 #' 
 #' @export
 
 
-plot.predictions <- function(x, ...) {
+plot.disag_predictions <- function(x, ...) {
 
-  mean_plot <- sp::spplot(x$prediction, main = list(label = 'mean prediction'))
-  print(mean_plot)
+  rasters_to_plot <- raster::stack(x$mean_predictions$predictions, x$uncertainty_predictions$predictions_ci)
+  names(rasters_to_plot) <- c('mean predictions', 'lower CI', 'upper CI')
   
-  covariate_plot <- sp::spplot(x$covariates, main = list(label = 'covariate contribution'))
-  print(covariate_plot)
-  
-  plots <- list(mean = mean_plot, covariates = covariate_plot)
-  
-  if(!is.null(x$field)) {
-    field_plot <- sp::spplot(x$field, main = list(label = 'spatial field'))
-    plots <- c(plots, field = list(field_plot))
-    print(field_plot)
-  }
-  if(!is.null(x$iid)) {
-    iid_plot <- sp::spplot(x$iid, main = list(label = 'iideffect'))
-    plots <- c(plots, iid = list(iid_plot))
-    print(iid_plot)
-  }
+  plots <- sp::spplot(rasters_to_plot)
   
   return(invisible(plots))
 }
 
-#' Plot uncertainty predictions from the disaggregation model results
-#'
-#' Plotting function for class \emph{uncertainty} (the uncertainty predictions of the disaggragation fitting).
-#' 
-#' Produces a plot of the lower and upper credible interval rasters.
-#' 
-#' @param x Object of class \emph{uncertainty} to be plotted.
-#' @param ... Further arguments to \emph{plot} function.
-#' 
-#' @return A plot of the lower and upper credible interval rasters
-#' 
-#' @method plot uncertainty
-#' 
-#' @export
-
-
-plot.uncertainty <- function(x, ...) {
-  
-  unc_plot <- sp::spplot(x$predictions_ci, main = 'uncertainty predictions')
-  
-  print(unc_plot)
-  
-  return(invisible(unc_plot))
-}
 
 # Plot polygon data from SpatialPolygonDataFrame
 #

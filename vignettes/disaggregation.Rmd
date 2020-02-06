@@ -167,6 +167,5 @@ preds <- predict(model_result,
                  N = 100, 
                  CI = 0.95)
 
-plot(preds$mean_predictions)
-plot(preds$uncertainty_predictions)
+plot(preds)
 ```

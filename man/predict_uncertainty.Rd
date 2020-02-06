@@ -20,7 +20,7 @@ If this is a raster stack or brick, predictions will be made over this data. Def
 \item{CI}{confidence interval. Default: 0.95.}
 }
 \value{
-The uncertainty_predictions, a list of class \emph{uncertainty}:
+The uncertainty predictions, which is a list of:
   \itemize{
    \item \emph{realisations} RasterStack of realisations of predictions. Number of realisations defined by argument \emph{N}.
    \item \emph{predictions_ci} RasterStack of the upper and lower credible intervals. Defined by argument \emph{CI}.

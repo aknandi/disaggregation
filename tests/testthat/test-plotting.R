@@ -107,39 +107,14 @@ test_that("Check plot.predictions function works as expected", {
   
   fit_result <- fit_model(test_data, iterations = 2)
   
-  fit_result_nofield <- fit_model(test_data, iterations = 2, field = FALSE)
+  preds <- predict(fit_result)
+  p <- plot(preds)
   
-  preds <- predict_model(fit_result)
-  p1 <- plot(preds)
-  
-  preds_nofield <- predict_model(fit_result_nofield)
-  p2 <- plot(preds_nofield)
-  
-  preds_withiid <- predict_model(fit_result, predict_iid = TRUE)
-  p3 <- plot(preds_withiid)
-  
-  unc <- predict_uncertainty(fit_result)
-  p4 <- plot(unc)
-  
-  expect_is(p1, 'list')
-  expect_equal(length(p1), 3)
-  expect_is(p1[[1]], 'trellis')
-  expect_is(p1[[2]], 'trellis')
-  expect_is(p1[[3]], 'trellis')
-  
-  expect_is(p2, 'list')
-  expect_equal(length(p2), 2)
-  expect_is(p2[[1]], 'trellis')
-  expect_is(p2[[2]], 'trellis')
-  
-  expect_is(p3, 'list')
-  expect_equal(length(p3), 4)
-  expect_is(p3[[1]], 'trellis')
-  expect_is(p3[[2]], 'trellis')
-  expect_is(p3[[3]], 'trellis')
-  expect_is(p3[[4]], 'trellis')
-  
-  expect_is(p4, 'trellis')
+  expect_is(p, 'list')
+  expect_equal(length(p), 2)
+  expect_equal(names(p), c('mean_predictions', 'uncertainty_predictions'))
+  expect_is(p$mean_predictions, 'list')
+  expect_is(p$uncertainty_predictions, 'list')
   
 })
 

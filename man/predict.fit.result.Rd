@@ -22,15 +22,15 @@ If this is a raster stack or brick, predictions will be made over this data.}
 \item{...}{Further arguments passed to or from other methods.}
 }
 \value{
-A list of two objects is returned: 
- \item{mean_predictions }{List of class \emph{predictions}:
+An object of class \emph{disag_predictions} which consists of a list of two objects: 
+ \item{mean_predictions }{List of:
   \itemize{
    \item \emph{predictions} Raster of mean predictions based.
    \item \emph{field} Raster of the field component of the linear predictor.
    \item \emph{iid} Raster of the iid component of the linear predictor.
    \item \emph{covariates} Raster of the covariate component of the linear predictor.
   }} 
- \item{uncertainty_predictions }{List of class \emph{uncertainty}:
+ \item{uncertainty_predictions: }{List of:
   \itemize{
    \item \emph{realisations} RasterStack of realisations of predictions. Number of realisations defined by argument \emph{N}.
    \item \emph{predictions_ci} RasterStack of the upper and lower credible intervals. Defined by argument \emph{CI}.
