@@ -96,7 +96,7 @@ test_that("Check predict.fit.result function works with newdata", {
   result <- fit_model(test_data, field = FALSE, iid = TRUE, iterations = 2)
   
   newdata <- raster::crop(raster::stack(r, r2), c(0, 10, 0, 10))
-  pred1 <- predict_model(result)
+  pred1 <- predict(result)
   pred2 <- predict(result, newdata, predict_iid = TRUE, N = 5)
   
   expect_is(pred2, 'disag_prediction')
@@ -107,8 +107,8 @@ test_that("Check predict.fit.result function works with newdata", {
   expect_equal(length(pred2$mean_prediction), 4)
   expect_equal(names(pred2$mean_prediction), c('prediction', 'field', 'iid', 'covariates'))
   expect_is(pred2$mean_prediction$prediction, 'Raster')
-  expect_is(is.null(pred2$mean_prediction$field))
-  expect_true(pred2$mean_prediction$iid, 'Raster')
+  expect_true(is.null(pred2$mean_prediction$field))
+  expect_is(pred2$mean_prediction$iid, 'Raster')
   expect_is(pred2$mean_prediction$covariates, 'Raster')
   
   expect_is(pred2$uncertainty_prediction, 'list')
