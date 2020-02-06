@@ -71,7 +71,7 @@ cov_stack <- raster::scale(cov_stack)
 We also create a population raster. This is to allow the model to correctly aggregated the pixel values to the polygon level. For this simple example we assume that the population within each polygon is uniformly distributed.
 
 ```{r, fig.show='hold'}
-extracted <- extract(r, polygon_data)
+extracted <- raster::extract(r, polygon_data)
 n_cells <- sapply(extracted, length)
 polygon_data@data$pop_per_cell <- polygon_data@data$population/n_cells
 pop_raster <- rasterize(polygon_data, cov_stack, field = 'pop_per_cell')

@@ -103,24 +103,24 @@ plot.fit.result <- function(x, ...){
 
 #' Plot mean and uncertainty predictions from the disaggregation model results
 #'
-#' Plotting function for class \emph{disag_predictions} (the mean and uncertainty predictions of the disaggragation fitting).
+#' Plotting function for class \emph{disag_prediction} (the mean and uncertainty predictions of the disaggragation fitting).
 #' 
 #' Produces raster plots of the mean prediction, and the lower and upper confidence intervals.
 #'
-#' @param x Object of class \emph{disag_predictions} to be plotted.
+#' @param x Object of class \emph{disag_prediction} to be plotted.
 #' @param ... Further arguments to \emph{plot} function.
 #' 
 #' @return A list of plots of rasters from the prediction: mean prediction, lower CI and upper CI.
 #' 
-#' @method plot disag_predictions
+#' @method plot disag_prediction
 #' 
 #' @export
 
 
-plot.disag_predictions <- function(x, ...) {
+plot.disag_prediction <- function(x, ...) {
 
-  rasters_to_plot <- raster::stack(x$mean_predictions$predictions, x$uncertainty_predictions$predictions_ci)
-  names(rasters_to_plot) <- c('mean predictions', 'lower CI', 'upper CI')
+  rasters_to_plot <- raster::stack(x$mean_prediction$prediction, x$uncertainty_prediction$predictions_ci)
+  names(rasters_to_plot) <- c('mean prediction', 'lower CI', 'upper CI')
   
   plots <- sp::spplot(rasters_to_plot)
   

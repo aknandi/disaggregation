@@ -100,21 +100,17 @@ test_that("Check plot.fit.result function works as expected", {
   
 })
 
-test_that("Check plot.predictions function works as expected", {
+test_that("Check plot.disag_prediction function works as expected", {
   
   skip_if_not_installed('INLA')
   skip_on_cran()
   
   fit_result <- fit_model(test_data, iterations = 2)
   
-  preds <- predict(fit_result)
-  p <- plot(preds)
+  pred <- predict(fit_result)
+  p <- plot(pred)
   
-  expect_is(p, 'list')
-  expect_equal(length(p), 2)
-  expect_equal(names(p), c('mean_predictions', 'uncertainty_predictions'))
-  expect_is(p$mean_predictions, 'list')
-  expect_is(p$uncertainty_predictions, 'list')
+  expect_is(p, 'trellis')
   
 })
 

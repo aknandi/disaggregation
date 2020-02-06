@@ -15,9 +15,9 @@ If this is a raster stack or brick, predictions will be made over this data. Def
 \item{predict_iid}{If TRUE, any polygon iid effect from the model will be used in the prediction. Default FALSE.}
 }
 \value{
-The mean predictions, which is a list of:
+The mean prediction, which is a list of:
   \itemize{
-   \item \emph{predictions} Raster of mean predictions based.
+   \item \emph{prediction} Raster of mean predictions based.
    \item \emph{field} Raster of the field component of the linear predictor.
    \item \emph{iid} Raster of the iid component of the linear predictor.
    \item \emph{covariates} Raster of the covariate component of the linear predictor.

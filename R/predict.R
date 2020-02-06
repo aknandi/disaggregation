@@ -20,15 +20,15 @@
 #' @param CI Confidence interval to be calculated from the realisations. Default: 0.95.
 #' @param ... Further arguments passed to or from other methods.
 #'
-#' @return An object of class \emph{disag_predictions} which consists of a list of two objects: 
-#'  \item{mean_predictions }{List of:
+#' @return An object of class \emph{disag_prediction} which consists of a list of two objects: 
+#'  \item{mean_prediction }{List of:
 #'   \itemize{
-#'    \item \emph{predictions} Raster of mean predictions based.
+#'    \item \emph{prediction} Raster of mean predictions based.
 #'    \item \emph{field} Raster of the field component of the linear predictor.
 #'    \item \emph{iid} Raster of the iid component of the linear predictor.
 #'    \item \emph{covariates} Raster of the covariate component of the linear predictor.
 #'   }} 
-#'  \item{uncertainty_predictions: }{List of:
+#'  \item{uncertainty_prediction: }{List of:
 #'   \itemize{
 #'    \item \emph{realisations} RasterStack of realisations of predictions. Number of realisations defined by argument \emph{N}.
 #'    \item \emph{predictions_ci} RasterStack of the upper and lower credible intervals. Defined by argument \emph{CI}.
@@ -47,16 +47,16 @@
 
 predict.fit.result <- function(object, newdata = NULL, predict_iid = FALSE, N = 100, CI = 0.95, ...) {
   
-  mean_predictions <- predict_model(object, newdata = newdata, predict_iid)
+  mean_prediction <- predict_model(object, newdata = newdata, predict_iid)
   
-  uncertainty_predictions <- predict_uncertainty(object, newdata = newdata, predict_iid, N, CI)
+  uncertainty_prediction <- predict_uncertainty(object, newdata = newdata, predict_iid, N, CI)
   
-  predictions <- list(mean_predictions = mean_predictions,
-                      uncertainty_predictions = uncertainty_predictions)
+  prediction <- list(mean_prediction = mean_prediction,
+                     uncertainty_prediction = uncertainty_prediction)
   
-  class(predictions) <- c('disag_predictions', 'list')
+  class(prediction) <- c('disag_prediction', 'list')
   
-  return(predictions)
+  return(prediction)
 }
 
 #' Function to predict mean from the model result
@@ -78,9 +78,9 @@ predict.fit.result <- function(object, newdata = NULL, predict_iid = FALSE, N = 
 #'   If this is a raster stack or brick, predictions will be made over this data. Default NULL.
 #' @param predict_iid If TRUE, any polygon iid effect from the model will be used in the prediction. Default FALSE.
 #'
-#' @return The mean predictions, which is a list of:
+#' @return The mean prediction, which is a list of:
 #'   \itemize{
-#'    \item \emph{predictions} Raster of mean predictions based.
+#'    \item \emph{prediction} Raster of mean predictions based.
 #'    \item \emph{field} Raster of the field component of the linear predictor.
 #'    \item \emph{iid} Raster of the iid component of the linear predictor.
 #'    \item \emph{covariates} Raster of the covariate component of the linear predictor.
@@ -102,11 +102,11 @@ predict_model <- function(model_output, newdata = NULL, predict_iid = FALSE) {
   pars <- model_output$obj$env$last.par.best
   pars <- split(pars, names(pars))
   
-  predictions <- predict_single_raster(pars, 
-                                       objects_for_prediction,
-                                       link_function = model_output$model_setup$link) 
-
-  return(predictions)
+  prediction <- predict_single_raster(pars, 
+                                      objects_for_prediction,
+                                      link_function = model_output$model_setup$link) 
+  
+  return(prediction)
   
 }
 
@@ -133,7 +133,7 @@ predict_model <- function(model_output, newdata = NULL, predict_iid = FALSE) {
 #' @param N number of realisations. Default: 100.
 #' @param CI confidence interval. Default: 0.95.
 #' 
-#' @return The uncertainty predictions, which is a list of:
+#' @return The uncertainty prediction, which is a list of:
 #'   \itemize{
 #'    \item \emph{realisations} RasterStack of realisations of predictions. Number of realisations defined by argument \emph{N}.
 #'    \item \emph{predictions_ci} RasterStack of the upper and lower credible intervals. Defined by argument \emph{CI}.
