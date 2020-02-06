@@ -27,7 +27,7 @@ The **disaggregation** package contains functions to run Bayesian disaggregation
 Install **disggregation** using:
 
 ```r
-devtools::install_github("aknandi/disaggregation")
+devtools::install_github("aknandi/disaggregation", ref = 'jss_comments')
 ```
 
 The key functions are `prepare_data`, `fit_model` and `predict`. The `prepare_data` function takes the aggregated data and covariate data to be used in the model and produces an object to be use by `fit_model`. This functions runs the disaggregation model and the out can be passed to `predict` to produce fine-scale predicted maps of the response variable. 
