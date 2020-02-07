@@ -6,7 +6,7 @@ citEntry(entry = "Article",
            "Tim C D Lucas <timcdlucas@gmail.com> [aut]", 
            "Rohan Arambepola [aut]",
            "Peter Gething",
-           "Dan Weiss
+           "Dan Weiss"
          )),
          title = "disaggregation: An R Package for Bayesian Spatial Disaggregation Modelling",
          journal = "arxiv",
