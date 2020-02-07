@@ -139,20 +139,20 @@ By default the model contains a spatial field and a polygon iid effect. These ca
 
 
 ```{r, fig.show='hold', eval=isINLA}
-model_result <- fit_model(data_for_model,
-                          iterations = 1000,
-                          family = 'poisson',
-                          link = 'log',
-                          priors = list(priormean_intercept = 0,
-                                        priorsd_intercept = 2,
-                                        priormean_slope = 0.0,
-                                        priorsd_slope = 0.4,
-                                        prior_rho_min = 3,
-                                        prior_rho_prob = 0.0001,
-                                        prior_sigma_max = 1,
-                                        prior_sigma_prob = 0.0001,
-                                        prior_iideffect_sd_max = 0.05,
-                                        prior_iideffect_sd_prob = 0.01))
+model_result <- disag_model(data_for_model,
+                            iterations = 1000,
+                            family = 'poisson',
+                            link = 'log',
+                            priors = list(priormean_intercept = 0,
+                                          priorsd_intercept = 2,
+                                          priormean_slope = 0.0,
+                                          priorsd_slope = 0.4,
+                                          prior_rho_min = 3,
+                                          prior_rho_prob = 0.0001,
+                                          prior_sigma_max = 1,
+                                          prior_sigma_prob = 0.0001,
+                                          prior_iideffect_sd_max = 0.05,
+                                          prior_iideffect_sd_prob = 0.01))
 ```
 
 ```{r, fig.show='hold', eval=isINLA}
