@@ -105,6 +105,35 @@ fit_model <- function(data,
                       iid = TRUE,
                       silent = TRUE) {
   
+  .Deprecated(new = 'disag_model', msg = "'fit_model' will be removed in the next version. Please use 'disag_model' instead")
+  
+  model_output <- disag_model(data, 
+                              priors = priors, 
+                              family = family, 
+                              link = link, 
+                              iterations = iterations, 
+                              field = field, 
+                              iid = iid,
+                              silent = silent)
+  
+  return(model_output)
+  
+  
+}
+
+#' @export
+#' @rdname fit_model
+
+disag_model <- function(data, 
+                        priors = NULL, 
+                        family = 'gaussian', 
+                        link = 'identity', 
+                        iterations = 100, 
+                        field = TRUE, 
+                        iid = TRUE,
+                        silent = TRUE) {
+  
+  
   stopifnot(inherits(data, 'disag.data'))
   if(!is.null(priors)) stopifnot(inherits(priors, 'list'))
   stopifnot(inherits(iterations, 'numeric'))
@@ -135,8 +164,6 @@ fit_model <- function(data,
   class(model_output) <- c('fit.result', 'list')
   
   return(model_output)
-  
-  
 }
 
 #' Create the TMB model object for the disaggregation model

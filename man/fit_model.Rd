@@ -2,9 +2,14 @@
 % Please edit documentation in R/fit_model.R
 \name{fit_model}
 \alias{fit_model}
+\alias{disag_model}
 \title{Fit the disaggregation model}
 \usage{
 fit_model(data, priors = NULL, family = "gaussian",
+  link = "identity", iterations = 100, field = TRUE, iid = TRUE,
+  silent = TRUE)
+
+disag_model(data, priors = NULL, family = "gaussian",
   link = "identity", iterations = 100, field = TRUE, iid = TRUE,
   silent = TRUE)
 }
