@@ -44,6 +44,20 @@ test_that("Check summary.disag_data function works as expected", {
   
 })
 
+test_that("Check print.disag_data function works as expected", {
+  
+  skip_on_cran()
+  
+  test_data <- prepare_data(polygon_shapefile = spdf, 
+                            covariate_rasters = cov_stack)
+  
+  print_output <- print(test_data)
+  
+  expect_is(print_output, 'disag_data')
+  expect_equal(print_output, test_data)
+  
+})
+
 test_that("Check summary.disag_model function works as expected", {
   
   skip_if_not_installed('INLA')
@@ -63,5 +77,22 @@ test_that("Check summary.disag_model function works as expected", {
   expect_is(model_summary$nll, 'numeric')
   expect_is(model_summary$metrics, 'data.frame')
   expect_equal(dim(model_summary$metrics), c(1, 5))
+  
+})
+
+test_that("Check print.disag_model function works as expected", {
+  
+  skip_if_not_installed('INLA')
+  skip_on_cran()
+  
+  test_data <- prepare_data(polygon_shapefile = spdf, 
+                            covariate_rasters = cov_stack)
+  
+  result <- disag_model(test_data, field = FALSE, iterations = 2)
+  
+  print_output <- print(result)
+  
+  expect_is(print_output, 'disag_model')
+  expect_equal(print_output, result)
   
 })
