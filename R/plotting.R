@@ -124,6 +124,8 @@ plot.disag_prediction <- function(x, ...) {
   
   plots <- sp::spplot(rasters_to_plot)
   
+  print(plots)
+  
   return(invisible(plots))
 }
 
