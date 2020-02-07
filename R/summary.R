@@ -1,10 +1,10 @@
 #' Summary function for disaggregation fit result
 #' 
-#' Function that summarises the fit result from the disaggregation model.
+#' Function that summarises the result of the fit from the disaggregation model.
 #' 
 #' Prints the negative log likelihood, model parameters and calculates metrics from in-sample performance.
 #'
-#' @param object Object returned from fit_model.
+#' @param object Object returned from disag_model.
 #' @param ... Further arguments to \emph{summary} function.
 #' 
 #' @return A list of the model parameters, negative log likelihood and metrics from in-sample performance.
@@ -68,11 +68,11 @@ summary.disag_model <- function(object, ...) {
 
 #' Print function for disaggregation fit result.
 #' 
-#' Function that prints the fit result from the disaggregation model.
+#' Function that prints the result of the fit from the disaggregation model.
 #' 
 #' Prints the negative log likelihood, model parameters and calculates metrics from in-sample performance.
 #'
-#' @param x Object returned from fit_model.
+#' @param x Object returned from disag_model.
 #' @param ... Further arguments to \emph{print} function.
 #' 
 #' @return NULL
@@ -104,7 +104,7 @@ print.disag_model <- function(x, ...){
 #' 
 #' Prints the number of polyons and pixels, the number of pixels in the largest and smallest polygons and summaries of the covariates.
 #'
-#' @param object Object returned from fit_model.
+#' @param object Object returned from prepare_data.
 #' @param ... Further arguments to \emph{summary} function.
 #' 
 #' @return A list of the number of polyons, the number of covariates and summaries of the covariates.
@@ -145,7 +145,7 @@ summary.disag_data <- function(object, ...) {
 #' 
 #' Prints the number of polyons and pixels, the number of pixels in the largest and smallest polygons and summaries of the covariates.
 #'
-#' @param x Object returned from fit_model.
+#' @param x Object returned from prepare_data.
 #' @param ... Further arguments to \emph{print} function.
 #' 
 #' @return NULL
@@ -166,5 +166,79 @@ print.disag_data <- function(x, ...){
   
   cat(paste("There are", n_covariates, "covariates\n"))
   
+  return(invisible(x))
+}
+
+
+#' Summary function for disaggregation prediction
+#' 
+#' Function that summarizes the prediction from the disaggregation model.
+#' 
+#' Prints the number of polyons and pixels, the number of pixels in the largest and smallest polygons and summaries of the covariates.
+#'
+#' @param object Object returned from predict.disag_model
+#' @param ... Further arguments to \emph{summary} function.
+#' 
+#' @return A list of the number of polyons, the number of covariates and summaries of the covariates.
+#' 
+#' @method summary disag_prediction
+#' 
+#' @export
+
+summary.disag_prediction <- function(object, ...) {
+  
+  number_realisations <- raster::nlayers(object$uncertainty_prediction$realisations)
+  max_mean <- max(object$mean_prediction$prediction@data@values)
+  min_mean <- min(object$mean_prediction$prediction@data@values)
+  max_iqr <- max((object$uncertainty_prediction$predictions_ci[[2]] - object$uncertainty_prediction$predictions_ci[[1]])@data@values)
+  min_iqr <- min((object$uncertainty_prediction$predictions_ci[[2]] - object$uncertainty_prediction$predictions_ci[[1]])@data@values)
+  
+  cat('Predction from disaggregation model\n')
+  cat('\n')
+  cat('Components of the model: ')
+  if(!is.null(object$mean_prediction$covariates)) cat('covariates ')
+  if(!is.null(object$mean_prediction$field)) cat('field ')
+  if(!is.null(object$mean_prediction$iid)) cat('iid ')
+  cat('\n\n')
+  cat(paste0('There are ', number_realisations, ' uncertainty realisations\n'))
+  cat('\n')
+  cat(paste('The mean predicted values range from', signif(min_mean, 3), 'to', signif(max_mean, 3), '\n'))
+  cat(paste('The predicted IQR takes values from', signif(min_iqr, 3), 'to', signif(max_iqr, 3), '\n'))
+  
+  summary <- list(number_realisations = number_realisations,
+                  range_mean_values = c(min_mean, max_mean),
+                  range_iqr_values = c(min_iqr, max_iqr))
+  
+  return(invisible(summary))
+  
+}
+
+
+#' Print function for disaggregation prediction
+#' 
+#' Function that prints the prediction from the disaggregation model.
+#' 
+#' Prints the number of polyons and pixels, the number of pixels in the largest and smallest polygons and summaries of the covariates.
+#'
+#' @param x Object returned from predict.disag_model.
+#' @param ... Further arguments to \emph{print} function.
+#' 
+#' @return NULL
+#' 
+#' @method print disag_prediction
+#' 
+#' @export
+
+print.disag_prediction <- function(x, ...){
+  
+  cat('Predction from disaggregation model\n')
+  cat('\n')
+  cat('Components of the model: ')
+  if(!is.null(x$mean_prediction$covariates)) cat('covariates ')
+  if(!is.null(x$mean_prediction$field)) cat('field ')
+  if(!is.null(x$mean_prediction$iid)) cat('iid ')
+  cat('\n\n')
+  cat(paste0('There are ', raster::nlayers(x$uncertainty_prediction$realisations), ' uncertainty realisations'))
+
   return(invisible(x))
 }

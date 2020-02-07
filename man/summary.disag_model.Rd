@@ -7,7 +7,7 @@
 \method{summary}{disag_model}(object, ...)
 }
 \arguments{
-\item{object}{Object returned from fit_model.}
+\item{object}{Object returned from disag_model.}
 
 \item{...}{Further arguments to \emph{summary} function.}
 }
@@ -15,7 +15,7 @@
 A list of the model parameters, negative log likelihood and metrics from in-sample performance.
 }
 \description{
-Function that summarises the fit result from the disaggregation model.
+Function that summarises the result of the fit from the disaggregation model.
 }
 \details{
 Prints the negative log likelihood, model parameters and calculates metrics from in-sample performance.
