@@ -41,7 +41,7 @@ test_that("Check prepare_data function works as expected", {
   result <- prepare_data(polygon_shapefile = spdf, 
                          covariate_rasters = cov_stack)
   
-  expect_is(result, 'disag.data')
+  expect_is(result, 'disag_data')
   expect_equal(length(result), 10)
   expect_equal(names(result), c('polygon_shapefile', 'shapefile_names', 'covariate_rasters', 'polygon_data', 'covariate_data', 
                                 'aggregation_pixels', 'coordsForFit', 'coordsForPrediction', 'startendindex', 'mesh'))
@@ -70,7 +70,7 @@ test_that("Check prepare_data function with sample size works as expected", {
                          sample_size_var = 'sample_size',
                          makeMesh = FALSE)
   
-  expect_is(result, 'disag.data')
+  expect_is(result, 'disag_data')
   expect_equal(length(result), 10)
   expect_equal(names(result), c('polygon_shapefile', 'shapefile_names', 'covariate_rasters', 'polygon_data', 'covariate_data', 
                                 'aggregation_pixels', 'coordsForFit', 'coordsForPrediction', 'startendindex', 'mesh'))
@@ -110,7 +110,7 @@ test_that("Check prepare_data function deals with NAs as expected", {
                          na.action = TRUE,
                          makeMesh = FALSE)
   
-  expect_is(result, 'disag.data')
+  expect_is(result, 'disag_data')
   expect_equal(length(result), 10)
   expect_equal(names(result), c('polygon_shapefile', 'shapefile_names', 'covariate_rasters', 'polygon_data', 'covariate_data', 
                                 'aggregation_pixels', 'coordsForFit', 'coordsForPrediction', 'startendindex', 'mesh'))
@@ -132,7 +132,7 @@ test_that("Check prepare_data function deals with NAs as expected", {
 })
 
 
-test_that("Check as.disag.data function works as expected", {
+test_that("Check as.disag_data function works as expected", {
   
   skip_on_cran()
   
@@ -152,7 +152,7 @@ test_that("Check as.disag.data function works as expected", {
   
   startendindex <- getStartendindex(cov_data, polygon_data, 'area_id')
   
-  result <- as.disag.data(spdf, 
+  result <- as.disag_data(spdf, 
                           list('area_id', 'response'),
                           cov_stack,
                           polygon_data, 
@@ -163,7 +163,7 @@ test_that("Check as.disag.data function works as expected", {
                           startendindex,
                           mesh = NULL)
   
-  expect_is(result, 'disag.data')
+  expect_is(result, 'disag_data')
   expect_equal(length(result), 10)
   expect_equal(names(result), c('polygon_shapefile', 'shapefile_names', 'covariate_rasters', 'polygon_data', 'covariate_data', 
                                 'aggregation_pixels', 'coordsForFit', 'coordsForPrediction', 'startendindex', 'mesh'))

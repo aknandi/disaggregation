@@ -1,6 +1,6 @@
 #' Predict mean and uncertainty from the disaggregation model result
 #' 
-#' \emph{predict.fit.result} function takes a \emph{fit.result} object created by \emph{disaggregation::fit_model} and 
+#' \emph{predict.disag_model} function takes a \emph{disag_model} object created by \emph{disaggregation::disag_model} and 
 #' predicts mean and uncertainty maps.
 #' 
 #' To predict over a different spatial extent to that used in the model, 
@@ -12,7 +12,7 @@
 #' For the uncertainty calculations, the number of the realisations and the size of the confidence interval to be calculated 
 #' are given by the arguments \emph{N} and \emph{CI} respectively. 
 #' 
-#' @param object fit.result object returned by fit_model function.
+#' @param object disag_model object returned by disag_model function.
 #' @param newdata If NULL, predictions are made using the data in model_output. 
 #'   If this is a raster stack or brick, predictions will be made over this data. 
 #' @param predict_iid logical. If TRUE, any polygon iid effect from the model will be used in the prediction. Default FALSE.
@@ -35,7 +35,7 @@
 #'   }} 
 #'
 #'
-#' @method predict fit.result
+#' @method predict disag_model
 #'
 #' @examples 
 #' \dontrun{
@@ -45,7 +45,7 @@
 #' @export
 
 
-predict.fit.result <- function(object, newdata = NULL, predict_iid = FALSE, N = 100, CI = 0.95, ...) {
+predict.disag_model <- function(object, newdata = NULL, predict_iid = FALSE, N = 100, CI = 0.95, ...) {
   
   mean_prediction <- predict_model(object, newdata = newdata, predict_iid)
   
@@ -61,8 +61,8 @@ predict.fit.result <- function(object, newdata = NULL, predict_iid = FALSE, N = 
 
 #' Function to predict mean from the model result
 #' 
-#' \emph{predict_model} function takes a \emph{fit.result} object created by 
-#' \emph{disaggregation::fit_model} and predicts mean maps. 
+#' \emph{predict_model} function takes a \emph{disag_model} object created by 
+#' \emph{disaggregation::disag_model} and predicts mean maps. 
 #' 
 #' Function returns rasters of the mean predictions as well as the  covariate and field contributions
 #' to the linear predictor.
@@ -73,7 +73,7 @@ predict.fit.result <- function(object, newdata = NULL, predict_iid = FALSE, N = 
 #' 
 #' The \emph{predict_iid} logical flag should be set to TRUE if the results of the iid effect from the model are to be used in the prediction. 
 #' 
-#' @param model_output fit.result object returned by fit_model function
+#' @param model_output disag_model object returned by disag_model function
 #' @param newdata If NULL, predictions are made using the data in model_output. 
 #'   If this is a raster stack or brick, predictions will be made over this data. Default NULL.
 #' @param predict_iid If TRUE, any polygon iid effect from the model will be used in the prediction. Default FALSE.
@@ -112,8 +112,8 @@ predict_model <- function(model_output, newdata = NULL, predict_iid = FALSE) {
 
 #' Function to predict uncertainty from the model result
 #' 
-#' \emph{predict_uncertainty} function takes a \emph{fit.result} object created by 
-#' \emph{disaggregation::fit_model} and predicts upper and lower credible interval maps. 
+#' \emph{predict_uncertainty} function takes a \emph{disag_model} object created by 
+#' \emph{disaggregation::disag_model} and predicts upper and lower credible interval maps. 
 #' 
 #' Function returns a RasterStack of the realisations as well as the upper and lower credible interval rasters.
 #' 
@@ -126,7 +126,7 @@ predict_model <- function(model_output, newdata = NULL, predict_iid = FALSE) {
 #' The number of the realisations and the size of the confidence interval to be calculated.
 #' are given by the arguments \emph{N} and \emph{CI} respectively. 
 #' 
-#' @param model_output fit.result object returned by fit_model function.
+#' @param model_output disag_model object returned by disag_model function.
 #' @param newdata If NULL, predictions are made using the data in model_output. 
 #'   If this is a raster stack or brick, predictions will be made over this data. Default NULL.
 #' @param predict_iid If TRUE, any polygon iid effect from the model will be used in the prediction. Default FALSE.
@@ -184,7 +184,7 @@ predict_uncertainty <- function(model_output, newdata = NULL, predict_iid = FALS
 
 # Get coordinates from raster
 #
-# @param data disag.data object 
+# @param data disag_data object 
 # 
 # @return A matrix of the coordinates of the raster
 # 

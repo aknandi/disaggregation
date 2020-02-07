@@ -7,7 +7,7 @@
 predict_model(model_output, newdata = NULL, predict_iid = FALSE)
 }
 \arguments{
-\item{model_output}{fit.result object returned by fit_model function}
+\item{model_output}{disag_model object returned by disag_model function}
 
 \item{newdata}{If NULL, predictions are made using the data in model_output. 
 If this is a raster stack or brick, predictions will be made over this data. Default NULL.}
@@ -24,8 +24,8 @@ The mean prediction, which is a list of:
   }
 }
 \description{
-\emph{predict_model} function takes a \emph{fit.result} object created by 
-\emph{disaggregation::fit_model} and predicts mean maps.
+\emph{predict_model} function takes a \emph{disag_model} object created by 
+\emph{disaggregation::disag_model} and predicts mean maps.
 }
 \details{
 Function returns rasters of the mean predictions as well as the  covariate and field contributions

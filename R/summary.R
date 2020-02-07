@@ -9,12 +9,12 @@
 #' 
 #' @return A list of the model parameters, negative log likelihood and metrics from in-sample performance.
 #' 
-#' @method summary fit.result
+#' @method summary disag_model
 #' 
 #' @export
 #' @importFrom stats cor quantile sd
 
-summary.fit.result <- function(object, ...) {
+summary.disag_model <- function(object, ...) {
   
   pred <- obs <- NULL
   
@@ -77,12 +77,12 @@ summary.fit.result <- function(object, ...) {
 #' 
 #' @return NULL
 #' 
-#' @method print fit.result
+#' @method print disag_model
 #' 
 #' @export
 #' @importFrom stats cor quantile sd
 
-print.fit.result <- function(x, ...){
+print.disag_model <- function(x, ...){
   
   model_params <- summary(x$sd_out, select = 'fixed')
   
@@ -109,11 +109,11 @@ print.fit.result <- function(x, ...){
 #' 
 #' @return A list of the number of polyons, the number of covariates and summaries of the covariates.
 #' 
-#' @method summary disag.data
+#' @method summary disag_data
 #' 
 #' @export
 
-summary.disag.data <- function(object, ...) {
+summary.disag_data <- function(object, ...) {
 
   n_polygons <- nrow(object$polygon_shapefile)
   n_covariates <- raster::nlayers(object$covariate_rasters)
@@ -150,11 +150,11 @@ summary.disag.data <- function(object, ...) {
 #' 
 #' @return NULL
 #' 
-#' @method print disag.data
+#' @method print disag_data
 #' 
 #' @export
 
-print.disag.data <- function(x, ...){
+print.disag_data <- function(x, ...){
   
   n_polygons <- nrow(x$polygon_shapefile)
   n_covariates <- raster::nlayers(x$covariate_rasters)

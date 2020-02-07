@@ -8,7 +8,7 @@ predict_uncertainty(model_output, newdata = NULL, predict_iid = FALSE,
   N = 100, CI = 0.95)
 }
 \arguments{
-\item{model_output}{fit.result object returned by fit_model function.}
+\item{model_output}{disag_model object returned by disag_model function.}
 
 \item{newdata}{If NULL, predictions are made using the data in model_output. 
 If this is a raster stack or brick, predictions will be made over this data. Default NULL.}
@@ -27,8 +27,8 @@ The uncertainty prediction, which is a list of:
   }
 }
 \description{
-\emph{predict_uncertainty} function takes a \emph{fit.result} object created by 
-\emph{disaggregation::fit_model} and predicts upper and lower credible interval maps.
+\emph{predict_uncertainty} function takes a \emph{disag_model} object created by 
+\emph{disaggregation::disag_model} and predicts upper and lower credible interval maps.
 }
 \details{
 Function returns a RasterStack of the realisations as well as the upper and lower credible interval rasters.

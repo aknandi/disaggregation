@@ -8,7 +8,7 @@ make_model_object(data, priors = NULL, family = "gaussian",
   link = "identity", field = TRUE, iid = TRUE, silent = TRUE)
 }
 \arguments{
-\item{data}{disag.data object returned by \code{\link{prepare_data}} function that contains all the necessary objects for the model fitting}
+\item{data}{disag_data object returned by \code{\link{prepare_data}} function that contains all the necessary objects for the model fitting}
 
 \item{priors}{list of prior values}
 
@@ -26,7 +26,7 @@ make_model_object(data, priors = NULL, family = "gaussian",
 The TMB model object returned by \code{\link[TMB]{MakeADFun}}.
 }
 \description{
-\emph{make_model_object} function takes a \emph{disag.data} object created by \code{\link{prepare_data}} 
+\emph{make_model_object} function takes a \emph{disag_data} object created by \code{\link{prepare_data}} 
 and creates a TMB model object to be used in fitting.
 }
 \details{

@@ -1,21 +1,21 @@
 #' Plot input data for disaggregation
 #'
-#' Plotting function for class \emph{disag.data} (the input data for disaggragation).
+#' Plotting function for class \emph{disag_data} (the input data for disaggragation).
 #' 
 #' Produces three plots: polygon response data, covariate rasters and INLA mesh.
 #'
-#' @param x Object of class \emph{disag.data} to be plotted.
+#' @param x Object of class \emph{disag_data} to be plotted.
 #' @param which If a subset of plots is requied, specify a subset of the numbers 1:3
 #' @param ... Further arguments to \emph{plot} function.
 #' 
 #' @return A list of three plots: the polygon plot (ggplot), covariate plot (spplot) and INLA mesh plot (ggplot)
 #' 
 #' @import ggplot2
-#' @method plot disag.data
+#' @method plot disag_data
 #' 
 #' @export
 
-plot.disag.data <- function(x, which = c(1,2,3), ...) {
+plot.disag_data <- function(x, which = c(1,2,3), ...) {
   
   plots <- list()
   titles <- c()
@@ -44,22 +44,22 @@ plot.disag.data <- function(x, which = c(1,2,3), ...) {
 
 #' Plot results of fitted model
 #'
-#' Plotting function for class \emph{fit.result} (the result of the disaggragation fitting).
+#' Plotting function for class \emph{disag_model} (the result of the disaggragation fitting).
 #' 
 #' Produces two plots: results of the fixed effects and in-sample observed vs predicted plot.
 #' 
-#' @param x Object of class \emph{fit.result} to be plotted.
+#' @param x Object of class \emph{disag_model} to be plotted.
 #' @param ... Further arguments to \emph{plot} function.
 #' 
 #' @return A list of two ggplot plots: results of the fixed effects and an in-sample observed vs predicted plot 
 #' 
 #' @import ggplot2
-#' @method plot fit.result
+#' @method plot disag_model
 #' 
 #' @export
 
 
-plot.fit.result <- function(x, ...){
+plot.disag_model <- function(x, ...){
   
   parameter <- sd <- obs <- pred <- NULL
   posteriors <- as.data.frame(summary(x$sd_out, select = 'fixed'))

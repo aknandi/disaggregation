@@ -34,12 +34,12 @@ if(identical(Sys.getenv("NOT_CRAN"), "true")) {
                             makeMesh = FALSE)
 }
 
-test_that("Check predict.fit.result function works as expected", {
+test_that("Check predict.disag_model function works as expected", {
   
   skip_if_not_installed('INLA')
   skip_on_cran()
   
-  result <- fit_model(test_data, iterations = 2)
+  result <- disag_model(test_data, iterations = 2)
 
   pred2 <- predict(result)
   
@@ -88,12 +88,12 @@ test_that("Check predict.fit.result function works as expected", {
 
 
 
-test_that("Check predict.fit.result function works with newdata", {
+test_that("Check predict.disag_model function works with newdata", {
   
   skip_if_not_installed('INLA')
   skip_on_cran()
   
-  result <- fit_model(test_data, field = FALSE, iid = TRUE, iterations = 2)
+  result <- disag_model(test_data, field = FALSE, iid = TRUE, iterations = 2)
   
   newdata <- raster::crop(raster::stack(r, r2), c(0, 10, 0, 10))
   pred1 <- predict(result)
@@ -129,7 +129,7 @@ test_that('Check that check_newdata works', {
   skip_if_not_installed('INLA')
   skip_on_cran()
   
-  result <- fit_model(test_data, field = FALSE, iterations = 2)
+  result <- disag_model(test_data, field = FALSE, iterations = 2)
   
   newdata <- raster::crop(raster::stack(r, r2), c(0, 10, 0, 10))
   nd1 <- check_newdata(newdata, result)
@@ -154,7 +154,7 @@ test_that('Check that setup_objects works', {
   skip_if_not_installed('INLA')
   skip_on_cran()
   
-  result <- fit_model(test_data, iterations = 2)
+  result <- disag_model(test_data, iterations = 2)
   
   objects <- setup_objects(result)
   
@@ -188,7 +188,7 @@ test_that('Check that predict_single_raster works', {
   skip_if_not_installed('INLA')
   skip_on_cran()
   
-  result <- fit_model(test_data, iterations = 2)
+  result <- disag_model(test_data, iterations = 2)
   
   objects <- setup_objects(result)
   

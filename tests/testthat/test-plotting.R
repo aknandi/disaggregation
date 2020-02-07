@@ -78,14 +78,14 @@ test_that("Check plot.disag.data function works as expected", {
   
 })
 
-test_that("Check plot.fit.result function works as expected", {
+test_that("Check plot.disag_model function works as expected", {
   
   skip_if_not_installed('INLA')
   skip_on_cran()
   
-  fit_result <- fit_model(test_data, iterations = 2)
+  fit_result <- disag_model(test_data, iterations = 2)
   
-  fit_result_nofield <- fit_model(test_data, iterations = 2, field = FALSE)
+  fit_result_nofield <- disag_model(test_data, iterations = 2, field = FALSE)
   
   p1 <- plot(fit_result)
   
@@ -105,7 +105,7 @@ test_that("Check plot.disag_prediction function works as expected", {
   skip_if_not_installed('INLA')
   skip_on_cran()
   
-  fit_result <- fit_model(test_data, iterations = 2)
+  fit_result <- disag_model(test_data, iterations = 2)
   
   pred <- predict(fit_result)
   p <- plot(pred)

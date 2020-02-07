@@ -14,7 +14,7 @@ disag_model(data, priors = NULL, family = "gaussian",
   silent = TRUE)
 }
 \arguments{
-\item{data}{disag.data object returned by \code{\link{prepare_data}} function that contains all the necessary objects for the model fitting}
+\item{data}{disag_data object returned by \code{\link{prepare_data}} function that contains all the necessary objects for the model fitting}
 
 \item{priors}{list of prior values}
 
@@ -31,17 +31,17 @@ disag_model(data, priors = NULL, family = "gaussian",
 \item{silent}{logical. Suppress verbose output.}
 }
 \value{
-A list is returned of class \code{fit.result}. 
-The functions \emph{summary}, \emph{print} and \emph{plot} can be used on \code{fit.result}. 
-The list  of class \code{fit.result} contains:
+A list is returned of class \code{disag_model}. 
+The functions \emph{summary}, \emph{print} and \emph{plot} can be used on \code{disag_model}. 
+The list  of class \code{disag_model} contains:
  \item{obj }{The TMB model object returned by \code{\link[TMB]{MakeADFun}}.} 
  \item{opt }{The optimized model object returned by \code{\link[stats]{nlminb}}.} 
  \item{sd_out }{The TMB object returned by \code{\link[TMB]{sdreport}}.}
- \item{data }{The \emph{disag.data} object used as an input to the model.}
+ \item{data }{The \emph{disag_data} object used as an input to the model.}
  \item{model_setup }{A list of information on the model setup. Likelihood function (\emph{family}), link function(\emph{link}), logical: whether a field was used (\emph{field}) and logical: whether an iid effect was used (\emph{iid}).}
 }
 \description{
-\emph{fit_model} function takes a \emph{disag.data} object created by \code{\link{prepare_data}} and performs a Bayesian disaggregation fit.
+\emph{fit_model} function takes a \emph{disag_data} object created by \code{\link{prepare_data}} and performs a Bayesian disaggregation fit.
 }
 \details{
 \strong{The model definition}

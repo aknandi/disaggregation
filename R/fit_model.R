@@ -1,6 +1,6 @@
 #' Fit the disaggregation model
 #' 
-#' \emph{fit_model} function takes a \emph{disag.data} object created by \code{\link{prepare_data}} and performs a Bayesian disaggregation fit.
+#' \emph{fit_model} function takes a \emph{disag_data} object created by \code{\link{prepare_data}} and performs a Bayesian disaggregation fit.
 #' 
 #' \strong{The model definition}
 #' 
@@ -41,7 +41,7 @@
 #' The \emph{silent} argument can be used to publish/supress verbose output. Default TRUE.
 #' 
 #'
-#' @param data disag.data object returned by \code{\link{prepare_data}} function that contains all the necessary objects for the model fitting
+#' @param data disag_data object returned by \code{\link{prepare_data}} function that contains all the necessary objects for the model fitting
 #' @param priors list of prior values
 #' @param family likelihood function: \emph{gaussian}, \emph{binomial} or \emph{poisson}
 #' @param link link function: \emph{logit}, \emph{log} or \emph{identity}
@@ -51,13 +51,13 @@
 #' @param silent logical. Suppress verbose output.
 #' 
 #' 
-#' @return A list is returned of class \code{fit.result}. 
-#' The functions \emph{summary}, \emph{print} and \emph{plot} can be used on \code{fit.result}. 
-#' The list  of class \code{fit.result} contains:
+#' @return A list is returned of class \code{disag_model}. 
+#' The functions \emph{summary}, \emph{print} and \emph{plot} can be used on \code{disag_model}. 
+#' The list  of class \code{disag_model} contains:
 #'  \item{obj }{The TMB model object returned by \code{\link[TMB]{MakeADFun}}.} 
 #'  \item{opt }{The optimized model object returned by \code{\link[stats]{nlminb}}.} 
 #'  \item{sd_out }{The TMB object returned by \code{\link[TMB]{sdreport}}.}
-#'  \item{data }{The \emph{disag.data} object used as an input to the model.}
+#'  \item{data }{The \emph{disag_data} object used as an input to the model.}
 #'  \item{model_setup }{A list of information on the model setup. Likelihood function (\emph{family}), link function(\emph{link}), logical: whether a field was used (\emph{field}) and logical: whether an iid effect was used (\emph{iid}).}
 #'  
 #' @name fit_model
@@ -134,7 +134,7 @@ disag_model <- function(data,
                         silent = TRUE) {
   
   
-  stopifnot(inherits(data, 'disag.data'))
+  stopifnot(inherits(data, 'disag_data'))
   if(!is.null(priors)) stopifnot(inherits(priors, 'list'))
   stopifnot(inherits(iterations, 'numeric'))
   
@@ -161,14 +161,14 @@ disag_model <- function(data,
                        data = data,
                        model_setup = list(family = family, link = link, field = field, iid = iid))
   
-  class(model_output) <- c('fit.result', 'list')
+  class(model_output) <- c('disag_model', 'list')
   
   return(model_output)
 }
 
 #' Create the TMB model object for the disaggregation model
 #' 
-#' \emph{make_model_object} function takes a \emph{disag.data} object created by \code{\link{prepare_data}} 
+#' \emph{make_model_object} function takes a \emph{disag_data} object created by \code{\link{prepare_data}} 
 #' and creates a TMB model object to be used in fitting.
 #' 
 #' \strong{The model definition}
@@ -210,7 +210,7 @@ disag_model <- function(data,
 #' The \emph{silent} argument can be used to publish/supress verbose output. Default TRUE.
 #' 
 #'
-#' @param data disag.data object returned by \code{\link{prepare_data}} function that contains all the necessary objects for the model fitting
+#' @param data disag_data object returned by \code{\link{prepare_data}} function that contains all the necessary objects for the model fitting
 #' @param priors list of prior values
 #' @param family likelihood function: \emph{gaussian}, \emph{binomial} or \emph{poisson}
 #' @param link link function: \emph{logit}, \emph{log} or \emph{identity}

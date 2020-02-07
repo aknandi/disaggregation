@@ -31,9 +31,9 @@ prepare_data(polygon_shapefile, covariate_rasters,
 \item{ncores}{Number of cores used to perform covariate extraction.}
 }
 \value{
-A list is returned of class \code{disag.data}. 
-The functions \emph{summary}, \emph{print} and \emph{plot} can be used on \code{disag.data}. 
-The list  of class \code{disag.data} contains:
+A list is returned of class \code{disag_data}. 
+The functions \emph{summary}, \emph{print} and \emph{plot} can be used on \code{disag_data}. 
+The list  of class \code{disag_data} contains:
  \item{polygon_shapefile }{The SpatialPolygonDataFrame used as an input.} 
  \item{covariate_rasters }{The RasterStack used as an input.} 
  \item{polygon_data }{A data frame with columns of \emph{area_id}, \emph{response} and \emph{N} (sample size: all NAs unless using binomial data). Each row represents a polygon.}
