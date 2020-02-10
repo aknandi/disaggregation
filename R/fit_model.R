@@ -103,6 +103,7 @@ fit_model <- function(data,
                       iterations = 100, 
                       field = TRUE, 
                       iid = TRUE,
+                      hess_control_list = NULL,
                       silent = TRUE) {
   
   stopifnot(inherits(data, 'disag.data'))
@@ -252,9 +253,9 @@ fit_model <- function(data,
   message('Fitting model. This may be slow.')
   opt <- stats::nlminb(obj$par, obj$fn, obj$gr, control = list(iter.max = iterations, trace = 0))
   
+  hess <- optimHess(opt$par, fn = obj$fn, gr = obj$gr, control = hess_control_list)
   
-  
-  sd_out <- TMB::sdreport(obj, getJointPrecision = TRUE)
+  sd_out <- TMB::sdreport(obj, getJointPrecision = TRUE, hessian.fixed = hess)
   
   if(opt$convergence != 0) warning('The model did not converge. Try increasing the number of iterations')
   
