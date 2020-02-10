@@ -48,7 +48,11 @@
 #' @param iterations number of iterations to run the optimisation for
 #' @param field logical. Flag the spatial field on or off
 #' @param iid logical. Flag the iid effect on or off
+#' @param hess_control_parscale Argument to scale parameters during the calculation of the Hessian. Must be the same length as the number of parameters. See \code{\link[stats]{optimHess}} for details.
+#' @param hess_control_ndeps Argument to control step sizes during the calculation of the Hessian. Either length 1 (same step size applied to all parameters) or the same length as the number of parameters. 
+#' Default is 1e-3, try setting a smaller value if you get NaNs in the standard error of the parameters. See \code{\link[stats]{optimHess}} for details.
 #' @param silent logical. Suppress verbose output.
+#' 
 #' 
 #' 
 #' @return A list is returned of class \code{fit.result}. 
@@ -103,7 +107,8 @@ fit_model <- function(data,
                       iterations = 100, 
                       field = TRUE, 
                       iid = TRUE,
-                      hess_control_list = NULL,
+                      hess_control_parscale = NULL,
+                      hess_control_ndeps = 1e-3,
                       silent = TRUE) {
   
   stopifnot(inherits(data, 'disag.data'))
@@ -253,8 +258,13 @@ fit_model <- function(data,
   message('Fitting model. This may be slow.')
   opt <- stats::nlminb(obj$par, obj$fn, obj$gr, control = list(iter.max = iterations, trace = 0))
   
-  hess <- optimHess(opt$par, fn = obj$fn, gr = obj$gr, control = hess_control_list)
+  # Get hess control pars into a list.
+  hess_control <- setup_hess_control(opt, hess_control_parscale, hess_control_ndeps)
   
+  # Calc the hessian
+  hess <- optimHess(opt$par, fn = obj$fn, gr = obj$gr, control = hess_control)
+  
+  # Calc uncertainty using the fixed hessian from above.
   sd_out <- TMB::sdreport(obj, getJointPrecision = TRUE, hessian.fixed = hess)
   
   if(opt$convergence != 0) warning('The model did not converge. Try increasing the number of iterations')
@@ -270,4 +280,28 @@ fit_model <- function(data,
   return(model_output)
   
   
+}
+
+
+
+# Setup hessian control
+setup_hess_control <- function(opt,hess_control_parscale, hess_control_ndeps){
+  hess_control <- list()
+  # hess_control_parscale should always either be null or a vector of the correct length.
+  if(!is.null(hess_control_parscale)){
+    if(length(hess_control_parscale) != length(opt$par)){
+      stop(paste('hess_control_parscale must either be NULL or a vector of length', length(opt$par)))
+    }
+    hess_control$parscale <- hess_control_parscale
+  }
+  # hess_control_ndeps can either be length 1 (default) or correct length vecot.
+  if(length(hess_control_ndeps) == 1){ 
+    hess_control$ndeps <- rep(hess_control_ndeps, length(opt$par))
+  } else {
+    if(length(hess_control_ndeps) != length(opt$par)){
+      stop(paste('hess_control_ndeps must either be NULL or a vector of length', length(opt$par)))
+    }
+    hess_control$ndeps <- hess_control_ndeps
+  }
+  return(hess_control)
 }
