@@ -4,10 +4,18 @@
 \alias{prepare_data}
 \title{Prepare data for disaggregation modelling}
 \usage{
-prepare_data(polygon_shapefile, covariate_rasters,
-  aggregation_raster = NULL, id_var = "area_id",
-  response_var = "response", sample_size_var = NULL,
-  mesh.args = NULL, na.action = FALSE, makeMesh = TRUE, ncores = 2)
+prepare_data(
+  polygon_shapefile,
+  covariate_rasters,
+  aggregation_raster = NULL,
+  id_var = "area_id",
+  response_var = "response",
+  sample_size_var = NULL,
+  mesh.args = NULL,
+  na.action = FALSE,
+  makeMesh = TRUE,
+  ncores = 2
+)
 }
 \arguments{
 \item{polygon_shapefile}{SpatialPolygonDataFrame  containing at least two columns: one with the id for the polygons (\emph{id_var}) and one with the response count data (\emph{response_var}); for binomial data, i.e survey data, it can also contain a sample size column (\emph{sample_size_var}).}
@@ -49,7 +57,7 @@ The list  of class \code{disag.data} contains:
 Designed to be used in the \emph{disaggregation::fit_model} function.
 }
 \details{
-Takes a SpatialPolygonDataFrame with the response data and a RasterStack of covariates.
+Takes a SpatialPolygonDataFrame with the response data and a RasterStack of covariates. 
 
 Extract the values of the covariates (as well as the aggregation raster, if given) at each pixel within the polygons 
 (\emph{parallelExtract} function). This is done in parallel and \emph{n.cores} argument is used to set the number of cores 

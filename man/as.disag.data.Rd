@@ -4,9 +4,18 @@
 \alias{as.disag.data}
 \title{Function to fit the disaggregation model}
 \usage{
-as.disag.data(polygon_shapefile, shapefile_names, covariate_rasters,
-  polygon_data, covariate_data, aggregation_pixels, coordsForFit,
-  coordsForPrediction, startendindex, mesh = NULL)
+as.disag.data(
+  polygon_shapefile,
+  shapefile_names,
+  covariate_rasters,
+  polygon_data,
+  covariate_data,
+  aggregation_pixels,
+  coordsForFit,
+  coordsForPrediction,
+  startendindex,
+  mesh = NULL
+)
 }
 \arguments{
 \item{polygon_shapefile}{SpatialPolygonDataFrame containing the response data}

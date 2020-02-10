@@ -4,8 +4,13 @@
 \alias{predict_uncertainty}
 \title{Function to predict uncertainty from the model result}
 \usage{
-predict_uncertainty(model_output, newdata = NULL, predict_iid = FALSE,
-  N = 100, CI = 0.95)
+predict_uncertainty(
+  model_output,
+  newdata = NULL,
+  predict_iid = FALSE,
+  N = 100,
+  CI = 0.95
+)
 }
 \arguments{
 \item{model_output}{fit.result object returned by fit_model function.}
@@ -37,7 +42,7 @@ To predict over a different spatial extent to that used in the model,
 a RasterStack covering the region to make predictions over is passed to the argument \emph{newdata}. 
 If this is not given predictions are made over the data used in the fit.
 
-The \emph{predict_iid} logical flag should be set to TRUE if the results of the iid effect from the model are to be used in the prediction.
+The \emph{predict_iid} logical flag should be set to TRUE if the results of the iid effect from the model are to be used in the prediction. 
 
 The number of the realisations and the size of the confidence interval to be calculated.
 are given by the arguments \emph{N} and \emph{CI} respectively.
