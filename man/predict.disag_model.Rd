@@ -4,8 +4,7 @@
 \alias{predict.disag_model}
 \title{Predict mean and uncertainty from the disaggregation model result}
 \usage{
-\method{predict}{disag_model}(object, newdata = NULL,
-  predict_iid = FALSE, N = 100, CI = 0.95, ...)
+\method{predict}{disag_model}(object, newdata = NULL, predict_iid = FALSE, N = 100, CI = 0.95, ...)
 }
 \arguments{
 \item{object}{disag_model object returned by disag_model function.}
@@ -45,7 +44,7 @@ To predict over a different spatial extent to that used in the model,
 a RasterStack covering the region to make predictions over is passed to the argument \emph{newdata}. 
 If this is not given predictions are made over the data used in the fit.
 
-The \emph{predict_iid} logical flag should be set to TRUE if the results of the iid effect from the model are to be used in the prediction.
+The \emph{predict_iid} logical flag should be set to TRUE if the results of the iid effect from the model are to be used in the prediction. 
 
 For the uncertainty calculations, the number of the realisations and the size of the confidence interval to be calculated 
 are given by the arguments \emph{N} and \emph{CI} respectively.

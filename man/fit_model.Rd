@@ -5,13 +5,27 @@
 \alias{disag_model}
 \title{Fit the disaggregation model}
 \usage{
-fit_model(data, priors = NULL, family = "gaussian",
-  link = "identity", iterations = 100, field = TRUE, iid = TRUE,
-  silent = TRUE)
+fit_model(
+  data,
+  priors = NULL,
+  family = "gaussian",
+  link = "identity",
+  iterations = 100,
+  field = TRUE,
+  iid = TRUE,
+  silent = TRUE
+)
 
-disag_model(data, priors = NULL, family = "gaussian",
-  link = "identity", iterations = 100, field = TRUE, iid = TRUE,
-  silent = TRUE)
+disag_model(
+  data,
+  priors = NULL,
+  family = "gaussian",
+  link = "identity",
+  iterations = 100,
+  field = TRUE,
+  iid = TRUE,
+  silent = TRUE
+)
 }
 \arguments{
 \item{data}{disag_data object returned by \code{\link{prepare_data}} function that contains all the necessary objects for the model fitting}
