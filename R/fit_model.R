@@ -108,7 +108,7 @@ fit_model <- function(data,
                       field = TRUE, 
                       iid = TRUE,
                       hess_control_parscale = NULL,
-                      hess_control_ndeps = 1e-3,
+                      hess_control_ndeps = 1e-4,
                       silent = TRUE) {
   
   stopifnot(inherits(data, 'disag.data'))
