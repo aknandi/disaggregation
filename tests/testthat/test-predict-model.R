@@ -34,155 +34,102 @@ if(identical(Sys.getenv("NOT_CRAN"), "true")) {
                             makeMesh = FALSE)
 }
 
-test_that("Check predict_model and predict_uncertainty function works as expected", {
+test_that("Check predict.disag_model function works as expected", {
   
   skip_if_not_installed('INLA')
   skip_on_cran()
   
-  result <- fit_model(test_data, iterations = 2)
-  
-  result_nofield <- fit_model(test_data, iterations = 2, field = FALSE)
-  
-  preds <- predict_model(result)
-  
-  expect_is(preds, 'predictions')
-  expect_equal(length(preds), 4)
-  expect_equal(names(preds), c('prediction', 'field', 'iid', 'covariates'))
-  expect_is(preds$prediction, 'Raster')
-  expect_is(preds$field, 'Raster')
-  expect_true(is.null(preds$iid))
-  expect_is(preds$covariates, 'Raster')
-  
-  
-  preds2 <- predict_model(result_nofield)
-  
-  expect_is(preds2, 'predictions')
-  expect_equal(length(preds2), 4)
-  expect_equal(names(preds2), c('prediction', 'field', 'iid', 'covariates'))
-  expect_is(preds2$prediction, 'Raster')
-  expect_true(is.null(preds2$field))
-  expect_true(is.null(preds2$iid))
-  expect_is(preds2$covariates, 'Raster')
-  
-  
-  preds3 <- predict_model(result, predict_iid = TRUE)
-  
-  expect_is(preds3, 'predictions')
-  expect_equal(length(preds3), 4)
-  expect_equal(names(preds3), c('prediction', 'field', 'iid', 'covariates'))
-  expect_is(preds3$prediction, 'Raster')
-  expect_is(preds3$field, 'Raster')
-  expect_is(preds3$iid, 'Raster')
-  expect_is(preds3$covariates, 'Raster')
-  
+  result <- disag_model(test_data, iterations = 2)
 
-  unc <- predict_uncertainty(result)
+  pred2 <- predict(result)
   
-  expect_is(unc, 'uncertainty')
-  expect_equal(length(unc), 2)
-  expect_equal(names(unc), c('realisations', 'predictions_ci'))
-  expect_is(unc$realisations, 'RasterStack')
-  expect_is(unc$predictions_ci, 'RasterBrick')
-  expect_equal(raster::nlayers(unc$realisations), 100)
-  expect_equal(raster::nlayers(unc$predictions_ci), 2)
+  expect_is(pred2, 'disag_prediction')
+  expect_equal(length(pred2), 2)
+  expect_equal(names(pred2), c('mean_prediction', 'uncertainty_prediction'))
   
+  expect_is(pred2$mean_prediction, 'list')
+  expect_equal(length(pred2$mean_prediction), 4)
+  expect_is(pred2$mean_prediction$prediction, 'Raster')
+  expect_is(pred2$mean_prediction$field, 'Raster')
+  expect_true(is.null(pred2$mean_prediction$iid))
+  expect_is(pred2$mean_prediction$covariates, 'Raster')
   
-  unc2 <- predict_uncertainty(result_nofield, N = 10)
+  expect_is(pred2$uncertainty_prediction, 'list')
+  expect_equal(length(pred2$uncertainty_prediction), 2)
+  expect_equal(names(pred2$uncertainty_prediction), c('realisations', 'predictions_ci'))
+  expect_is(pred2$uncertainty_prediction$realisations, 'RasterStack')
+  expect_is(pred2$uncertainty_prediction$predictions_ci, 'RasterBrick')
+  expect_equal(raster::nlayers(pred2$uncertainty_prediction$realisations), 100)
+  expect_equal(raster::nlayers(pred2$uncertainty_prediction$predictions_ci), 2)
+
+  pred2 <- predict(result, predict_iid = TRUE, N = 10)
   
-  expect_is(unc2, 'uncertainty')
-  expect_equal(length(unc2), 2)
-  expect_equal(names(unc2), c('realisations', 'predictions_ci'))
-  expect_is(unc2$realisations, 'RasterStack')
-  expect_is(unc2$predictions_ci, 'RasterBrick')
-  expect_equal(raster::nlayers(unc2$realisations), 10)
-  expect_equal(raster::nlayers(unc2$predictions_ci), 2)
+  expect_is(pred2, 'disag_prediction')
+  expect_equal(length(pred2), 2)
+  expect_equal(names(pred2), c('mean_prediction', 'uncertainty_prediction'))
   
+  expect_is(pred2$mean_prediction, 'list')
+  expect_equal(length(pred2$mean_prediction), 4)
+  expect_equal(names(pred2$mean_prediction), c('prediction', 'field', 'iid', 'covariates'))
+  expect_is(pred2$mean_prediction$prediction, 'Raster')
+  expect_is(pred2$mean_prediction$field, 'Raster')
+  expect_is(pred2$mean_prediction$iid, 'Raster')
+  expect_is(pred2$mean_prediction$covariates, 'Raster')
   
-  unc2 <- predict_uncertainty(result, predict_iid = TRUE, N = 10)
-  
-  expect_is(unc2, 'uncertainty')
-  expect_equal(length(unc2), 2)
-  expect_equal(names(unc2), c('realisations', 'predictions_ci'))
-  expect_is(unc2$realisations, 'RasterStack')
-  expect_is(unc2$predictions_ci, 'RasterBrick')
-  expect_equal(raster::nlayers(unc2$realisations), 10)
-  expect_equal(raster::nlayers(unc2$predictions_ci), 2)
+  expect_is(pred2$uncertainty_prediction, 'list')
+  expect_equal(length(pred2$uncertainty_prediction), 2)
+  expect_equal(names(pred2$uncertainty_prediction), c('realisations', 'predictions_ci'))
+  expect_is(pred2$uncertainty_prediction$realisations, 'RasterStack')
+  expect_is(pred2$uncertainty_prediction$predictions_ci, 'RasterBrick')
+  expect_equal(raster::nlayers(pred2$uncertainty_prediction$realisations), 10)
+  expect_equal(raster::nlayers(pred2$uncertainty_prediction$predictions_ci), 2)
   
 })
 
 
 
-test_that("Check predict_model and predict_uncertainty function works with newdata", {
+test_that("Check predict.disag_model function works with newdata", {
   
   skip_if_not_installed('INLA')
   skip_on_cran()
   
-  result <- fit_model(test_data, field = FALSE, iid = TRUE, iterations = 2)
+  result <- disag_model(test_data, field = FALSE, iid = TRUE, iterations = 2)
   
   newdata <- raster::crop(raster::stack(r, r2), c(0, 10, 0, 10))
-  preds1 <- predict_model(result)
-  preds2 <- predict_model(result, newdata, predict_iid = TRUE)
+  pred1 <- predict(result)
+  pred2 <- predict(result, newdata, predict_iid = TRUE, N = 5)
   
-  expect_is(preds2, 'predictions')
-  expect_equal(length(preds2), 4)
-  expect_equal(names(preds2), c('prediction', 'field', 'iid', 'covariates'))
-  expect_is(preds2$prediction, 'Raster')
-  expect_true(is.null(preds2$field))
-  expect_is(preds2$iid, 'Raster')
-  expect_is(preds2$covariates, 'Raster')
-
-  expect_false(identical(raster::extent(preds1$prediction), raster::extent(preds2$prediction)))
+  expect_is(pred2, 'disag_prediction')
+  expect_equal(length(pred2), 2)
+  expect_equal(names(pred2), c('mean_prediction', 'uncertainty_prediction'))
   
+  expect_is(pred2$mean_prediction, 'list')
+  expect_equal(length(pred2$mean_prediction), 4)
+  expect_equal(names(pred2$mean_prediction), c('prediction', 'field', 'iid', 'covariates'))
+  expect_is(pred2$mean_prediction$prediction, 'Raster')
+  expect_true(is.null(pred2$mean_prediction$field))
+  expect_is(pred2$mean_prediction$iid, 'Raster')
+  expect_is(pred2$mean_prediction$covariates, 'Raster')
   
-  unc1 <- predict_uncertainty(result, N = 5)
-  unc2 <- predict_uncertainty(result, newdata, N = 5)
+  expect_is(pred2$uncertainty_prediction, 'list')
+  expect_equal(length(pred2$uncertainty_prediction), 2)
+  expect_equal(names(pred2$uncertainty_prediction), c('realisations', 'predictions_ci'))
+  expect_is(pred2$uncertainty_prediction$realisations, 'RasterStack')
+  expect_is(pred2$uncertainty_prediction$predictions_ci, 'RasterBrick')
+  expect_equal(raster::nlayers(pred2$uncertainty_prediction$realisations), 5)
+  expect_equal(raster::nlayers(pred2$uncertainty_prediction$predictions_ci), 2)
   
-  expect_is(unc1, 'uncertainty')
-  expect_equal(length(unc2), 2)
-  expect_equal(names(unc2), c('realisations', 'predictions_ci'))
-  expect_is(unc2$realisations, 'RasterStack')
-  expect_is(unc2$predictions_ci, 'RasterBrick')
-  expect_equal(raster::nlayers(unc2$realisations), 5)
-  expect_equal(raster::nlayers(unc2$predictions_ci), 2)
-
-  expect_false(identical(raster::extent(unc1$realisations), raster::extent(unc2$realisations)))
-  
-})
-
-test_that('Check that predict.fit.model works', {
-  
-  skip_if_not_installed('INLA')
-  skip_on_cran()
-  
-  result <- fit_model(test_data, field = FALSE, iterations = 2)
-  
-  preds <- predict(result, N = 5)
-  
-  expect_is(preds, 'list')
-  expect_equal(length(preds), 2)
-  expect_is(preds$mean_predictions, 'predictions')
-  expect_is(preds$uncertainty_predictions, 'uncertainty')
-  expect_equal(length(preds$mean_predictions), 4)
-  expect_equal(names(preds$mean_predictions), c('prediction', 'field', 'iid', 'covariates'))
-  expect_is(preds$mean_predictions$prediction, 'Raster')
-  expect_true(is.null(preds$mean_predictions$field))
-  expect_true(is.null(preds$mean_predictions$iid))
-  expect_is(preds$mean_predictions$covariates, 'Raster')
-  expect_equal(length(preds$uncertainty_predictions), 2)
-  expect_equal(names(preds$uncertainty_predictions), c('realisations', 'predictions_ci'))
-  expect_equal(raster::nlayers(preds$uncertainty_predictions$realisations), 5)
-  expect_equal(raster::nlayers(preds$uncertainty_predictions$predictions_ci), 2)
-
+  expect_false(identical(raster::extent(pred1$mean_prediction$prediction), raster::extent(pred2$mean_prediction$prediction)))
+  expect_false(identical(raster::extent(pred1$uncertainty_prediction$realisations), raster::extent(pred2$uncertainty_prediction$realisations)))
   
 })
-
 
 test_that('Check that check_newdata works', {
   
   skip_if_not_installed('INLA')
   skip_on_cran()
   
-  result <- fit_model(test_data, field = FALSE, iterations = 2)
+  result <- disag_model(test_data, field = FALSE, iterations = 2)
   
   newdata <- raster::crop(raster::stack(r, r2), c(0, 10, 0, 10))
   nd1 <- check_newdata(newdata, result)
@@ -207,7 +154,7 @@ test_that('Check that setup_objects works', {
   skip_if_not_installed('INLA')
   skip_on_cran()
   
-  result <- fit_model(test_data, iterations = 2)
+  result <- disag_model(test_data, iterations = 2)
   
   objects <- setup_objects(result)
   
@@ -241,37 +188,37 @@ test_that('Check that predict_single_raster works', {
   skip_if_not_installed('INLA')
   skip_on_cran()
   
-  result <- fit_model(test_data, iterations = 2)
+  result <- disag_model(test_data, iterations = 2)
   
   objects <- setup_objects(result)
   
   pars <- result$obj$env$last.par.best
   pars <- split(pars, names(pars))
   
-  pred <- predict_single_raster(pars, 
+  pred2 <- predict_single_raster(pars, 
                                 objects = objects,
                                 link_function = result$model_setup$link)
   
-  expect_is(pred, 'list')
-  expect_equal(length(pred), 4)
-  expect_equal(names(pred), c('prediction', 'field', 'iid', 'covariates'))
-  expect_is(pred$prediction, 'Raster')
-  expect_is(pred$field, 'Raster')
-  expect_true(is.null(pred$iid))
-  expect_is(pred$covariates, 'Raster')
+  expect_is(pred2, 'list')
+  expect_equal(length(pred2), 4)
+  expect_equal(names(pred2), c('prediction', 'field', 'iid', 'covariates'))
+  expect_is(pred2$prediction, 'Raster')
+  expect_is(pred2$field, 'Raster')
+  expect_true(is.null(pred2$iid))
+  expect_is(pred2$covariates, 'Raster')
   
   objects2 <- setup_objects(result, predict_iid = TRUE)
   
-  pred <- predict_single_raster(pars, 
+  pred2 <- predict_single_raster(pars, 
                                 objects = objects2,
                                 link_function = result$model_setup$link)
   
-  expect_is(pred, 'list')
-  expect_equal(length(pred), 4)
-  expect_equal(names(pred), c('prediction', 'field', 'iid', 'covariates'))
-  expect_is(pred$prediction, 'Raster')
-  expect_is(pred$field, 'Raster')
-  expect_is(pred$iid, 'Raster')
-  expect_is(pred$covariates, 'Raster')
+  expect_is(pred2, 'list')
+  expect_equal(length(pred2), 4)
+  expect_equal(names(pred2), c('prediction', 'field', 'iid', 'covariates'))
+  expect_is(pred2$prediction, 'Raster')
+  expect_is(pred2$field, 'Raster')
+  expect_is(pred2$iid, 'Raster')
+  expect_is(pred2$covariates, 'Raster')
   
 })

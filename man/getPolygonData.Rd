@@ -4,8 +4,12 @@
 \alias{getPolygonData}
 \title{Extract polygon id and response data into a data.frame from a SpatialPolygonsDataFrame}
 \usage{
-getPolygonData(shape, id_var = "area_id", response_var = "response",
-  sample_size_var = NULL)
+getPolygonData(
+  shape,
+  id_var = "area_id",
+  response_var = "response",
+  sample_size_var = NULL
+)
 }
 \arguments{
 \item{shape}{A SpatialPolygons object containing response data.}

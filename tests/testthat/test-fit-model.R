@@ -39,28 +39,28 @@ if(identical(Sys.getenv("NOT_CRAN"), "true")) {
                             makeMesh = FALSE)
 }
 
-test_that("fit_model produces errors whe expected", {
+test_that("disag_model produces errors whe expected", {
   
   skip_if_not_installed('INLA')
   skip_on_cran()
   
-  expect_error(fit_model(list()))
-  expect_error(fit_model(test_data, iterations = 'iterations'))
-  expect_error(fit_model(test_data, priors = list(polygon_sd_men = 0.3, polygon_sd_sd = 0.4)))
-  expect_error(fit_model(test_data, priors = c(polygon_sd_mean = 1.2)))
-  expect_error(fit_model(test_data, family = 'banana'))
-  expect_error(fit_model(test_data, link = 'apple'))
+  expect_error(disag_model(list()))
+  expect_error(disag_model(test_data, iterations = 'iterations'))
+  expect_error(disag_model(test_data, priors = list(polygon_sd_men = 0.3, polygon_sd_sd = 0.4)))
+  expect_error(disag_model(test_data, priors = c(polygon_sd_mean = 1.2)))
+  expect_error(disag_model(test_data, family = 'banana'))
+  expect_error(disag_model(test_data, link = 'apple'))
   
 })
 
-test_that("fit_model behaves as expected", {
+test_that("disag_model behaves as expected", {
   
   skip_if_not_installed('INLA')
   skip_on_cran()
   
-  result <- fit_model(test_data, iterations = 2)
+  result <- disag_model(test_data, iterations = 2)
 
-  expect_is(result, 'fit.result')
+  expect_is(result, 'disag_model')
   expect_equal(length(result), 5)
   expect_equal(length(result$sd_out$par.fixed), raster::nlayers(test_data$covariate_rasters) + 5)
   expect_equal(unique(names(result$sd_out$par.random)), c("iideffect", "nodemean"))
@@ -76,13 +76,13 @@ test_that("user defined model setup is working as expected", {
                              covariate_rasters = cov_stack,
                              sample_size_var = 'sample_size')
   
-  result2 <- fit_model(test_data, iterations = 2, field = FALSE, family = 'poisson', link = 'log')
-  result3 <- fit_model(binom_data, iterations = 2, iid = FALSE, family = 'binomial', link = 'logit')
-  result4 <- fit_model(test_data, iterations = 2, field = FALSE, iid = FALSE, link = 'identity')
+  result2 <- disag_model(test_data, iterations = 2, field = FALSE, family = 'poisson', link = 'log')
+  result3 <- disag_model(binom_data, iterations = 2, iid = FALSE, family = 'binomial', link = 'logit')
+  result4 <- disag_model(test_data, iterations = 2, field = FALSE, iid = FALSE, link = 'identity')
   
-  expect_error(fit_model(test_data, iterations = 2, iid = FALSE, family = 'binomial', link = 'logit'))
+  expect_error(disag_model(test_data, iterations = 2, iid = FALSE, family = 'binomial', link = 'logit'))
   
-  expect_is(result2, 'fit.result')
+  expect_is(result2, 'disag_model')
   expect_equal(length(result2), 5)
   expect_equal(length(result2$sd_out$par.fixed), raster::nlayers(test_data$covariate_rasters) + 2)
   expect_equal(unique(names(result2$sd_out$par.random)), c("iideffect"))
@@ -91,7 +91,7 @@ test_that("user defined model setup is working as expected", {
   expect_equal(result2$model_setup$family, 'poisson')
   expect_equal(result2$model_setup$link, 'log')
   
-  expect_is(result3, 'fit.result')
+  expect_is(result3, 'disag_model')
   expect_equal(length(result3), 5)
   expect_equal(length(result3$sd_out$par.fixed), raster::nlayers(binom_data$covariate_rasters) + 3)
   expect_equal(unique(names(result3$sd_out$par.random)), c("nodemean"))
@@ -100,7 +100,7 @@ test_that("user defined model setup is working as expected", {
   expect_equal(result3$model_setup$family, 'binomial')
   expect_equal(result3$model_setup$link, 'logit')
   
-  expect_is(result4, 'fit.result')
+  expect_is(result4, 'disag_model')
   expect_equal(length(result4), 5)
   expect_equal(length(result4$sd_out$par.fixed), raster::nlayers(test_data$covariate_rasters) + 2)
   expect_equal(unique(names(result4$sd_out$par.random)), NULL)
@@ -108,4 +108,16 @@ test_that("user defined model setup is working as expected", {
   expect_false(result4$model_setup$iid)
   expect_equal(result4$model_setup$family, 'gaussian')
   expect_equal(result4$model_setup$link, 'identity')
+})
+
+test_that("make_model_object behaves as expected", {
+  
+  skip_if_not_installed('INLA')
+  skip_on_cran()
+  
+  result <- make_model_object(test_data)
+  
+  expect_is(result, 'list')
+  expect_equal(sum(sapply(c("par", "fn", "gr", "report"), function(x) !(x %in% names(result)))), 0)
+  
 })

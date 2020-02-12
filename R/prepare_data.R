@@ -37,9 +37,9 @@
 #' @param makeMesh logical. If TRUE, build INLA mesh, takes some time. Default TRUE.
 #' @param ncores Number of cores used to perform covariate extraction.
 #'
-#' @return A list is returned of class \code{disag.data}. 
-#' The functions \emph{summary}, \emph{print} and \emph{plot} can be used on \code{disag.data}. 
-#' The list  of class \code{disag.data} contains:
+#' @return A list is returned of class \code{disag_data}. 
+#' The functions \emph{summary}, \emph{print} and \emph{plot} can be used on \code{disag_data}. 
+#' The list  of class \code{disag_data} contains:
 #'  \item{polygon_shapefile }{The SpatialPolygonDataFrame used as an input.} 
 #'  \item{covariate_rasters }{The RasterStack used as an input.} 
 #'  \item{polygon_data }{A data frame with columns of \emph{area_id}, \emph{response} and \emph{N} (sample size: all NAs unless using binomial data). Each row represents a polygon.}
@@ -184,7 +184,7 @@ prepare_data <- function(polygon_shapefile,
                      startendindex = startendindex,
                      mesh = mesh)
   
-  class(disag_data) <- c('disag.data', 'list')
+  class(disag_data) <- c('disag_data', 'list')
   
   return(disag_data)
   
@@ -203,9 +203,9 @@ prepare_data <- function(polygon_shapefile,
 #' @param startendindex matrix containing the start and end index for each polygon
 #' @param mesh inla.mesh object to use in the fit
 #' 
-#' @return A list is returned of class \code{disag.data}. 
-#' The functions \emph{summary}, \emph{print} and \emph{plot} can be used on \code{disag.data}. 
-#' The list  of class \code{disag.data} contains:
+#' @return A list is returned of class \code{disag_data}. 
+#' The functions \emph{summary}, \emph{print} and \emph{plot} can be used on \code{disag_data}. 
+#' The list  of class \code{disag_data} contains:
 #'  \item{polygon_shapefile }{The SpatialPolygonDataFrame used as an input.} 
 #'  \item{covariate_rasters }{The RasterStack used as an input.} 
 #'  \item{polygon_data }{A data frame with columns of \emph{area_id}, \emph{response} and \emph{N} (sample size: all NAs unless using binomial data). Each row represents a polygon.}
@@ -216,12 +216,12 @@ prepare_data <- function(polygon_shapefile,
 #'  \item{startendindex }{A matrix with two columns containing the start and end index of the pixels within each polygon.}
 #'  \item{mesh }{A INLA mesh to be used for the spatial field of the disaggregation model.}
 #'
-#' @name as.disag.data
+#' @name as.disag_data
 #' 
 #' @export
 
 
-as.disag.data <- function(polygon_shapefile, 
+as.disag_data <- function(polygon_shapefile, 
                           shapefile_names,
                           covariate_rasters, 
                           polygon_data, 
@@ -256,7 +256,7 @@ as.disag.data <- function(polygon_shapefile,
                      startendindex = startendindex,
                      mesh = mesh)
   
-  class(disag_data) <- c('disag.data', 'list')
+  class(disag_data) <- c('disag_data', 'list')
   
   return(disag_data)
 }

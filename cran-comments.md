@@ -1,51 +1,22 @@
-## Resubmission
-This is a resubmission. In this version I have:
+## Update
+This is a package update (version 0.1.3). The changes in this version are:
 
-* Version 0.1.1 was accepted but subsequently failed a single build (r-devel-windows-ix86+x86_64-gcc8). These errors have now been fixed, details below. The version is now 0.1.2
+* Renamed fit_model function to disag_model. Deprecated fit_model, will be removed in the next version
 
-  In tests, prepare_data function explicity only builds mesh if not on CRAN (if(identical(Sys.getenv("NOT_CRAN"), "true")))
-  Affects: test-fit-model, test-plotting, test-predict-model
+* Renamed classes disag.data and fit.result to disag_data and disag_model
+
+* Created a disag_predictions class which is returned by the predict function and contains the 
+  mean and uncertainty predictions. This has replaced the predictions and uncertainty classes. 
+  Plot, summary and print methods have been implemented for the disag_predictions class
+
+* Extracted the function make_model_object to allow the user to make a TMB model object on its own, 
+  so it can be used in different optimiser or a for MCMC
   
-* Version 0.1.0 was accepted but subsequently failed some builds. These errors have now been fixed, details below. The version is now 0.1.1
+* Neatened up plot.disag_data function to produce 3 plots on the same canvas, with an optional which 
+  argument for the user to choose which plots to display
 
-  disaggregation.cpp:207:18: warning: explicitly assigning value of variable of type 'vector<Type>' to itself [-Wself-assign-overloaded]
-  This line has been removed
-  disaggregation.cpp:99:22: error: call of overloaded 'sqrt(int)' is ambiguous
-    Type kappa = sqrt(8) / rho;
-  Changed this to Type kappa = sqrt(8.0) / rho;
-
-* Omitted the redundant and rather unspecific part "Useful Functions for" in the DESCRIPTION title.
-
-* Added a useful reference for disaggregation modelling in the Description field of the DESCRIPTION file
-
-  A useful reference for disaggregation modelling is Lucas et al. (2019) <doi:10.1101/548719>.
-  
-* Added missing Rd-tags: \value
-  
-  Affects: build_mesh, parallelExtract, getPolygonData, getCovariateRasters, getStartendindex, predict_model, predict_uncertatinty,
-  as.disag.data, plotting functions and summary functions
-
-* Remove Roxygen comments from functions that are not exported
-  
-  Affects: extractCoordsForMesh, plot_polygon_data, getCoords and getAmatrix
-
-* Replaced the installed.packages() function with requireNamespace()
-  
-  Affects: prepare_data function and vignettes/disaggregation.Rmd
-
-* Skipped tests on CRAN as they were taking too long
-
-  The timings used to be:
-  ** running tests for arch 'i386' ... [298s] OK
-  ** running tests for arch 'x64' ... [305s] OK
-  I have now reduced this by more than half:
-  ** running tests for arch 'i386' ... [106s] OK
-  ** running tests for arch 'x64' ... [101s] OK
-
-* \dontrun{} is only used if the example really cannot be executed. 
-
-  Examples that are the most interesting use INLA so we don't run these examples. 
-  One example takes longer than 5 seconds and so \donttest{} is used instead.
+* Made the summary and print function return different outputs. Print functions show minmial output, 
+  summary function are more deatiled
 
 ## Test environments
 * local Windows 10, R 3.6.1
@@ -59,14 +30,6 @@ There were 3 NOTEs:
 
 * checking CRAN incoming feasibility ... NOTE
   Maintainer: 'Anita Nandi <anita.k.nandi@gmail.com>'
-
-  New submission
-
-  Possibly mis-spelled words in DESCRIPTION:
-    Disaggregation (3:8)
-    al (15:14)
-    disaggregation (11:19, 14:82)
-    et (15:11)
 
   Suggests or Enhances not in mainstream repositories:
     INLA

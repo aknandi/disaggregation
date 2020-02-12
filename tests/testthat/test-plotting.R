@@ -51,6 +51,7 @@ test_that("Check plot_polygon_data function works as expected", {
 
 test_that("Check plot.disag.data function works as expected", {
   
+  skip_if_not_installed('INLA')
   skip_on_cran()
   
   test_data2 <- prepare_data(polygon_shapefile = spdf2, 
@@ -60,25 +61,31 @@ test_that("Check plot.disag.data function works as expected", {
   p <- plot(test_data)
   
   expect_is(p, 'list')
-  expect_equal(length(p), 2)
-  expect_equal(names(p), c('polygon', 'covariates'))
+  expect_equal(length(p), 3)
+  expect_equal(names(p), c('polygon', 'covariates', 'mesh'))
   
   p2 <- plot(test_data2)
   
   expect_is(p2, 'list')
-  expect_equal(length(p2), 2)
-  expect_equal(names(p2), c('polygon', 'covariates'))
+  expect_equal(length(p2), 3)
+  expect_equal(names(p2), c('polygon', 'covariates', 'mesh'))
+  
+  p3 <- plot(test_data, which = c(1,3))
+  
+  expect_is(p3, 'list')
+  expect_equal(length(p3), 2)
+  expect_equal(names(p3), c('polygon', 'mesh'))
   
 })
 
-test_that("Check plot.fit.result function works as expected", {
+test_that("Check plot.disag_model function works as expected", {
   
   skip_if_not_installed('INLA')
   skip_on_cran()
   
-  fit_result <- fit_model(test_data, iterations = 2)
+  fit_result <- disag_model(test_data, iterations = 2)
   
-  fit_result_nofield <- fit_model(test_data, iterations = 2, field = FALSE)
+  fit_result_nofield <- disag_model(test_data, iterations = 2, field = FALSE)
   
   p1 <- plot(fit_result)
   
@@ -93,46 +100,17 @@ test_that("Check plot.fit.result function works as expected", {
   
 })
 
-test_that("Check plot.predictions function works as expected", {
+test_that("Check plot.disag_prediction function works as expected", {
   
   skip_if_not_installed('INLA')
   skip_on_cran()
   
-  fit_result <- fit_model(test_data, iterations = 2)
+  fit_result <- disag_model(test_data, iterations = 2)
   
-  fit_result_nofield <- fit_model(test_data, iterations = 2, field = FALSE)
+  pred <- predict(fit_result)
+  p <- plot(pred)
   
-  preds <- predict_model(fit_result)
-  p1 <- plot(preds)
-  
-  preds_nofield <- predict_model(fit_result_nofield)
-  p2 <- plot(preds_nofield)
-  
-  preds_withiid <- predict_model(fit_result, predict_iid = TRUE)
-  p3 <- plot(preds_withiid)
-  
-  unc <- predict_uncertainty(fit_result)
-  p4 <- plot(unc)
-  
-  expect_is(p1, 'list')
-  expect_equal(length(p1), 3)
-  expect_is(p1[[1]], 'trellis')
-  expect_is(p1[[2]], 'trellis')
-  expect_is(p1[[3]], 'trellis')
-  
-  expect_is(p2, 'list')
-  expect_equal(length(p2), 2)
-  expect_is(p2[[1]], 'trellis')
-  expect_is(p2[[2]], 'trellis')
-  
-  expect_is(p3, 'list')
-  expect_equal(length(p3), 4)
-  expect_is(p3[[1]], 'trellis')
-  expect_is(p3[[2]], 'trellis')
-  expect_is(p3[[3]], 'trellis')
-  expect_is(p3[[4]], 'trellis')
-  
-  expect_is(p4, 'trellis')
+  expect_is(p, 'trellis')
   
 })
 

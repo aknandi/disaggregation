@@ -125,9 +125,9 @@ Type objective_function<Type>::operator()()
     // Likelihood of hyperparameter of polygon iid random effect. 
     // From https://projecteuclid.org/euclid.ss/1491465621 (Eqn 3.3)
     Type lambda = -log(prior_iideffect_sd_prob) / prior_iideffect_sd_max;
-    Type pcdensityiid = lambda / 2 * pow(iideffect_tau, -3/2) * exp( - lambda * pow(iideffect_tau, -1/2));
+    Type log_pcdensity_iid = log(lambda / 2) - (3/2)*iideffect_log_tau - lambda * pow(iideffect_tau, -1/2);
     // log(iideffect_sd) from the Jacobian
-    nll -= log(pcdensityiid) + log(iideffect_sd);
+    nll -= log_pcdensity_iid + log(iideffect_sd);
     
     // Likelihood of random effect for polygons
     for(int p = 0; p < iideffect.size(); p++) {
@@ -147,9 +147,9 @@ Type objective_function<Type>::operator()()
     // From https://www.tandfonline.com/doi/full/10.1080/01621459.2017.1415907 (Theorem 2.6)
     Type lambdatilde1 = -log(prior_rho_prob) * prior_rho_min;
     Type lambdatilde2 = -log(prior_sigma_prob) / prior_sigma_max;
-    Type pcdensity = lambdatilde1 * lambdatilde2 * pow(rho, -2) * exp(-lambdatilde1 * pow(rho, -1) - lambdatilde2 * sigma);
+    Type log_pcdensity = log(lambdatilde1) + log(lambdatilde2) - 2*log_rho - lambdatilde1 * pow(rho, -1) - lambdatilde2 * sigma;
     // log_rho and log_sigma from the Jacobian
-    nll -= log(pcdensity) + log_rho + log_sigma;
+    nll -= log_pcdensity + log_rho + log_sigma;
     
     // Build spde matrix
     SparseMatrix<Type> Q = Q_spde(spde, kappa);

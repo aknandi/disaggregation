@@ -1,6 +1,6 @@
 #' Predict mean and uncertainty from the disaggregation model result
 #' 
-#' \emph{predict.fit.result} function takes a \emph{fit.result} object created by \emph{disaggregation::fit_model} and 
+#' \emph{predict.disag_model} function takes a \emph{disag_model} object created by \emph{disaggregation::disag_model} and 
 #' predicts mean and uncertainty maps.
 #' 
 #' To predict over a different spatial extent to that used in the model, 
@@ -12,7 +12,7 @@
 #' For the uncertainty calculations, the number of the realisations and the size of the confidence interval to be calculated 
 #' are given by the arguments \emph{N} and \emph{CI} respectively. 
 #' 
-#' @param object fit.result object returned by fit_model function.
+#' @param object disag_model object returned by disag_model function.
 #' @param newdata If NULL, predictions are made using the data in model_output. 
 #'   If this is a raster stack or brick, predictions will be made over this data. 
 #' @param predict_iid logical. If TRUE, any polygon iid effect from the model will be used in the prediction. Default FALSE.
@@ -20,22 +20,22 @@
 #' @param CI Confidence interval to be calculated from the realisations. Default: 0.95.
 #' @param ... Further arguments passed to or from other methods.
 #'
-#' @return A list of two objects is returned: 
-#'  \item{mean_predictions }{List of class \emph{predictions}:
+#' @return An object of class \emph{disag_prediction} which consists of a list of two objects: 
+#'  \item{mean_prediction }{List of:
 #'   \itemize{
-#'    \item \emph{predictions} Raster of mean predictions based.
+#'    \item \emph{prediction} Raster of mean predictions based.
 #'    \item \emph{field} Raster of the field component of the linear predictor.
 #'    \item \emph{iid} Raster of the iid component of the linear predictor.
 #'    \item \emph{covariates} Raster of the covariate component of the linear predictor.
 #'   }} 
-#'  \item{uncertainty_predictions }{List of class \emph{uncertainty}:
+#'  \item{uncertainty_prediction: }{List of:
 #'   \itemize{
 #'    \item \emph{realisations} RasterStack of realisations of predictions. Number of realisations defined by argument \emph{N}.
 #'    \item \emph{predictions_ci} RasterStack of the upper and lower credible intervals. Defined by argument \emph{CI}.
 #'   }} 
 #'
 #'
-#' @method predict fit.result
+#' @method predict disag_model
 #'
 #' @examples 
 #' \dontrun{
@@ -45,20 +45,24 @@
 #' @export
 
 
-predict.fit.result <- function(object, newdata = NULL, predict_iid = FALSE, N = 100, CI = 0.95, ...) {
+predict.disag_model <- function(object, newdata = NULL, predict_iid = FALSE, N = 100, CI = 0.95, ...) {
   
-  mean_predictions <- predict_model(object, newdata = newdata, predict_iid)
+  mean_prediction <- predict_model(object, newdata = newdata, predict_iid)
   
-  uncertainty_predictions <- predict_uncertainty(object, newdata = newdata, predict_iid, N, CI)
+  uncertainty_prediction <- predict_uncertainty(object, newdata = newdata, predict_iid, N, CI)
   
-  return(list(mean_predictions = mean_predictions,
-              uncertainty_predictions = uncertainty_predictions))
+  prediction <- list(mean_prediction = mean_prediction,
+                     uncertainty_prediction = uncertainty_prediction)
+  
+  class(prediction) <- c('disag_prediction', 'list')
+  
+  return(prediction)
 }
 
 #' Function to predict mean from the model result
 #' 
-#' \emph{predict_model} function takes a \emph{fit.result} object created by 
-#' \emph{disaggregation::fit_model} and predicts mean maps. 
+#' \emph{predict_model} function takes a \emph{disag_model} object created by 
+#' \emph{disaggregation::disag_model} and predicts mean maps. 
 #' 
 #' Function returns rasters of the mean predictions as well as the  covariate and field contributions
 #' to the linear predictor.
@@ -69,14 +73,14 @@ predict.fit.result <- function(object, newdata = NULL, predict_iid = FALSE, N = 
 #' 
 #' The \emph{predict_iid} logical flag should be set to TRUE if the results of the iid effect from the model are to be used in the prediction. 
 #' 
-#' @param model_output fit.result object returned by fit_model function
+#' @param model_output disag_model object returned by disag_model function
 #' @param newdata If NULL, predictions are made using the data in model_output. 
 #'   If this is a raster stack or brick, predictions will be made over this data. Default NULL.
 #' @param predict_iid If TRUE, any polygon iid effect from the model will be used in the prediction. Default FALSE.
 #'
-#' @return The mean_predictions, a list of class \emph{predictions}:
+#' @return The mean prediction, which is a list of:
 #'   \itemize{
-#'    \item \emph{predictions} Raster of mean predictions based.
+#'    \item \emph{prediction} Raster of mean predictions based.
 #'    \item \emph{field} Raster of the field component of the linear predictor.
 #'    \item \emph{iid} Raster of the iid component of the linear predictor.
 #'    \item \emph{covariates} Raster of the covariate component of the linear predictor.
@@ -98,20 +102,18 @@ predict_model <- function(model_output, newdata = NULL, predict_iid = FALSE) {
   pars <- model_output$obj$env$last.par.best
   pars <- split(pars, names(pars))
   
-  predictions <- predict_single_raster(pars, 
-                                       objects_for_prediction,
-                                       link_function = model_output$model_setup$link) 
-
-  class(predictions) <- c('predictions', 'list')
+  prediction <- predict_single_raster(pars, 
+                                      objects_for_prediction,
+                                      link_function = model_output$model_setup$link) 
   
-  return(predictions)
+  return(prediction)
   
 }
 
 #' Function to predict uncertainty from the model result
 #' 
-#' \emph{predict_uncertainty} function takes a \emph{fit.result} object created by 
-#' \emph{disaggregation::fit_model} and predicts upper and lower credible interval maps. 
+#' \emph{predict_uncertainty} function takes a \emph{disag_model} object created by 
+#' \emph{disaggregation::disag_model} and predicts upper and lower credible interval maps. 
 #' 
 #' Function returns a RasterStack of the realisations as well as the upper and lower credible interval rasters.
 #' 
@@ -124,14 +126,14 @@ predict_model <- function(model_output, newdata = NULL, predict_iid = FALSE) {
 #' The number of the realisations and the size of the confidence interval to be calculated.
 #' are given by the arguments \emph{N} and \emph{CI} respectively. 
 #' 
-#' @param model_output fit.result object returned by fit_model function.
+#' @param model_output disag_model object returned by disag_model function.
 #' @param newdata If NULL, predictions are made using the data in model_output. 
 #'   If this is a raster stack or brick, predictions will be made over this data. Default NULL.
 #' @param predict_iid If TRUE, any polygon iid effect from the model will be used in the prediction. Default FALSE.
 #' @param N number of realisations. Default: 100.
 #' @param CI confidence interval. Default: 0.95.
 #' 
-#' @return The uncertainty_predictions, a list of class \emph{uncertainty}:
+#' @return The uncertainty prediction, which is a list of:
 #'   \itemize{
 #'    \item \emph{realisations} RasterStack of realisations of predictions. Number of realisations defined by argument \emph{N}.
 #'    \item \emph{predictions_ci} RasterStack of the upper and lower credible intervals. Defined by argument \emph{CI}.
@@ -177,14 +179,12 @@ predict_uncertainty <- function(model_output, newdata = NULL, predict_iid = FALS
   uncertainty <- list(realisations = predictions,
                       predictions_ci = predictions_ci)
   
-  class(uncertainty) <- c('uncertainty', 'list')
-  
   return(uncertainty)
 }
 
 # Get coordinates from raster
 #
-# @param data disag.data object 
+# @param data disag_data object 
 # 
 # @return A matrix of the coordinates of the raster
 # 
