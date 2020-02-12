@@ -36,9 +36,7 @@ There were 3 NOTEs:
   Availability using Additional_repositories specification:
     INLA   yes   https://inla.r-inla-download.org/R/stable
 
-  The Title field starts with the package name.
-  
-  I have not submitted a package before. These are not mis-spelled words. The package uses INLA, my understanding of this NOTE is that it is fine.
+  The package uses INLA, my understanding of this NOTE is that it is fine.
 
 * checking installed package size ... NOTE
     installed size is 12.8Mb
