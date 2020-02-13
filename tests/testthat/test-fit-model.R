@@ -121,3 +121,21 @@ test_that("make_model_object behaves as expected", {
   expect_equal(sum(sapply(c("par", "fn", "gr", "report"), function(x) !(x %in% names(result)))), 0)
   
 })
+
+test_that("setup_hess_control behaves as expected", {
+  
+  skip_if_not_installed('INLA')
+  skip_on_cran()
+  
+  obj <- make_model_object(test_data)
+  
+  opt <- stats::nlminb(obj$par, obj$fn, obj$gr, control = list(iter.max = 2, trace = 0))
+  
+  hess_control <- setup_hess_control(opt, hess_control_parscale = c(rep(c(0.9, 1.1), 3), 1), hess_control_ndeps = 1e-3)
+  
+  expect_is(hess_control, 'list')
+  expect_equal(length(hess_control$parscale), length(opt$par))
+  expect_equal(length(hess_control$ndeps), length(opt$par))
+  
+})
+

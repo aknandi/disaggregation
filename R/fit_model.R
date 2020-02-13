@@ -48,9 +48,12 @@
 #' @param iterations number of iterations to run the optimisation for
 #' @param field logical. Flag the spatial field on or off
 #' @param iid logical. Flag the iid effect on or off
-#' @param hess_control_parscale Argument to scale parameters during the calculation of the Hessian. Must be the same length as the number of parameters. See \code{\link[stats]{optimHess}} for details.
-#' @param hess_control_ndeps Argument to control step sizes during the calculation of the Hessian. Either length 1 (same step size applied to all parameters) or the same length as the number of parameters. 
-#' Default is 1e-3, try setting a smaller value if you get NaNs in the standard error of the parameters. See \code{\link[stats]{optimHess}} for details.
+#' @param hess_control_parscale Argument to scale parameters during the calculation of the Hessian. 
+#' Must be the same length as the number of parameters. See \code{\link[stats]{optimHess}} for details.
+#' @param hess_control_ndeps Argument to control step sizes during the calculation of the Hessian. 
+#' Either length 1 (same step size applied to all parameters) or the same length as the number of parameters. 
+#' Default is 1e-3, try setting a smaller value if you get NaNs in the standard error of the parameters. 
+#' See \code{\link[stats]{optimHess}} for details.
 #' @param silent logical. Suppress verbose output.
 #' 
 #' @return A list is returned of class \code{disag_model}. 
