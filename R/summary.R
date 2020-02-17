@@ -44,7 +44,7 @@ summary.disag_model <- function(object, ...) {
                               spearman = cor(pred, obs, method = 'spearman'),
                               log_pearson = cor(log1p(pred), log1p(obs), method = 'pearson'))
   
-  cat(paste('Likelihood function:', object$model_setup$family))
+  cat(paste('Likelihood function:', object$model_setup$family, '\n'))
   cat(paste('Link function:', object$model_setup$link, '\n'))
   
   cat('Model parameters:\n')
