@@ -61,11 +61,11 @@ data_for_model <- prepare_data(shps, covariate_stack,
 Function fit_model takes data structure returned by prepare_data and fits a TMB disaggregation model. Here you can specify priors, likelihood function, link function and whether to include a field or iid effect (default includes both)
 
 ```R
-model_result <- fit_model(data_for_model, 
-                          family = 'gaussian', 
-                          link = 'identity',
-                          field = TRUE,
-                          iid = FALSE)
+model_result <- disag_model(data_for_model, 
+                            family = 'gaussian', 
+                            link = 'identity',
+                            field = TRUE,
+                            iid = FALSE)
 ```
 
 ### Specify priors
@@ -73,11 +73,11 @@ model_result <- fit_model(data_for_model,
 Priors can be specified for the regression parameters, field and iid effect as a single list.
 
 ```R
-model_result <- fit_model(data_for_model, 
-                          priors = list(priormean_intercept = -2.0,
-                                        priorsd_intercept = 2.0,
-                                        priormean_slope = 0.0,
-                                        priorsd_slope = 0.3))
+model_result <- disag_model(data_for_model, 
+                            priors = list(priormean_intercept = -2.0,
+                                          priorsd_intercept = 2.0,
+                                          priormean_slope = 0.0,
+                                          priorsd_slope = 0.3))
 ```
 
 ## Model prediction
@@ -87,7 +87,7 @@ model_result <- fit_model(data_for_model,
 Function predict takes data structure returned by fit_model to predict model results and uncertainty.
 
 ```R
-predictions <- predict(model_result)
+prediction <- predict(model_result)
 ```
 
 ## Plotting and summary functions
@@ -97,8 +97,7 @@ Plotting functions for input data, model results and predictions
 ```R
 plot(data_for_model) # Plots polygon data, covariate rasters and INLa mesh
 plot(model_result) # Plots of fixed effects parameters and in sample predictions
-plot(predictions$mean_predictions) #  Plots the mean prediction, covariate contribution and the field and iid contribution (if they were used in the model)
-plot(predictions$uncertainty_predictions) # Plots the upper and lower CI rasters
+plot(prediction) #  Plots the mean, upper CI and lower CI prediction rasters
 ```
 
 Summary functions for input data and model results
