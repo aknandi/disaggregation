@@ -330,7 +330,13 @@ make_model_object <- function(data,
   n_s <- nrow(spde$M0)
   
   cov_matrix <- as.matrix(data$covariate_data[, -c(1:2)])
-  cov_matrix <- t(apply(cov_matrix, 1,as.numeric))
+  # If we have exactly one column we don't have to transpose. Sure this 
+  #   this could be cleaner but I don't know how.
+  if(ncol(cov_matrix) == 1){
+    cov_matrix <- as.matrix(apply(cov_matrix, 1, as.numeric))
+  } else {
+    cov_matrix <- t(apply(cov_matrix, 1, as.numeric))
+  }
   
   # Construct sensible default field hyperpriors
   limits <- sp::bbox(data$polygon_shapefile)
