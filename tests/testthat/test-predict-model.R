@@ -84,6 +84,32 @@ test_that("Check predict.disag_model function works as expected", {
   expect_equal(raster::nlayers(pred2$uncertainty_prediction$realisations), 10)
   expect_equal(raster::nlayers(pred2$uncertainty_prediction$predictions_ci), 2)
   
+  
+  # For a model with no field or iid
+  
+  result <- disag_model(test_data, iterations = 2, field = FALSE, iid = FALSE)
+  
+  pred2 <- predict(result)
+  
+  expect_is(pred2, 'disag_prediction')
+  expect_equal(length(pred2), 2)
+  expect_equal(names(pred2), c('mean_prediction', 'uncertainty_prediction'))
+  
+  expect_is(pred2$mean_prediction, 'list')
+  expect_equal(length(pred2$mean_prediction), 4)
+  expect_is(pred2$mean_prediction$prediction, 'Raster')
+  expect_true(is.null(pred2$mean_prediction$field))
+  expect_true(is.null(pred2$mean_prediction$iid))
+  expect_is(pred2$mean_prediction$covariates, 'Raster')
+  
+  expect_is(pred2$uncertainty_prediction, 'list')
+  expect_equal(length(pred2$uncertainty_prediction), 2)
+  expect_equal(names(pred2$uncertainty_prediction), c('realisations', 'predictions_ci'))
+  expect_is(pred2$uncertainty_prediction$realisations, 'RasterStack')
+  expect_is(pred2$uncertainty_prediction$predictions_ci, 'RasterBrick')
+  expect_equal(raster::nlayers(pred2$uncertainty_prediction$realisations), 100)
+  expect_equal(raster::nlayers(pred2$uncertainty_prediction$predictions_ci), 2)
+  
 })
 
 
@@ -222,3 +248,5 @@ test_that('Check that predict_single_raster works', {
   expect_is(pred2$covariates, 'Raster')
   
 })
+
+
