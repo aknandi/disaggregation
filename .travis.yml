@@ -53,4 +53,5 @@ matrix:
       os: linux
     - r: devel
       env: _R_CHECK_FORCE_SUGGESTS_=false
-      install: R -e 'install.packages("devtools", dep = TRUE);devtools::install_deps(dep = c("Depends", "Imports"));install.packages("SpatialEpi")'
+      install: R -e 'install.packages("devtools", dep = TRUE);devtools::install_deps(dep = c("Depends", "Imports"))'
+

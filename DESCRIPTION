@@ -34,14 +34,14 @@ Imports:
     ggplot2,
     cowplot,
     sparseMVN,
-    utils
+    utils,
+    SpatialEpi
 Additional_repositories: https://inla.r-inla-download.org/R/stable
 Suggests: 
     testthat,
     INLA,
     knitr,
-    rmarkdown,
-    SpatialEpi
+    rmarkdown
 LinkingTo: 
     TMB,
     RcppEigen
