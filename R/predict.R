@@ -307,7 +307,13 @@ predict_single_raster <- function(model_parameters, objects, link_function) {
   }
   
   cov_by_betas <- raster::stack(covs_by_betas)
-  cov_contribution <- sum(cov_by_betas) + model_parameters$intercept
+  if(raster::nlayers(cov_by_betas) > 1){
+    sum_cov_by_betas <- sum(cov_by_betas)
+  } else { 
+    # With only 1 covariate, there's nothing to sum. Do this to avoid warnings.
+    sum_cov_by_betas <- cov_by_betas
+  }
+  cov_contribution <- sum_cov_by_betas + model_parameters$intercept
   
   linear_pred <- cov_contribution  
   

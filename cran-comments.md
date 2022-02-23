@@ -3,6 +3,7 @@ This is a package update (version 0.1.3). The changes in this version are:
 
 * Renamed fit_model function to disag_model. Deprecated fit_model, will be removed in the next version
 
+
 * Renamed classes disag.data and fit.result to disag_data and disag_model
 
 * Created a disag_predictions class which is returned by the predict function and contains the 

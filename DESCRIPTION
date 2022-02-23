@@ -40,8 +40,7 @@ Suggests:
     testthat,
     INLA,
     knitr,
-    rmarkdown,
-    SpatialEpi
+    rmarkdown
 LinkingTo: 
     TMB,
     RcppEigen
