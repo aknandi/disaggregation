@@ -46,10 +46,12 @@ after_success:
 matrix:
   include:
     - r: release
-      r_github_packages: andrewzm/INLA
+      install: R -e 'install.packages("devtools", dep = TRUE);devtools::install_deps(dep = c("Depends", "Imports"));install.packages("INLA",repos=c(getOption("rep>
+'
       os: linux
     - r: devel
-      r_github_packages: andrewzm/INLA
+      install: R -e 'install.packages("devtools", dep = TRUE);devtools::install_deps(dep = c("Depends", "Imports"));install.packages("INLA",repos=c(getOption("repos"),INLA="https://inla.r-inla-download.org/R/stable"), dep=TRUE)
+'
       os: linux
     - r: devel
       env: _R_CHECK_FORCE_SUGGESTS_=false
