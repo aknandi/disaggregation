@@ -11,7 +11,7 @@ on:
     branches:
       - devel
 
-name: R-CMD-check-no-suggests
+name: R-CMD-check
 
 jobs:
   R-CMD-check:
@@ -23,7 +23,10 @@ jobs:
       fail-fast: false
       matrix:
         config:
+          - {os: windows-latest, r: 'release'}
+          - {os: macOS-latest, r: 'release'}
           - {os: ubuntu-20.04, r: 'release', rspm: "https://packagemanager.rstudio.com/cran/__linux__/focal/latest"}
+#          - {os: ubuntu-20.04, r: 'oldrel', rspm: "https://packagemanager.rstudio.com/cran/__linux__/focal/latest"}
           - {os: ubuntu-20.04, r: 'devel', rspm: "https://packagemanager.rstudio.com/cran/__linux__/focal/latest"}
 
     env:
@@ -36,7 +39,7 @@ jobs:
       - uses: r-lib/actions/setup-r@v2
         with:
           r-version: ${{ matrix.config.r }}
-          extra-repositories: "https://inla.r-inla-download.org/R/testing"
+          extra-repositories: "https://inla.r-inla-download.org/R/stable"
 
       - uses: r-lib/actions/setup-pandoc@v2
 
@@ -50,7 +53,7 @@ jobs:
 
       - uses: r-lib/actions/setup-r-dependencies@v2
         with:
-          dependencies: '"hard"'
+          dependencies: '"all"'
           extra-packages: |
              rcmdcheck
 
@@ -64,7 +67,5 @@ jobs:
       - uses: r-lib/actions/check-r-package@v2
         env:
           _R_CHECK_CRAN_INCOMING_REMOTE_: false
-          _R_CHECK_FORCE_SUGGESTS_: false
         with:
-          build_args: 'c("--no-manual", "--no-build-vignettes")'
-          args: 'c("--no-manual", "--ignore-vignettes", "--as-cran")'
+          args: 'c("--no-manual", "--as-cran")'
