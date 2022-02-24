@@ -4,9 +4,8 @@ on:
   push:
     branches:
       - devel
-      - stable
-      - release/*
-      - feature/*
+      - master
+      - actions
   pull_request:
     branches:
       - devel
