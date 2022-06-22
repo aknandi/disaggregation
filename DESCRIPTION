@@ -3,8 +3,8 @@ Type: Package
 Title: Disaggregation Modelling
 Version: 0.1.3
 Authors@R: c(
-    person("Anita", "Nandi", email = "anita.k.nandi@gmail.com", role = c("aut", "cre"), comment = c(ORCID = "0000-0002-5087-2494")),
-    person("Tim", "Lucas", email =  "timcdlucas@gmail.com", role = "aut", comment = c(ORCID = "0000-0003-4694-8107")),
+    person("Anita", "Nandi", email = "anita.k.nandi@gmail.com", role = "aut", comment = c(ORCID = "0000-0002-5087-2494")),
+    person("Tim", "Lucas", email =  "timcdlucas@gmail.com", role = c("aut", "cre"), comment = c(ORCID = "0000-0003-4694-8107")),
     person("Rohan", "Arambepola", email = "rarambepola@gmail.com", role = "aut"),
     person("Andre", "Python", email = "python.andre@gmail.com", role = "aut", comment = c(ORCID = "0000-0001-8094-7226"))
     )
