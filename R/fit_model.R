@@ -346,8 +346,8 @@ make_model_object <- function(data,
   prior_sigma <- sd(data$polygon_data$response/mean(data$polygon_data$response))
   
   # Default priors if they are not specified
-  default_priors <- list(priormean_intercept = -4.0,
-                         priorsd_intercept = 2.0,
+  default_priors <- list(priormean_intercept = 0,
+                         priorsd_intercept = 10.0,
                          priormean_slope = 0.0,
                          priorsd_slope = 0.5,
                          prior_rho_min = prior_rho,
