@@ -49,7 +49,10 @@
 #'  \item{coordsForPrediction }{A matrix with two columns of x, y coordinates of pixels in the whole Raster. Used to make predictions.}
 #'  \item{startendindex }{A matrix with two columns containing the start and end index of the pixels within each polygon.}
 #'  \item{mesh }{A INLA mesh to be used for the spatial field of the disaggregation model.}
-#' 
+#' @import rgdal
+#' @import splancs
+#' @import rgeos
+#' @import utils
 #' @name prepare_data
 #'
 #' @examples 
@@ -170,7 +173,7 @@ prepare_data <- function(polygon_shapefile,
     }
   } else {
     mesh <- NULL
-    message("A mesh is not being built. You will not be able to run a model without a mesh.")
+    message("A mesh is not being built. You will not be able to run a spatial model without a mesh.")
   }
   
   disag_data <- list(polygon_shapefile = polygon_shapefile,
