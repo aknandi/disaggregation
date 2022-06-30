@@ -67,7 +67,7 @@ parallelExtract <- function(raster, shape, fun = mean, id = 'OBJECTID',  ...){
   if(!is.null(fun)){
     # If a summary function was given, just bind everything together and add ID column
     df <- data.frame(do.call(rbind, values))
-    if(class(shape) == 'SpatialPolygonsDataFrame'){
+    if(inherits(shape, 'SpatialPolygonsDataFrame')){
       df <- cbind(ID = as.data.frame(shape)[, id], df)
     } else{
       df <- cbind(ID = names(shape), df)
