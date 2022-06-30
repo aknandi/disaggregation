@@ -19,7 +19,7 @@ knitr::opts_chunk$set(
 )
 ```
 
-```{r, echo=FALSE}
+```{r, echo=FALSE, eval = TRUE}
 isINLA <- requireNamespace('INLA', quietly = TRUE)
 ```
 
