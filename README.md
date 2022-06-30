@@ -1,7 +1,9 @@
 Disaggregation
 ==============
 
-[![Build Status](https://travis-ci.org/aknandi/disaggregation.svg?branch=master)](https://travis-ci.org/aknandi/disaggregation?branch=master)
+
+[![CRANstatus](https://www.r-pkg.org/badges/version/dplyr)](https://cran.r-project.org/package=dplyr)
+[![R-CMD-check](https://github.com/tidyverse/dplyr/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/tidyverse/dplyr/actions/workflows/R-CMD-check.yaml)
 [![codecov.io](https://codecov.io/github/aknandi/disaggregation/coverage.svg?branch=master)](https://codecov.io/github/aknandi/disaggregation?branch=master)
 
 A package containing useful functions for disaggregation modelling
