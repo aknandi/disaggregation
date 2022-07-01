@@ -39,3 +39,16 @@ To use the disaggregation `prepare_data` fuction, you must have the aggregated d
 
 We will demonstrate an example of the **disaggregation** package using areal data of leukemia incidence in New York, using data from the package `SpatialEpi`.
 
+```{r}
+library(SpatialEpi, quietly = TRUE)
+library(dplyr, quietly = TRUE)
+library(sp, quietly = TRUE) 
+library(raster, quietly = TRUE)
+library(disaggregation, quietly = TRUE)
+
+map <- NYleukemia$spatial.polygon
+df <- NYleukemia$data
+
+polygon_data <- SpatialPolygonsDataFrame(map, df)
+polygon_data
+```
