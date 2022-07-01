@@ -62,8 +62,8 @@ test_that("disag_model behaves as expected", {
 
   expect_is(result, 'disag_model')
   expect_equal(length(result), 5)
-  expect_equal(length(result$sd_out$par.fixed), raster::nlayers(test_data$covariate_rasters) + 5)
-  expect_equal(unique(names(result$sd_out$par.random)), c("iideffect", "nodemean"))
+  expect_equal(length(result$sd_out$par.fixed), raster::nlayers(test_data$covariate_rasters) + 4)
+  expect_equal(unique(names(result$sd_out$par.random)), c("nodemean"))
   
   
   
@@ -88,7 +88,7 @@ test_that("disag_model with 1 covariate behaves as expected", {
   
   # Should be intercept, 1 slope, tau gaussian, and 2 for space. None for iid anymore.
   expect_equal(length(result$sd_out$par.fixed), raster::nlayers(test_data$covariate_rasters) + 3)
-  expect_equal(unique(names(result$sd_out$par.random)), c("iideffect", "nodemean"))
+  expect_equal(unique(names(result$sd_out$par.random)), c("nodemean"))
   
   # Confirm only two covariates were fitted.
   expect_equal(sum(names(result$opt$par) == 'slope'), 1)
