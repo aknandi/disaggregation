@@ -1,15 +1,15 @@
 ---
-title: "A short introduction to the disaggregation package"
+  title: "A short introduction to the disaggregation package"
 author: "Anita Nandi"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{A short introduction to the disaggregation package}
-  %\VignetteEngine{knitr::rmarkdown}
-  %\VignetteEncoding{UTF-8}
+%\VignetteEngine{knitr::rmarkdown}
+%\VignetteEncoding{UTF-8}
 ---
-
-```{r setup, include = FALSE}
+  
+  ```{r setup, include = FALSE}
 knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>",
@@ -26,8 +26,8 @@ isINLA <- requireNamespace('INLA', quietly = TRUE)
 The **disaggregation** package contains functions to run Bayesian disaggregation models. Aggregated response data over large heterongenous regions can be used alongside fine-scale covariate information to predict fine-scale response across the region. The github page for this package can be found [here](https://github.com/aknandi/disaggregation).
 
 Install **disggregation** using:
-
-```r
+  
+  ```r
 devtools::install_github("aknandi/disaggregation")
 ```
 
@@ -107,3 +107,66 @@ data_for_model <- prepare_data(polygon_data,
 plot(data_for_model)
 ```
 
+Now have our data object we are ready to run the model. Here we can specify the likelihood function as gaussian, binomial or poisson, and we can specify the link function as logit, log or identity. The disaggregation model makes predictions at the pixel level:
+  
+  $link(pred_i) = \beta_0 + \beta X + GP(s_i) + u_i$
+  
+  where $X$ are the covariates, $GP$ is the gaussian random field and $u_i$ is the iid random effect. The pixel predictions are then aggregated to the polygon level using the weighted sum (via the aggregation raster, $agg_i$):
+  
+  $cases_j = \sum_{i \epsilon j} pred_i \times agg_i$
+  
+  $rate_j = \frac{\sum_{i \epsilon j} pred_i \times agg_i}{\sum_{i \epsilon j} agg_i}$
+  
+  The different likelihood correspond to slightly different models ($y_j$ is the repsonse count data):
+  
+  **Gaussian** ($\sigma_j$ is the dispersion of the polygon data), 
+
+$dnorm(y_j/\sum agg_i, rate_j, \sigma_j)$
+  
+  Here $\sigma_j = \sigma \sqrt{\sum agg_i^2} / \sum agg_i$, where $\sigma$ is the dispersion of the pixel data, a parameter learnt by the model.
+
+
+**Binomial** (For a survey in polygon j, $y_j$ is the number positive and $N_j$ is the number tested)
+
+$dbinom(y_j, N_j, rate_j)$
+  
+  **Poisson** (predicts incidence count)
+
+$dpois(y_j, cases_j)$
+  
+  The user can also specify the priors for the regression parameters. For the field, the user specifies the pc priors for the range, $\rho_{min}$ and $\rho_{prob}$, where $P(\rho < \rho_{min}) = \rho_{prob}$, and the variation, $\sigma_{min}$ and $\sigma_{prob}$, where $P(\sigma > \sigma_{min}) = \sigma_{prob}$, in the field. For the iid effect, the user also specifies pc priors.
+
+By default the model contains a spatial field and a polygon iid effect. These can be turned off in the `disag_model` function, using `field = FALSE` or `iid = FALSE`.
+
+
+```{r, fig.show='hold', eval=isINLA}
+model_result <- disag_model(data_for_model,
+                            iterations = 1000,
+                            family = 'poisson',
+                            link = 'log',
+                            priors = list(priormean_intercept = 0,
+                                          priorsd_intercept = 2,
+                                          priormean_slope = 0.0,
+                                          priorsd_slope = 0.4,
+                                          prior_rho_min = 3,
+                                          prior_rho_prob = 0.01,
+                                          prior_sigma_max = 1,
+                                          prior_sigma_prob = 0.01,
+                                          prior_iideffect_sd_max = 0.05,
+                                          prior_iideffect_sd_prob = 0.01))
+```
+
+```{r, fig.show='hold', eval=isINLA}
+plot(model_result)
+```
+
+Now we have the results from the model of the fitted parameters, we can predict Leukemia incidence rate at fine-scale (the scale of the covariate data) across New York. The `predict` function takes the model result and predicts both the mean raster surface and predicts and summarises `N` parameter draws, where `N` is set by the user (default 100). The uncertainty is summarirised via the confidence interval set by the user (default 95% CI).
+
+
+```{r, fig.show='hold', eval=isINLA}
+preds <- predict(model_result, 
+                 N = 100, 
+                 CI = 0.95)
+
+plot(preds)
+```
