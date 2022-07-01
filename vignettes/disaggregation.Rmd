@@ -1,25 +1,25 @@
 ---
-  title: "A short introduction to the disaggregation package"
+title: "A short introduction to the disaggregation package"
 author: "Anita Nandi"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{A short introduction to the disaggregation package}
-%\VignetteEngine{knitr::rmarkdown}
-%\VignetteEncoding{UTF-8}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
 ---
   
-  ```{r setup, include = FALSE}
+```{r setup, include = FALSE}
 knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>",
   cache = TRUE,
   fig.width = 7,
-  eval = FALSE
+  eval = TRUE
 )
 ```
 
-```{r, echo=FALSE, eval = TRUE}
+```{r, echo = FALSE, eval = TRUE}
 isINLA <- requireNamespace('INLA', quietly = TRUE)
 ```
 
@@ -27,7 +27,7 @@ The **disaggregation** package contains functions to run Bayesian disaggregation
 
 Install **disggregation** using:
   
-  ```r
+```r
 devtools::install_github("aknandi/disaggregation")
 ```
 
@@ -89,7 +89,7 @@ Now we have setup the data we can use the `prepare_data` function to create the 
 
 The user can also control the parameters of the mesh that is used to create the spatial field. The mesh is created by finding a tight boundary around the polygon data, and creating a fine mesh within the boundary and a coarser mesh outside. This speeds up computation time by only having a very fine mesh within the area of interest and having a small region outside with a coarser mesh to avoid edge effects. The mesh parameters: `concave`, `convex` and `resolution` refer to the parameters used to create the mesh boundary using the [inla.noncovex.hull function](https://rdrr.io/github/andrewzm/INLA/man/inla.nonconvex.hull.html), while the mesh parameters `max.edge`, `cut` and `offset` refer to the parameters used to create the mesh using the [inla.mesh.2d function](https://rdrr.io/github/andrewzm/INLA/man/inla.mesh.2d.html).
 
-```{r, fig.show='hold'}
+```{r, fig.show='hold', eval= isINLA}
 data_for_model <- prepare_data(polygon_data,
                                cov_stack,
                                pop_raster,
@@ -103,7 +103,7 @@ data_for_model <- prepare_data(polygon_data,
                                ncores = 1)
 ```
 
-```{r, fig.show='hold'}
+```{r, fig.show='hold', eval= isINLA}
 plot(data_for_model)
 ```
 
