@@ -52,3 +52,38 @@ df <- NYleukemia$data
 polygon_data <- SpatialPolygonsDataFrame(map, df)
 polygon_data
 ```
+
+Now we simulate two covariate rasters for the area of interest and make a `RasterStack`. They are simulated at the resolution of approximately 1km2.
+
+```{r, fig.show='hold'}
+extent_in_km <- 111*(polygon_data@bbox[, 2] - polygon_data@bbox[, 1])
+n_pixels_x <- floor(extent_in_km[[1]])
+n_pixels_y <- floor(extent_in_km[[2]])
+r <- raster::raster(ncol = n_pixels_x, nrow = n_pixels_y)
+r <- raster::setExtent(r, raster::extent(polygon_data))
+r[] <- sapply(1:raster::ncell(r), function(x) rnorm(1, ifelse(x %% n_pixels_x != 0, x %% n_pixels_x, n_pixels_x), 3))
+r2 <- raster::raster(ncol = n_pixels_x, nrow = n_pixels_y)
+r2 <- raster::setExtent(r2, raster::extent(polygon_data))
+r2[] <- sapply(1:raster::ncell(r), function(x) rnorm(1, ceiling(x/n_pixels_y), 3))
+cov_stack <- raster::stack(r, r2)
+cov_stack <- raster::scale(cov_stack)
+```
+
+We also create a population raster. This is to allow the model to correctly aggregated the pixel values to the polygon level. For this simple example we assume that the population within each polygon is uniformly distributed.
+
+```{r, fig.show='hold'}
+extracted <- raster::extract(r, polygon_data)
+n_cells <- sapply(extracted, length)
+polygon_data@data$pop_per_cell <- polygon_data@data$population/n_cells
+pop_raster <- rasterize(polygon_data, cov_stack, field = 'pop_per_cell')
+
+```
+
+To correct small inconsistencies in the polygon geometry, we run the line below
+
+```{r, fig.show='hold'}
+polygon_data <- rgeos::gBuffer(polygon_data, byid = TRUE, width = 0)
+```
+
+Now we have setup the data we can use the `prepare_data` function to create the objects needed to run the disaggregation model. The name of the response variable and id variable in the `SpatialPolygonsDataFrame` should be specified. 
+
