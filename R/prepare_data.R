@@ -32,7 +32,7 @@
 #' @param id_var Name of column in SpatialPolygonDataFrame object with the polygon id.
 #' @param response_var Name of column in SpatialPolygonDataFrame object with the response data.
 #' @param sample_size_var For survey data, name of column in SpatialPolygonDataFrame object (if it exists) with the sample size data.
-#' @param mesh.args list of parameters that control the mesh structure with the same names as used by INLA. Defaults assume degrees so may be very bad defaults in other units.
+#' @param mesh.args list of parameters that control the mesh structure with the same names as used by INLA.
 #' @param na.action logical. If TRUE, NAs in response will be removed, covariate NAs will be given the median value, aggregation NAs will be set to zero. Default FALSE (NAs in response or covariate data within the polygons will give errors).
 #' @param makeMesh logical. If TRUE, build INLA mesh, takes some time. Default TRUE.
 #' @param ncores Number of cores used to perform covariate extraction.
