@@ -48,15 +48,15 @@ jobs:
       if: runner.os == 'macOS'
       run: |
         brew install --cask xquartz
-      brew install pkg-config
-      brew install proj@9
-      brew install gdal
+        brew install pkg-config
+        brew install proj@9
+        brew install gdal
     
     - name: Has inla? Check.
       run: |
         options(width = 100)
-      pkgs <- installed.packages()[, "Package"]
-      "INLA" %in% pkgs
+        pkgs <- installed.packages()[, "Package"]
+        "INLA" %in% pkgs
       shell: Rscript {0}
     
     - uses: r-lib/actions/setup-r-dependencies@v2
@@ -64,32 +64,32 @@ jobs:
         dependencies: '"hard"'
       extra-packages: |
         rcmdcheck
-      testthat
+        testthat
     
     - name: Has inla? Check, and remove.
       run: |
         options(width = 100)
-      pkgs <- installed.packages()[, "Package"]
-      "INLA" %in% pkgs
-      if ("INLA" %in% pkgs) {
-        remove.packages("INLA")
-      }
+        pkgs <- installed.packages()[, "Package"]
+        "INLA" %in% pkgs
+        if ("INLA" %in% pkgs) {
+          remove.packages("INLA")
+        }
       shell: Rscript {0}
     
     - name: Session info
       run: |
         options(width = 100)
-      pkgs <- installed.packages()[, "Package"]
-      sessioninfo::session_info(pkgs, include_base = TRUE)
+        pkgs <- installed.packages()[, "Package"]
+        sessioninfo::session_info(pkgs, include_base = TRUE)
       shell: Rscript {0}
     
     - uses: r-lib/actions/check-r-package@v2
       env:
         _R_CHECK_CRAN_INCOMING_REMOTE_: false
-      _R_CHECK_FORCE_SUGGESTS_: false
+        _R_CHECK_FORCE_SUGGESTS_: false
       with:
         build_args: 'c("--no-manual", "--no-build-vignettes")'
-      args: 'c("--no-manual", "--ignore-vignettes", "--as-cran")'
+        args: 'c("--no-manual", "--ignore-vignettes", "--as-cran")'
       
       
       
