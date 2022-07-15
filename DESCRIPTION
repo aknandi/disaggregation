@@ -1,7 +1,7 @@
 Package: disaggregation
 Type: Package
 Title: Disaggregation Modelling
-Version: 0.1.3
+Version: 0.1.4
 Authors@R: c(
     person("Anita", "Nandi", email = "anita.k.nandi@gmail.com", role = "aut", comment = c(ORCID = "0000-0002-5087-2494")),
     person("Tim", "Lucas", email =  "timcdlucas@gmail.com", role = c("aut", "cre"), comment = c(ORCID = "0000-0003-4694-8107")),
@@ -16,7 +16,7 @@ Description: Fits disaggregation regression models using 'TMB' ('Template Model
 License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
-RoxygenNote: 7.0.2
+RoxygenNote: 7.1.2
 Imports: 
     maptools,
     raster,
@@ -40,7 +40,8 @@ Suggests:
     testthat,
     INLA,
     knitr,
-    rmarkdown
+    rmarkdown,
+    SpatialEpi
 LinkingTo: 
     TMB,
     RcppEigen

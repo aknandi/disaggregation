@@ -39,7 +39,7 @@ if(identical(Sys.getenv("NOT_CRAN"), "true")) {
                             makeMesh = FALSE)
 }
 
-test_that("disag_model produces errors whe expected", {
+test_that("disag_model produces errors when expected", {
   
   skip_if_not_installed('INLA')
   skip_on_cran()
@@ -58,12 +58,12 @@ test_that("disag_model behaves as expected", {
   skip_if_not_installed('INLA')
   skip_on_cran()
   
-  result <- disag_model(test_data, iterations = 2)
+  result <- disag_model(test_data, iterations = 2, iid = FALSE)
 
   expect_is(result, 'disag_model')
   expect_equal(length(result), 5)
-  expect_equal(length(result$sd_out$par.fixed), raster::nlayers(test_data$covariate_rasters) + 5)
-  expect_equal(unique(names(result$sd_out$par.random)), c("iideffect", "nodemean"))
+  expect_equal(length(result$sd_out$par.fixed), raster::nlayers(test_data$covariate_rasters) + 4)
+  expect_equal(unique(names(result$sd_out$par.random)), c("nodemean"))
   
   
   
@@ -81,13 +81,14 @@ test_that("disag_model with 1 covariate behaves as expected", {
   test_data2$covariate_rasters <- test_data2$covariate_rasters[[1]]
   test_data2$covariate_data <- test_data2$covariate_data[, 1:3]
   
-  result <- disag_model(test_data2, iterations = 2)
+  result <- disag_model(test_data2, iterations = 2, iid = FALSE)
   
   expect_is(result, 'disag_model')
   expect_equal(length(result), 5)
   
-  expect_equal(length(result$sd_out$par.fixed), raster::nlayers(test_data$covariate_rasters) + 5)
-  expect_equal(unique(names(result$sd_out$par.random)), c("iideffect", "nodemean"))
+  # Should be intercept, 1 slope, tau gaussian, and 2 for space. None for iid anymore.
+  expect_equal(length(result$sd_out$par.fixed), raster::nlayers(test_data$covariate_rasters) + 3)
+  expect_equal(unique(names(result$sd_out$par.random)), c("nodemean"))
   
   # Confirm only two covariates were fitted.
   expect_equal(sum(names(result$opt$par) == 'slope'), 1)

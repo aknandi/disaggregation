@@ -8,25 +8,25 @@ vignette: >
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
-
+  
 ```{r setup, include = FALSE}
 knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>",
   cache = TRUE,
   fig.width = 7,
-  eval = FALSE
+  eval = TRUE
 )
 ```
 
-```{r, echo=FALSE}
+```{r, echo = FALSE, eval = TRUE}
 isINLA <- requireNamespace('INLA', quietly = TRUE)
 ```
 
 The **disaggregation** package contains functions to run Bayesian disaggregation models. Aggregated response data over large heterongenous regions can be used alongside fine-scale covariate information to predict fine-scale response across the region. The github page for this package can be found [here](https://github.com/aknandi/disaggregation).
 
 Install **disggregation** using:
-
+  
 ```r
 devtools::install_github("aknandi/disaggregation")
 ```
@@ -89,7 +89,7 @@ Now we have setup the data we can use the `prepare_data` function to create the 
 
 The user can also control the parameters of the mesh that is used to create the spatial field. The mesh is created by finding a tight boundary around the polygon data, and creating a fine mesh within the boundary and a coarser mesh outside. This speeds up computation time by only having a very fine mesh within the area of interest and having a small region outside with a coarser mesh to avoid edge effects. The mesh parameters: `concave`, `convex` and `resolution` refer to the parameters used to create the mesh boundary using the [inla.noncovex.hull function](https://rdrr.io/github/andrewzm/INLA/man/inla.nonconvex.hull.html), while the mesh parameters `max.edge`, `cut` and `offset` refer to the parameters used to create the mesh using the [inla.mesh.2d function](https://rdrr.io/github/andrewzm/INLA/man/inla.mesh.2d.html).
 
-```{r, fig.show='hold'}
+```{r, fig.show='hold', eval= isINLA}
 data_for_model <- prepare_data(polygon_data,
                                cov_stack,
                                pop_raster,
@@ -103,40 +103,40 @@ data_for_model <- prepare_data(polygon_data,
                                ncores = 1)
 ```
 
-```{r, fig.show='hold'}
+```{r, fig.show='hold', eval= isINLA}
 plot(data_for_model)
 ```
 
 Now have our data object we are ready to run the model. Here we can specify the likelihood function as gaussian, binomial or poisson, and we can specify the link function as logit, log or identity. The disaggregation model makes predictions at the pixel level:
-
-$link(pred_i) = \beta_0 + \beta X + GP(s_i) + u_i$
-
-where $X$ are the covariates, $GP$ is the gaussian random field and $u_i$ is the iid random effect. The pixel predictions are then aggregated to the polygon level using the weighted sum (via the aggregation raster, $agg_i$):
-
-$cases_j = \sum_{i \epsilon j} pred_i \times agg_i$
-
-$rate_j = \frac{\sum_{i \epsilon j} pred_i \times agg_i}{\sum_{i \epsilon j} agg_i}$
-
-The different likelihood correspond to slightly different models ($y_j$ is the repsonse count data):
-
-**Gaussian** ($\sigma_j$ is the dispersion of the polygon data), 
+  
+  $link(pred_i) = \beta_0 + \beta X + GP(s_i) + u_i$
+  
+  where $X$ are the covariates, $GP$ is the gaussian random field and $u_i$ is the iid random effect. The pixel predictions are then aggregated to the polygon level using the weighted sum (via the aggregation raster, $agg_i$):
+  
+  $cases_j = \sum_{i \epsilon j} pred_i \times agg_i$
+  
+  $rate_j = \frac{\sum_{i \epsilon j} pred_i \times agg_i}{\sum_{i \epsilon j} agg_i}$
+  
+  The different likelihood correspond to slightly different models ($y_j$ is the repsonse count data):
+  
+  **Gaussian** ($\sigma_j$ is the dispersion of the polygon data), 
 
 $dnorm(y_j/\sum agg_i, rate_j, \sigma_j)$
-
-Here $\sigma_j = \sigma \sqrt{\sum agg_i^2} / \sum agg_i$, where $\sigma$ is the dispersion of the pixel data, a parameter learnt by the model.
+  
+  Here $\sigma_j = \sigma \sqrt{\sum agg_i^2} / \sum agg_i$, where $\sigma$ is the dispersion of the pixel data, a parameter learnt by the model.
 
 
 **Binomial** (For a survey in polygon j, $y_j$ is the number positive and $N_j$ is the number tested)
 
 $dbinom(y_j, N_j, rate_j)$
-
-**Poisson** (predicts incidence count)
+  
+  **Poisson** (predicts incidence count)
 
 $dpois(y_j, cases_j)$
+  
+  The user can also specify the priors for the regression parameters. For the field, the user specifies the pc priors for the range, $\rho_{min}$ and $\rho_{prob}$, where $P(\rho < \rho_{min}) = \rho_{prob}$, and the variation, $\sigma_{min}$ and $\sigma_{prob}$, where $P(\sigma > \sigma_{min}) = \sigma_{prob}$, in the field. For the iid effect, the user also specifies pc priors.
 
-The user can also specify the priors for the regression parameters. For the field, the user specifies the pc priors for the range, $\rho_{min}$ and $\rho_{prob}$, where $P(\rho < \rho_{min}) = \rho_{prob}$, and the variation, $\sigma_{min}$ and $\sigma_{prob}$, where $P(\sigma > \sigma_{min}) = \sigma_{prob}$, in the field. For the iid effect, the user also specifies pc priors.
-
-By default the model contains a spatial field and a polygon iid effect. These can be turned off in the `fit_model` function, using `field = FALSE` or `iid = FALSE`.
+By default the model contains a spatial field and a polygon iid effect. These can be turned off in the `disag_model` function, using `field = FALSE` or `iid = FALSE`.
 
 
 ```{r, fig.show='hold', eval=isINLA}

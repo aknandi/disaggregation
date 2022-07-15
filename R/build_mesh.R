@@ -46,12 +46,18 @@ build_mesh <- function(shapes, mesh.args = NULL) {
   stopifnot(inherits(shapes, 'SpatialPolygons'))
   if(!is.null(mesh.args)) stopifnot(inherits(mesh.args, 'list'))
   
+  limits <- sp::bbox(shapes)
+  hypotenuse <- sqrt((limits[1,2] - limits[1,1])^2 + (limits[2,2] - limits[2,1])^2)
+  maxedge <- hypotenuse/10
+  
+  
   pars <- list(convex = -0.01,
                concave = -0.5,
                resolution = 300,
-               max.edge = c(3.0, 8), 
-               cut = 0.4, 
-               offset = c(1, 15))
+               max.edge = c(maxedge, maxedge * 2), 
+               cut = 0.1, 
+               offset = c(hypotenuse / 10, hypotenuse / 10))
+
   
   pars[names(mesh.args)] <- mesh.args
 
@@ -74,6 +80,6 @@ build_mesh <- function(shapes, mesh.args = NULL) {
     cut = pars$cut, 
     offset = pars$offset)
   
-  
+
   return(mesh)
 }
