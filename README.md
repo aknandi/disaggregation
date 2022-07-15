@@ -6,8 +6,6 @@ Disaggregation
 [![R-CMD-check](https://github.com/aknandi/disaggregation/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/aknandi/disaggregation/actions/workflows/R-CMD-check.yaml)
 
 
-[![codecov.io](https://codecov.io/github/aknandi/disaggregation/coverage.svg?branch=master)](https://codecov.io/github/aknandi/disaggregation?branch=master)
-
 A package containing useful functions for disaggregation modelling
 
 Installation
