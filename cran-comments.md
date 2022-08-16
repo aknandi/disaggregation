@@ -1,28 +1,22 @@
 ## Update
-This is a package update (version 0.1.3). The changes in this version are:
+This is a package update (version 0.1.4). The changes in this version are:
 
-* Renamed fit_model function to disag_model. Deprecated fit_model, will be removed in the next version
+* Change maintainer. Anita Nandi has emailed to confirm. Anita has moved industry and no longer has time to maintain this package.
+
+* Fixed mistake in model definition. We were adjusting the jacobian for a change of variables incorrectly.
+
+* Fixed predictions in models with no field
+
+* Better documentation for priors.
 
 
-* Renamed classes disag.data and fit.result to disag_data and disag_model
-
-* Created a disag_predictions class which is returned by the predict function and contains the 
-  mean and uncertainty predictions. This has replaced the predictions and uncertainty classes. 
-  Plot, summary and print methods have been implemented for the disag_predictions class
-
-* Extracted the function make_model_object to allow the user to make a TMB model object on its own, 
-  so it can be used in different optimiser or a for MCMC
-  
-* Neatened up plot.disag_data function to produce 3 plots on the same canvas, with an optional which 
-  argument for the user to choose which plots to display
-
-* Made the summary and print function return different outputs. Print functions show minmial output, 
-  summary function are more deatiled
 
 ## Test environments
 * local Windows 10, R 3.6.1
 * Ubuntu 16.04.6 LTS (on travis-ci, devel and release) 
 * win-builder (devel and release)
+
+
 
 ## R CMD check results
 There were no ERRORs or WARNINGs. 
@@ -51,6 +45,8 @@ There were 3 NOTEs:
     '-Wa,-mbig-obj'
     
   To compile large C++ source files on Windows a compilation flag is needed
+
+
 
 ## Downstream dependencies
 There are currently no downstream dependencies for this package
