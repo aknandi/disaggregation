@@ -9,13 +9,15 @@ This is a package update (version 0.1.4). The changes in this version are:
 
 * Better documentation for priors.
 
+* redocument to fix html5 issues.
+
 
 
 ## Test environments
-* local Windows 10, R 3.6.1
-* Ubuntu 16.04.6 LTS (on travis-ci, devel and release) 
-* win-builder (devel and release)
-
+Windows, R release
+Ubuntu 20, R release
+Ubuntu 20, r Oldrel
+Ubuntu 20, R devel
 
 
 ## R CMD check results
@@ -23,8 +25,6 @@ There were no ERRORs or WARNINGs.
 
 There were 3 NOTEs:
 
-* checking CRAN incoming feasibility ... NOTE
-  Maintainer: 'Anita Nandi <anita.k.nandi@gmail.com>'
 
   Suggests or Enhances not in mainstream repositories:
     INLA
