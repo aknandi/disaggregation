@@ -9,7 +9,7 @@
 \arguments{
 \item{x}{Object of class \emph{disag_data} to be plotted.}
 
-\item{which}{If a subset of plots is requied, specify a subset of the numbers 1:3}
+\item{which}{If a subset of plots is required, specify a subset of the numbers 1:3}
 
 \item{...}{Further arguments to \emph{plot} function.}
 }
@@ -17,7 +17,7 @@
 A list of three plots: the polygon plot (ggplot), covariate plot (spplot) and INLA mesh plot (ggplot)
 }
 \description{
-Plotting function for class \emph{disag_data} (the input data for disaggragation).
+Plotting function for class \emph{disag_data} (the input data for disaggregation).
 }
 \details{
 Produces three plots: polygon response data, covariate rasters and INLA mesh.

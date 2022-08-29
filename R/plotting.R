@@ -1,11 +1,11 @@
 #' Plot input data for disaggregation
 #'
-#' Plotting function for class \emph{disag_data} (the input data for disaggragation).
+#' Plotting function for class \emph{disag_data} (the input data for disaggregation).
 #' 
 #' Produces three plots: polygon response data, covariate rasters and INLA mesh.
 #'
 #' @param x Object of class \emph{disag_data} to be plotted.
-#' @param which If a subset of plots is requied, specify a subset of the numbers 1:3
+#' @param which If a subset of plots is required, specify a subset of the numbers 1:3
 #' @param ... Further arguments to \emph{plot} function.
 #' 
 #' @return A list of three plots: the polygon plot (ggplot), covariate plot (spplot) and INLA mesh plot (ggplot)
@@ -44,7 +44,7 @@ plot.disag_data <- function(x, which = c(1,2,3), ...) {
 
 #' Plot results of fitted model
 #'
-#' Plotting function for class \emph{disag_model} (the result of the disaggragation fitting).
+#' Plotting function for class \emph{disag_model} (the result of the disaggregation fitting).
 #' 
 #' Produces two plots: results of the fixed effects and in-sample observed vs predicted plot.
 #' 
@@ -103,7 +103,7 @@ plot.disag_model <- function(x, ...){
 
 #' Plot mean and uncertainty predictions from the disaggregation model results
 #'
-#' Plotting function for class \emph{disag_prediction} (the mean and uncertainty predictions of the disaggragation fitting).
+#' Plotting function for class \emph{disag_prediction} (the mean and uncertainty predictions of the disaggregation fitting).
 #' 
 #' Produces raster plots of the mean prediction, and the lower and upper confidence intervals.
 #'

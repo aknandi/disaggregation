@@ -19,7 +19,7 @@ covariate data that corresponds to that polygon, the second column is the index 
 covariate data that corresponds to that polygon.
 }
 \description{
-From the covaraite data and polygon data, the function matches the polygon id between the two to find 
+From the covariate data and polygon data, the function matches the polygon id between the two to find 
 which pixels from the covariate data are contained in each of the polygons.
 }
 \details{

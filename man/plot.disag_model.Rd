@@ -15,7 +15,7 @@
 A list of two ggplot plots: results of the fixed effects and an in-sample observed vs predicted plot
 }
 \description{
-Plotting function for class \emph{disag_model} (the result of the disaggragation fitting).
+Plotting function for class \emph{disag_model} (the result of the disaggregation fitting).
 }
 \details{
 Produces two plots: results of the fixed effects and in-sample observed vs predicted plot.

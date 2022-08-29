@@ -23,7 +23,7 @@ knitr::opts_chunk$set(
 isINLA <- requireNamespace('INLA', quietly = TRUE)
 ```
 
-The **disaggregation** package contains functions to run Bayesian disaggregation models. Aggregated response data over large heterongenous regions can be used alongside fine-scale covariate information to predict fine-scale response across the region. The github page for this package can be found [here](https://github.com/aknandi/disaggregation).
+The **disaggregation** package contains functions to run Bayesian disaggregation models. Aggregated response data over large heterogenous regions can be used alongside fine-scale covariate information to predict fine-scale response across the region. The github page for this package can be found [here](https://github.com/aknandi/disaggregation).
 
 Install **disggregation** using:
   
@@ -33,7 +33,7 @@ devtools::install_github("aknandi/disaggregation")
 
 The key functions are `prepare_data`, `fit_model` and `predict`. The `prepare_data` function takes the aggregated data and covariate data to be used in the model and produces an object to be use by `fit_model`. This functions runs the disaggregation model and the out can be passed to `predict` to produce fine-scale predicted maps of the response variable. 
 
-To use the disaggregation `prepare_data` fuction, you must have the aggregated data as a `SpatialPolygonDataFrame` object and a `RasterStack` of the covariate data to be used in the model.
+To use the disaggregation `prepare_data` function, you must have the aggregated data as a `SpatialPolygonDataFrame` object and a `RasterStack` of the covariate data to be used in the model.
 
 ## Example
 
@@ -117,7 +117,7 @@ Now have our data object we are ready to run the model. Here we can specify the 
   
   $rate_j = \frac{\sum_{i \epsilon j} pred_i \times agg_i}{\sum_{i \epsilon j} agg_i}$
   
-  The different likelihood correspond to slightly different models ($y_j$ is the repsonse count data):
+  The different likelihood correspond to slightly different models ($y_j$ is the response count data):
   
   **Gaussian** ($\sigma_j$ is the dispersion of the polygon data), 
 
@@ -160,7 +160,7 @@ model_result <- disag_model(data_for_model,
 plot(model_result)
 ```
 
-Now we have the results from the model of the fitted parameters, we can predict Leukemia incidence rate at fine-scale (the scale of the covariate data) across New York. The `predict` function takes the model result and predicts both the mean raster surface and predicts and summarises `N` parameter draws, where `N` is set by the user (default 100). The uncertainty is summarirised via the confidence interval set by the user (default 95% CI).
+Now we have the results from the model of the fitted parameters, we can predict Leukemia incidence rate at fine-scale (the scale of the covariate data) across New York. The `predict` function takes the model result and predicts both the mean raster surface and predicts and summarises `N` parameter draws, where `N` is set by the user (default 100). The uncertainty is summarised via the confidence interval set by the user (default 95% CI).
 
 
 ```{r, fig.show='hold', eval=isINLA}
