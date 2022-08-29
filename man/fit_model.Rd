@@ -94,7 +94,7 @@ The different likelihood correspond to slightly different models (\eqn{y_j}{yi} 
 
 Specify priors for the regression parameters, field and iid effect as a single list. Hyperpriors for the field 
 are given as penalised complexity priors you specify \eqn{\rho_{min}} and \eqn{\rho_{prob}} for the range of the field 
-where \eqn{P(\rho < \rho_{min}) = \rho_{prob}}, and \eqn{\sigma_{min}$ and $\sigma_{prob}} for the variation of the field 
+where \eqn{P(\rho < \rho_{min}) = \rho_{prob}}, and \eqn{\sigma_{min}} and \eqn{\sigma_{prob}} for the variation of the field 
 where \eqn{P(\sigma > \sigma_{min}) = \sigma_{prob}}. Also, specify pc priors for the iid effect
 
 The \emph{family} and \emph{link} arguments are used to specify the likelihood and link function respectively. 
