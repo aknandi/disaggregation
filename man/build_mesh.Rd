@@ -26,7 +26,7 @@ and having a small region outside with a coarser mesh to avoid edge effects.
 
 Six mesh parameters can be specified as arguments: \emph{convex}, \emph{concave} and \emph{resolution},
 to control the boundary of the inner mesh, and \emph{max.edge}, \emph{cut} and \emph{offset}, to control the  mesh itself,
-with the names meaing the same as used by INLA functions \emph{inla.convex.hull} and \emph{inla.mesh.2d}.
+with the names meaning the same as used by INLA functions \emph{inla.convex.hull} and \emph{inla.mesh.2d}.
 
 Defaults are:
 pars <- list(convex = -0.01, concave = -0.5, resolution = 300, max.edge = c(3.0, 8),  cut = 0.4, offset = c(1, 15)).

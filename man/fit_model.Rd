@@ -79,7 +79,7 @@ And then aggregates these predictions to the polygon level using the weighted su
 \deqn{cases_j = \sum_{i \epsilon j} pred_i \times agg_i}{ casesj = \sum (predi x aggi)}
 \deqn{rate_j = \frac{\sum_{i \epsilon j} pred_i \times agg_i}{\sum_{i \epsilon j} agg_i}}{ratej = \sum(predi x aggi) / \sum (aggi)}
 
-The different likelihood correspond to slightly different models (\eqn{y_j}{yi} is the repsonse count data):
+The different likelihood correspond to slightly different models (\eqn{y_j}{yi} is the response count data):
 \itemize{
   \item Gaussian: 
    If \eqn{\sigma} is the dispersion of the pixel data, \eqn{\sigma_j}{\sigmaj} is the dispersion of the polygon data, where 
@@ -94,7 +94,7 @@ The different likelihood correspond to slightly different models (\eqn{y_j}{yi} 
 
 Specify priors for the regression parameters, field and iid effect as a single list. Hyperpriors for the field 
 are given as penalised complexity priors you specify \eqn{\rho_{min}} and \eqn{\rho_{prob}} for the range of the field 
-where \eqn{P(\rho < \rho_{min}) = \rho_{prob}}, and \eqn{\sigma_{min}$ and $\sigma_{prob}} for the variation of the field 
+where \eqn{P(\rho < \rho_{min}) = \rho_{prob}}, and \eqn{\sigma_{min}} and \eqn{\sigma_{prob}} for the variation of the field 
 where \eqn{P(\sigma > \sigma_{min}) = \sigma_{prob}}. Also, specify pc priors for the iid effect
 
 The \emph{family} and \emph{link} arguments are used to specify the likelihood and link function respectively. 
@@ -106,7 +106,7 @@ The field and iid effect can be turned on or off via the \emph{field} and \emph{
 
 The \emph{iterations} argument specifies the maximum number of iterations the model can run for to find an optimal point.
 
-The \emph{silent} argument can be used to publish/supress verbose output. Default TRUE.
+The \emph{silent} argument can be used to publish/suppress verbose output. Default TRUE.
 }
 \examples{
 \dontrun{

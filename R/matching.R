@@ -1,6 +1,6 @@
 #' Function to match pixels to their corresponding polygon
 #' 
-#' From the covaraite data and polygon data, the function matches the polygon id between the two to find 
+#' From the covariate data and polygon data, the function matches the polygon id between the two to find 
 #' which pixels from the covariate data are contained in each of the polygons.
 #' 
 #' Takes a data.frame containing the covariate data with a polygon id column and one column for each covariate, 
