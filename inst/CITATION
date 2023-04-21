@@ -1,16 +1,16 @@
-citHeader("To cite the disaggregation package in publications, please use:")
-
-citEntry(entry = "Article",
-         author = as.person(c(
-           "Anita K Nandi <anita.k.nandi@gmail.com> [aut, cre]",
-           "Tim C D Lucas <timcdlucas@gmail.com> [aut]", 
-           "Rohan Arambepola [aut]",
-           "Peter Gething",
-           "Dan Weiss"
-         )),
-         title = "disaggregation: An R Package for Bayesian Spatial Disaggregation Modelling",
-         journal = "arxiv",
-         year = "2020",
-         url = "https://arxiv.org/abs/2001.04847",
-         textVersion = "Nandi, A. K., Lucas, T. C., Arambepola, R., Gething, P., & Weiss, D. J. (2020). disaggregation: An R Package for Bayesian Spatial Disaggregation Modelling. arXiv preprint arXiv:2001.04847."
+bibentry(bibtype = "Article",
+  title        = "{disaggregation}: An {R} Package for {B}ayesian Spatial Disaggregation Modeling",
+  author       = c(person(given = c("Anita", "K."), family = "Nandi"),
+                   person(given = c("Tim", "C.", "D."), family = "Lucas"),
+                   person(given = "Rohan", family = "Arambepola"),
+                   person(given = "Peter", family = "Gething"),
+                   person(given = c("Daniel", "J."), family = "Weiss")),
+  journal      = "Journal of Statistical Software",
+  year         = "2023",
+  volume       = "106",
+  number       = "11",
+  pages        = "1--19",
+  doi          = "10.18637/jss.v106.i11",
+  header       = "To cite disaggregation in publications use:"
 )
+
