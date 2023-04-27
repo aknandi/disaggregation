@@ -1,10 +1,11 @@
 #' Fit the disaggregation model
 #' 
-#' \emph{fit_model} function takes a \emph{disag_data} object created by \code{\link{prepare_data}} and performs a Bayesian disaggregation fit.
+#' \emph{fit_model} function takes a \emph{disag_data} object created by 
+#' \code{\link{prepare_data}} and performs a Bayesian disaggregation fit.
 #' 
 #' \strong{The model definition}
 #' 
-#' The disaggregation model make predictions at the pixel level:
+#' The disaggregation model makes predictions at the pixel level:
 #' \deqn{link(pred_i) = \beta_0 + \beta X + GP(s_i) + u_i}{ link(predi) = \beta 0 + \beta X + GP + u}
 #' 
 #' And then aggregates these predictions to the polygon level using the weighted sum (via the aggregation raster, \eqn{agg_i}{aggi}):
@@ -66,6 +67,8 @@
 #'  \item{model_setup }{A list of information on the model setup. Likelihood function (\emph{family}), link function(\emph{link}), logical: whether a field was used (\emph{field}) and logical: whether an iid effect was used (\emph{iid}).}
 #'  
 #' @name fit_model
+#' @references Nanda et al. (2023) disaggregation: An R Package for Bayesian 
+#' Spatial Disaggregation Modeling. <doi:10.18637/jss.v106.i11>
 #'
 #' @examples 
 #' \dontrun{
