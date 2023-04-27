@@ -6,3 +6,5 @@ README.md
 vignettes/disaggregation_cache/*
 cran-comments.md
 ^\.github$
+.github/workflows/R-CMD-check-HTML5.archyaml
+vignettes/spatio_temporal_disaggregation.Rmd
