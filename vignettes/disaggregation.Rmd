@@ -112,6 +112,7 @@ switch the polygons to simple features and back again.
 ```{r, fig.show='hold'}
 polygon_data <- sf:::as_Spatial(st_buffer(st_as_sf(polygon_data), dist = 0))
 
+df <- sf::st_buffer(df, dist = 0)
 ```
 
 Now we have setup the data we can use the `prepare_data` function to create the objects needed to run the disaggregation model. The name of the response variable and id variable in the `SpatialPolygonsDataFrame` should be specified. 
