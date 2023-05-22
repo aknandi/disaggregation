@@ -26,7 +26,7 @@
 #' will automatically deal with NAs. It removes any polygons that have NAs as a response, sets any aggregation pixels with NA to zero 
 #' and sets covariate NAs pixels to the median value for the that covariate.
 #' 
-#' @param polygon_shapefile SpatialPolygonDataFrame  containing at least two columns: one with the id for the polygons (\emph{id_var}) and one with the response count data (\emph{response_var}); for binomial data, i.e survey data, it can also contain a sample size column (\emph{sample_size_var}).
+#' @param x sf object containing at least three columns: one with the geometried, one with the id for the polygons (\emph{id_var}) and one with the response count data (\emph{response_var}); for binomial data, i.e survey data, it can also contain a sample size column (\emph{sample_size_var}).
 #' @param covariate_rasters RasterStack of covariate rasters to be used in the model.
 #' @param aggregation_raster Raster to aggregate pixel level predictions to polygon level e.g. population to aggregate prevalence. If this is not supplied a uniform raster will be used.
 #' @param id_var Name of column in SpatialPolygonDataFrame object with the polygon id.
@@ -40,7 +40,7 @@
 #' @return A list is returned of class \code{disag_data}. 
 #' The functions \emph{summary}, \emph{print} and \emph{plot} can be used on \code{disag_data}. 
 #' The list  of class \code{disag_data} contains:
-#'  \item{polygon_shapefile }{The SpatialPolygonDataFrame used as an input.} 
+#'  \item{x }{The SpatialPolygonDataFrame used as an input.} 
 #'  \item{covariate_rasters }{The RasterStack used as an input.} 
 #'  \item{polygon_data }{A data frame with columns of \emph{area_id}, \emph{response} and \emph{N} (sample size: all NAs unless using binomial data). Each row represents a polygon.}
 #'  \item{covariate_data }{A data frame with columns of \emph{area_id}, \emph{cell_id} and one for each covariate in \emph{covariate_rasters}. Each row represents a pixel in a polygon.}
@@ -77,7 +77,7 @@
 #'  r2[] <- sapply(1:raster::ncell(r), function(x) rnorm(1, ceiling(x/10), 3))
 #'  cov_rasters <- raster::stack(r, r2)
 #' 
-#'  test_data <- prepare_data(polygon_shapefile = spdf, 
+#'  test_data <- prepare_data(x = spdf, 
 #'                            covariate_rasters = cov_rasters)
 #' } 
 #'                    
@@ -85,7 +85,7 @@
 #' 
 #' 
 
-prepare_data <- function(polygon_shapefile, 
+prepare_data <- function(x, 
                          covariate_rasters,
                          aggregation_raster = NULL,
                          id_var = 'area_id', 
@@ -96,24 +96,24 @@ prepare_data <- function(polygon_shapefile,
                          makeMesh = TRUE,
                          ncores = 2) {
 
-  stopifnot(inherits(polygon_shapefile, 'SpatialPolygonsDataFrame'))
-  stopifnot(inherits(covariate_rasters, 'Raster'))
-  if(!is.null(aggregation_raster)) stopifnot(inherits(aggregation_raster, 'Raster'))
+  stopifnot(inherits(x, 'sf'))
+  stopifnot(inherits(covariate_rasters, 'SpatRaster'))
+  if(!is.null(aggregation_raster)) stopifnot(inherits(aggregation_raster, 'SpatRaster'))
   stopifnot(inherits(id_var, 'character'))
   stopifnot(inherits(response_var, 'character'))
   if(!is.null(mesh.args)) stopifnot(inherits(mesh.args, 'list'))
   
   # Check for NAs in response data
-  na_rows <- is.na(polygon_shapefile@data[, response_var])
+  na_rows <- is.na(x[, response_var, drop = TRUE])
   if(sum(na_rows) != 0) {
     if(na.action) {
-      polygon_shapefile <- polygon_shapefile[!na_rows, ]
+      x <- x[!na_rows, ]
     } else {
       stop('There are NAs in the response data. Please deal with these, or set na.action = TRUE')
     }
   }
   
-  polygon_data <- getPolygonData(polygon_shapefile, id_var, response_var, sample_size_var)
+  polygon_data <- getPolygonData(x, id_var, response_var, sample_size_var)
   
 
   # Save raster layer names so we can reassign it to make sure names don't change.
@@ -122,15 +122,15 @@ prepare_data <- function(polygon_shapefile,
   # If no aggregation raster is given, use a 'unity' raster
   if(is.null(aggregation_raster)) {
     aggregation_raster <- covariate_rasters[[1]]
-    aggregation_raster <- raster::setValues(aggregation_raster, rep(1, raster::ncell(aggregation_raster)))
+    terra::values(aggregation_raster) <- rep(1, terra::ncell(aggregation_raster))
   }
   names(aggregation_raster) <- 'aggregation_raster'
 
   
-  covariate_rasters <- raster::addLayer(covariate_rasters, aggregation_raster)
+  covariate_rasters <- c(covariate_rasters, aggregation_raster)
   cl <- parallel::makeCluster(ncores)
   doParallel::registerDoParallel(cl)
-  covariate_data <- parallelExtract(covariate_rasters, polygon_shapefile, fun = NULL, id = id_var)
+  covariate_data <- parallelExtract(covariate_rasters, x, fun = NULL, id = id_var)
   parallel::stopCluster(cl)
   foreach::registerDoSEQ()
   
@@ -169,14 +169,14 @@ prepare_data <- function(polygon_shapefile,
       mesh <- NULL
       message("Cannot build mesh as INLA is not installed. If you need a spatial field in your model, you must install INLA.")
     } else {
-      mesh <- build_mesh(polygon_shapefile, mesh.args)
+      mesh <- build_mesh(x, mesh.args)
     }
   } else {
     mesh <- NULL
     message("A mesh is not being built. You will not be able to run a spatial model without a mesh.")
   }
   
-  disag_data <- list(polygon_shapefile = polygon_shapefile,
+  disag_data <- list(x = x,
                      shapefile_names = list(id_var = id_var, response_var = response_var),
                      covariate_rasters = covariate_rasters,
                      polygon_data = polygon_data,
@@ -195,13 +195,13 @@ prepare_data <- function(polygon_shapefile,
 
 #' Function to fit the disaggregation model
 #'
-#' @param polygon_shapefile SpatialPolygonDataFrame containing the response data 
-#' @param shapefile_names List of 2: polygon id variable name and response variable name from polygon_shapefile
+#' @param x SpatialPolygonDataFrame containing the response data 
+#' @param shapefile_names List of 2: polygon id variable name and response variable name from x
 #' @param covariate_rasters RasterStack of covariates
 #' @param polygon_data data.frame with two columns: polygon id and response
 #' @param covariate_data data.frame with cell id, polygon id and covariate columns
 #' @param aggregation_pixels vector with value of aggregation raster at each pixel
-#' @param coordsForFit coordinates of the covariate data points within the polygons in polygon_shapefile
+#' @param coordsForFit coordinates of the covariate data points within the polygons in x
 #' @param coordsForPrediction coordinates of the covariate data points in the whole raster extent
 #' @param startendindex matrix containing the start and end index for each polygon
 #' @param mesh inla.mesh object to use in the fit
@@ -209,7 +209,7 @@ prepare_data <- function(polygon_shapefile,
 #' @return A list is returned of class \code{disag_data}. 
 #' The functions \emph{summary}, \emph{print} and \emph{plot} can be used on \code{disag_data}. 
 #' The list  of class \code{disag_data} contains:
-#'  \item{polygon_shapefile }{The SpatialPolygonDataFrame used as an input.} 
+#'  \item{x }{The SpatialPolygonDataFrame used as an input.} 
 #'  \item{covariate_rasters }{The RasterStack used as an input.} 
 #'  \item{polygon_data }{A data frame with columns of \emph{area_id}, \emph{response} and \emph{N} (sample size: all NAs unless using binomial data). Each row represents a polygon.}
 #'  \item{covariate_data }{A data frame with columns of \emph{area_id}, \emph{cell_id} and one for each covariate in \emph{covariate_rasters}. Each row represents a pixel in a polygon.}
@@ -224,7 +224,7 @@ prepare_data <- function(polygon_shapefile,
 #' @export
 
 
-as.disag_data <- function(polygon_shapefile, 
+as.disag_data <- function(x, 
                           shapefile_names,
                           covariate_rasters, 
                           polygon_data, 
@@ -235,7 +235,7 @@ as.disag_data <- function(polygon_shapefile,
                           startendindex, 
                           mesh = NULL) {
   
-  stopifnot(inherits(polygon_shapefile, 'SpatialPolygonsDataFrame'))
+  stopifnot(inherits(x, 'SpatialPolygonsDataFrame'))
   stopifnot(inherits(shapefile_names, 'list'))
   stopifnot(inherits(covariate_rasters, c('RasterBrick', 'RasterStack')))
   stopifnot(inherits(polygon_data, 'data.frame'))
@@ -248,7 +248,7 @@ as.disag_data <- function(polygon_shapefile,
     stopifnot(inherits(mesh, 'inla.mesh'))
   }
   
-  disag_data <- list(polygon_shapefile = polygon_shapefile,
+  disag_data <- list(x = x,
                      shapefile_names = shapefile_names,
                      covariate_rasters = covariate_rasters,
                      polygon_data = polygon_data,
