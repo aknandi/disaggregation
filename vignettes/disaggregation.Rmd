@@ -108,7 +108,7 @@ pop_raster <- rasterize(terra::vect(df), cov_stack, field = 'pop_per_cell')
 To correct small inconsistencies in the polygon geometry, we run the line below
 
 ```{r, fig.show='hold'}
-polygon_data <- rgeos::gBuffer(polygon_data, byid = TRUE, width = 0)
+df <- sf::st_buffer(df, dist = 0)
 ```
 
 Now we have setup the data we can use the `prepare_data` function to create the objects needed to run the disaggregation model. The name of the response variable and id variable in the `SpatialPolygonsDataFrame` should be specified. 
