@@ -57,17 +57,17 @@ parallelExtract <- function(raster, shape, fun = mean, id = 'OBJECTID',  ...){
          call. = FALSE)
   }
   
-  shape@data[, id] <- as.character(shape@data[, id])
+  shape[, id] <- as.character(shape[, id, drop = TRUE])
   
   i <- NULL
   # Run extract in parallel.
-  values <- foreach::foreach(i = seq_along(shape)) %dopar% {  
-    raster::extract(raster, shape[i, ], fun = fun, na.rm = TRUE, cellnumbers = TRUE, ...)
+  values <- foreach::foreach(i = seq(nrow(shape))) %dopar% {  
+    terra::extract(raster, terra::vect(shape[i, ]), fun = fun, na.rm = TRUE, cells = TRUE, ...)
   } 
   if(!is.null(fun)){
     # If a summary function was given, just bind everything together and add ID column
     df <- data.frame(do.call(rbind, values))
-    if(inherits(shape, 'SpatialPolygonsDataFrame')){
+    if(inherits(shape, 'df')){
       df <- cbind(ID = as.data.frame(shape)[, id], df)
     } else{
       df <- cbind(ID = names(shape), df)
@@ -83,7 +83,7 @@ parallelExtract <- function(raster, shape, fun = mean, id = 'OBJECTID',  ...){
     #   Want to make covariates columns, rbind shapes, and add shape and cell id columns.
     
     # list of vectors, one for each covariate
-    values_id <- lapply(seq_along(values), function(x) data.frame(shape@data[, id][x], values[[x]][[1]]))
+    values_id <- lapply(seq_along(values), function(x) data.frame(shape[, id, drop = TRUE][x], values[[x]][[1]]))
     
     
     df <- do.call(rbind, values_id)
@@ -101,7 +101,7 @@ parallelExtract <- function(raster, shape, fun = mean, id = 'OBJECTID',  ...){
 #' polygon, the values of the response for that polygon, and the sample size respectively. If the data is not survey data (the sample size does 
 #' not exist), this column will contain NAs.
 #' 
-#' @param shape A SpatialPolygons object containing response data.
+#' @param shape A sf object containing response data.
 #' @param id_var Name of column in shape object with the polygon id. Default 'area_id'.
 #' @param response_var Name of column in shape object with the response data. Default 'response'.
 #' @param sample_size_var For survey data, name of column in SpatialPolygonDataFrame object (if it exists) with the sample size data. Default NULL.
@@ -132,10 +132,10 @@ parallelExtract <- function(raster, shape, fun = mean, id = 'OBJECTID',  ...){
 getPolygonData <- function(shape, id_var = 'area_id', response_var = 'response', sample_size_var = NULL) {
   
   if(is.null(sample_size_var)) {
-    polygon_df <- shape@data[, c(id_var, response_var)]
+    polygon_df <- shape[, c(id_var, response_var), drop = TRUE]
     polygon_df$N <- rep(NA, nrow(polygon_df))
   } else {
-    polygon_df <- shape@data[, c(id_var, response_var, sample_size_var)]
+    polygon_df <- shape[, c(id_var, response_var, sample_size_var), drop = TRUE]
   }
   
   names(polygon_df) <- c('area_id', 'response', 'N')

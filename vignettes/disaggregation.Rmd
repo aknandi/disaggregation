@@ -91,6 +91,7 @@ terra::values(r2) <- sapply(seq(terra::ncell(r2)),
 
 cov_stack <- terra::rast(list(r, r2))
 cov_stack <- terra::scale(cov_stack)
+names(cov_stack) <- c('layer1', 'layer2')
 
 ```
 
@@ -120,7 +121,7 @@ Now we have setup the data we can use the `prepare_data` function to create the 
 The user can also control the parameters of the mesh that is used to create the spatial field. The mesh is created by finding a tight boundary around the polygon data, and creating a fine mesh within the boundary and a coarser mesh outside. This speeds up computation time by only having a very fine mesh within the area of interest and having a small region outside with a coarser mesh to avoid edge effects. The mesh parameters: `concave`, `convex` and `resolution` refer to the parameters used to create the mesh boundary using the [inla.noncovex.hull function](https://rdrr.io/github/andrewzm/INLA/man/inla.nonconvex.hull.html), while the mesh parameters `max.edge`, `cut` and `offset` refer to the parameters used to create the mesh using the [inla.mesh.2d function](https://rdrr.io/github/andrewzm/INLA/man/inla.mesh.2d.html).
 
 ```{r, fig.show='hold', eval= isINLA}
-data_for_model <- prepare_data(polygon_data,
+data_for_model <- prepare_data(x = df,
                                cov_stack,
                                pop_raster,
                                response_var = 'cases',
