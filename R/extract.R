@@ -52,21 +52,14 @@
 
 parallelExtract <- function(raster, shape, fun = mean, id = 'OBJECTID',  ...){
   
-  if (!requireNamespace("foreach", quietly = TRUE)) {
-    stop("foreach needed for this function to work. Please install it.",
-         call. = FALSE)
-  }
-  
   shape[, id] <- as.character(shape[, id, drop = TRUE])
   
-  i <- NULL
   # Run extract in parallel.
-  values <- foreach::foreach(i = seq(nrow(shape))) %dopar% {  
-    terra::extract(raster, terra::vect(shape[i, ]), fun = fun, na.rm = TRUE, cells = TRUE, ...)
-  } 
+  values <- terra::extract(raster, terra::vect(shape), fun = fun, na.rm = TRUE, cells = TRUE, ...)
+  
   if(!is.null(fun)){
     # If a summary function was given, just bind everything together and add ID column
-    df <- data.frame(do.call(rbind, values))
+    df <- values
     if(inherits(shape, 'df')){
       df <- cbind(ID = as.data.frame(shape)[, id], df)
     } else{
@@ -78,15 +71,8 @@ parallelExtract <- function(raster, shape, fun = mean, id = 'OBJECTID',  ...){
     
     return(df)
   } else {
-    # If no summary was given we get a list of length n.shapes
-    #   each entry in the list is a dataframe with n.covariates columns
-    #   Want to make covariates columns, rbind shapes, and add shape and cell id columns.
-    
-    # list of vectors, one for each covariate
-    values_id <- lapply(seq_along(values), function(x) data.frame(shape[, id, drop = TRUE][x], values[[x]][[1]]))
-    
-    
-    df <- do.call(rbind, values_id)
+    df <- values[, 2:(ncol(values) - 1)]
+    df <- cbind(values$ID, values$cell, df)
     names(df) <- c(id, 'cellid', names(raster))
     
     return(df)

@@ -126,12 +126,8 @@ prepare_data <- function(x,
 
   
   covariate_rasters <- c(covariate_rasters, aggregation_raster)
-  cl <- parallel::makeCluster(ncores)
-  doParallel::registerDoParallel(cl)
   covariate_data <- parallelExtract(covariate_rasters, x, fun = NULL, id = id_var)
-  parallel::stopCluster(cl)
-  foreach::registerDoSEQ()
-  
+
   covariate_rasters <- raster::dropLayer(covariate_rasters, raster::nlayers(covariate_rasters))
   names(covariate_rasters) <- cov_names
   
