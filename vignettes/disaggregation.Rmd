@@ -48,13 +48,11 @@ We will demonstrate an example of the **disaggregation** package using areal dat
 ```{r}
 library(SpatialEpi, quietly = TRUE)
 library(dplyr, quietly = TRUE)
-library(sp, quietly = TRUE) # Don't need to read data. So just here while I learn sf.
-library(raster, quietly = TRUE)
 library(disaggregation, quietly = TRUE)
 library(ggplot2)
 
-library(sf)
-library(terra)
+library(sf, quietly = TRUE)
+library(terra, quietly = TRUE)
 
 
 polygons <- sf::st_as_sf(NYleukemia$spatial.polygon)

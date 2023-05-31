@@ -21,12 +21,12 @@ plot.disag_data <- function(x, which = c(1,2,3), ...) {
   titles <- c()
   
   if(1 %in% which) {
-    plots$polygon <- plot_polygon_data(x$polygon_shapefile, x$shapefile_names)
+    plots$polygon <- plot_polygon_data(x$x, x$shapefile_names)
     titles <- c(titles, 'Polygon response data')
   }
   
   if(2 %in% which) {
-    stopifnot(inherits(x$covariate_rasters, c('RasterStack', 'RasterBrick')))
+    stopifnot(inherits(x$covariate_rasters, c('SpatRaster')))
     plots$covariates <- sp::spplot(x$covariate_rasters)
     titles <- c(titles, 'Covariate rasters')
   }
@@ -141,24 +141,19 @@ plot.disag_prediction <- function(x, ...) {
 
 plot_polygon_data <- function(x, names) {
 
+  stopifnot(inherits(x, 'sf'))
+  
+  
   # Rename the response variable for plotting
   shp <- x
-  shp@data <- dplyr::rename(shp@data, 'response' = names$response_var)
-  shp@data <- dplyr::rename(shp@data, 'area_id' = names$id_var)
+  shp <- dplyr::rename(shp, 'response' = names$response_var)
+  shp <- dplyr::rename(shp, 'area_id' = names$id_var)
   
   area_id <- long <- lat <- group <- response <- NULL
-  stopifnot(inherits(shp, 'SpatialPolygonsDataFrame'))
   
-  df_fortify <- fortify(shp, region = 'area_id')
-  
-  df <- shp@data
-  df <- dplyr::mutate(df, area_id = as.character(area_id)) 
-  df <- dplyr::left_join(df_fortify, df, by = c('id' = 'area_id'))
-  
-  p <- ggplot(df, aes(long, lat, group = group, fill = response)) + 
-    geom_polygon() +
-    coord_equal() +
-    scale_fill_viridis_c(trans = 'identity')
+  p <- ggplot(shp, aes(long, lat, group = group, fill = response)) + 
+        geom_sf() +
+        scale_fill_viridis_c(trans = 'identity')
   
   return(invisible(p))
 }
