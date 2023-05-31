@@ -72,7 +72,7 @@ parallelExtract <- function(raster, shape, fun = mean, id = 'OBJECTID',  ...){
     
   } else {
     df <- values[, 2:(ncol(values) - 1)]
-    df <- cbind(as.data.frame(shape)[, id], values$cell, df)
+    df <- cbind(as.data.frame(shape)[values$ID, id], values$cell, df)
     names(df) <- c(id, 'cellid', names(raster))
     
     return(df)
