@@ -1,8 +1,8 @@
-<<<<<<< HEAD
 #' Plot input data for disaggregation
 #'
 #' Plotting function for class \emph{disag_data} (the input data for disaggregation).
 #'
+>>>>>>> Fix plot.disag_data
 #' Produces three plots: polygon response data, covariate rasters and INLA mesh.
 #'
 #' @param x Object of class \emph{disag_data} to be plotted.
@@ -22,12 +22,12 @@ plot.disag_data <- function(x, which = c(1,2,3), ...) {
   titles <- c()
 
   if(1 %in% which) {
-    plots$polygon <- plot_polygon_data(x$polygon_shapefile, x$shapefile_names)
+    plots$polygon <- plot_polygon_data(x$x, x$shapefile_names)
     titles <- c(titles, 'Polygon response data')
   }
 
   if(2 %in% which) {
-    stopifnot(inherits(x$covariate_rasters, c('RasterStack', 'RasterBrick')))
+    stopifnot(inherits(x$covariate_rasters, c('SpatRaster')))
     plots$covariates <- sp::spplot(x$covariate_rasters)
     titles <- c(titles, 'Covariate rasters')
   }
@@ -117,6 +117,7 @@ plot.disag_model <- function(x, ...){
 #' Plot mean and uncertainty predictions from the disaggregation model results
 #'
 #' Plotting function for class \emph{disag_prediction} (the mean and uncertainty predictions of the disaggregation fitting).
+#'
 #'
 #' Produces raster plots of the mean prediction, and the lower and upper confidence intervals.
 #'

@@ -40,8 +40,8 @@
 #' @return A list is returned of class \code{disag_data}. 
 #' The functions \emph{summary}, \emph{print} and \emph{plot} can be used on \code{disag_data}. 
 #' The list  of class \code{disag_data} contains:
-#'  \item{x }{The SpatialPolygonDataFrame used as an input.} 
-#'  \item{covariate_rasters }{The RasterStack used as an input.} 
+#'  \item{x }{The sf object used as an input.} 
+#'  \item{covariate_rasters }{The SpatRaster used as an input.} 
 #'  \item{polygon_data }{A data frame with columns of \emph{area_id}, \emph{response} and \emph{N} (sample size: all NAs unless using binomial data). Each row represents a polygon.}
 #'  \item{covariate_data }{A data frame with columns of \emph{area_id}, \emph{cell_id} and one for each covariate in \emph{covariate_rasters}. Each row represents a pixel in a polygon.}
 #'  \item{aggregation_pixels }{An array with the value of the aggregation raster for each pixel in the same order as the rows of \emph{covariate_data}.}
