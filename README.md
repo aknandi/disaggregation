@@ -109,4 +109,3 @@ Summary functions for input data and model results
 summary(data_for_model)  
 summary(model_result) 
 ```
-

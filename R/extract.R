@@ -58,6 +58,7 @@ parallelExtract <- function(raster, shape, fun = mean, id = 'OBJECTID',  ...){
   values <- terra::extract(raster, terra::vect(shape), fun = fun, na.rm = TRUE, cells = TRUE, ...)
   
   if(!is.null(fun)){
+    
     # If a summary function was given, just bind everything together and add ID column
     df <- values
     if(inherits(shape, 'df')){
@@ -66,13 +67,12 @@ parallelExtract <- function(raster, shape, fun = mean, id = 'OBJECTID',  ...){
       df <- cbind(ID = names(shape), df)
       id <- 'id'
     }
-    
     names(df) <- c(id, names(raster))
-    
     return(df)
+    
   } else {
     df <- values[, 2:(ncol(values) - 1)]
-    df <- cbind(values$ID, values$cell, df)
+    df <- cbind(as.data.frame(shape)[, id], values$cell, df)
     names(df) <- c(id, 'cellid', names(raster))
     
     return(df)
@@ -171,13 +171,13 @@ getCovariateRasters <- function(directory, file_pattern = '.tif$', shape) {
 
 extractCoordsForMesh <- function(cov_rasters, selectIds = NULL) {
   
-  stopifnot(inherits(cov_rasters, c('RasterStack', 'RasterBrick')))
+  stopifnot(inherits(cov_rasters, 'SpatRaster'))
   if(!is.null(selectIds)) stopifnot(inherits(selectIds, 'numeric'))
   
   points_raster <- cov_rasters[[1]]
-  points_raster[is.na(raster::values(points_raster))] <- -9999
-  raster_pts <- raster::rasterToPoints(points_raster, spatial = TRUE)
-  coords <- raster_pts@coords
+  points_raster[is.na(terra::values(points_raster))] <- -9999
+  raster_pts <- terra::as.points(points_raster)
+  coords <- terra::crds(raster_pts)
   
   # If specified, only retain certain pixel ids
   if(!is.null(selectIds)) {
