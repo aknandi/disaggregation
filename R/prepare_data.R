@@ -130,7 +130,9 @@ prepare_data <- function(x,
   covariate_rasters <- c(covariate_rasters, aggregation_raster)
   covariate_data <- parallelExtract(covariate_rasters, x, fun = NULL, id = id_var)
 
-  covariate_rasters <- raster::dropLayer(covariate_rasters, raster::nlayers(covariate_rasters))
+  # Remove the aggregation raster
+  covariate_rasters <- covariate_rasters[[seq(nlyr(covariate_rasters) - 1)]]
+  
   names(covariate_rasters) <- cov_names
   
   aggregation_pixels <- as.numeric(covariate_data[ , ncol(covariate_data)])

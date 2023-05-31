@@ -118,8 +118,8 @@ The user can also control the parameters of the mesh that is used to create the 
 
 ```{r, fig.show='hold', eval= isINLA}
 data_for_model <- prepare_data(x = df,
-                               cov_stack,
-                               pop_raster,
+                               covariate_rasters = cov_stack,
+                               aggregation_raster = pop_raster,
                                response_var = 'cases',
                                id_var = 'censustract.FIPS',
                                mesh.args = list(cut = 0.01,
