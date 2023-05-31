@@ -40,16 +40,16 @@
 #' }
 #'
 #'
-#'
 #' @export
 
 build_mesh <- function(shapes, mesh.args = NULL) {
 
-  stopifnot(inherits(shapes, 'SpatialPolygons'))
+<<<<<<< HEAD
+  stopifnot(inherits(shapes, 'sf'))
   if(!is.null(mesh.args)) stopifnot(inherits(mesh.args, 'list'))
 
-  limits <- sp::bbox(shapes)
-  hypotenuse <- sqrt((limits[1,2] - limits[1,1])^2 + (limits[2,2] - limits[2,1])^2)
+  limits <- sf::st_bbox(shapes)
+  hypotenuse <- sqrt((limits$xmax - limits$xmin)^2 + (limits$ymax - limits$ymin)^2)
   maxedge <- hypotenuse/10
 
 
@@ -65,7 +65,9 @@ build_mesh <- function(shapes, mesh.args = NULL) {
 
   outline <- sf::st_union(sf::st_as_sf(shapes))
   coords <- sf::st_coordinates(outline)
-
+  #no sure which is needed
+  # outline <- st_sf(sf::st_union(sf::st_convex_hull(shapes)))
+  # coords <- sf::st_coordinates(outline)[, c('X', 'Y')]
 
 
   outline.hull <- INLA::inla.nonconvex.hull(coords,
@@ -78,7 +80,6 @@ build_mesh <- function(shapes, mesh.args = NULL) {
     max.edge = pars$max.edge,
     cut = pars$cut,
     offset = pars$offset)
-
 
   return(mesh)
 }
