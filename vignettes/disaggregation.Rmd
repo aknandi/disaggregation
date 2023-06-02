@@ -100,7 +100,7 @@ We also create a population raster. This is to allow the model to correctly aggr
 extracted <- terra::extract(r, terra::vect(df$geometry), fun = sum)
 n_cells <- terra::extract(r, terra::vect(df$geometry), fun = length)
 df$pop_per_cell <- df$population/n_cells$lyr.1
-pop_raster <- rasterize(terra::vect(df), cov_stack, field = 'pop_per_cell')
+pop_raster <- terra::rasterize(terra::vect(df), cov_stack, field = 'pop_per_cell')
 
 ```
 
