@@ -187,7 +187,7 @@ print.disag_data <- function(x, ...){
 
 summary.disag_prediction <- function(object, ...) {
   
-  number_realisations <- raster::nlayers(object$uncertainty_prediction$realisations)
+  number_realisations <- terra::nlyr(object$uncertainty_prediction$realisations)
   max_mean <- max(object$mean_prediction$prediction@data@values)
   min_mean <- min(object$mean_prediction$prediction@data@values)
   max_iqr <- max((object$uncertainty_prediction$predictions_ci[[2]] - object$uncertainty_prediction$predictions_ci[[1]])@data@values)
@@ -238,7 +238,7 @@ print.disag_prediction <- function(x, ...){
   if(!is.null(x$mean_prediction$field)) cat('field ')
   if(!is.null(x$mean_prediction$iid)) cat('iid ')
   cat('\n\n')
-  cat(paste0('There are ', raster::nlayers(x$uncertainty_prediction$realisations), ' uncertainty realisations'))
+  cat(paste0('There are ', terra::nlyr(x$uncertainty_prediction$realisations), ' uncertainty realisations'))
 
   return(invisible(x))
 }
