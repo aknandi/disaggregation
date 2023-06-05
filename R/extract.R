@@ -175,7 +175,7 @@ extractCoordsForMesh <- function(cov_rasters, selectIds = NULL) {
   if(!is.null(selectIds)) stopifnot(inherits(selectIds, 'numeric'))
   
   points_raster <- cov_rasters[[1]]
-  points_raster[is.na(terra::values(points_raster))] <- -9999
+  points_raster[is.na(terra::values(points_raster, mat = FALSE))] <- -9999
   raster_pts <- terra::as.points(points_raster)
   coords <- terra::crds(raster_pts)
   
