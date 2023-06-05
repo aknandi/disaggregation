@@ -59,7 +59,8 @@ polygons <- sf::st_as_sf(NYleukemia$spatial.polygon)
 
 df <- cbind(polygons, NYleukemia$data)
 
-ggplot() + geom_sf(data = df, aes(fill = cases / population))
+ggplot() + 
+  geom_sf(data = df, aes(fill = cases / population))
 
 
 ```
