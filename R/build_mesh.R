@@ -31,6 +31,7 @@
 #'   xmin = 2*(col - 1); xmax = 2*col; ymin = 2*(row - 1); ymax = 2*row
 #'   polygons[[i]] <- rbind(c(xmin, ymax), c(xmax,ymax), c(xmax, ymin),
 #'                          c(xmin,ymin), c(xmin, ymax))
+#' }
 #'
 #' polys <- sf::st_sfc(sf::st_polygon(polygons))
 #' response_df <- data.frame(area_id = 1:100,
@@ -39,7 +40,6 @@
 #'
 #' my_mesh <- build_mesh(spdf)
 #' }
-#'
 #'
 #' @export
 
@@ -63,12 +63,10 @@ build_mesh <- function(shapes, mesh.args = NULL) {
 
   pars[names(mesh.args)] <- mesh.args
 
-  outline <- sf::st_union(sf::st_as_sf(shapes))
-  coords <- sf::st_coordinates(outline)
-  #no sure which is needed
-  # outline <- st_sf(sf::st_union(sf::st_convex_hull(shapes)))
-  # coords <- sf::st_coordinates(outline)[, c('X', 'Y')]
+  #outline <- maptools::unionSpatialPolygons(shapes_old, IDs = rep(1, length(shapes_old)))
+  outline <- st_sf(sf::st_union(sf::st_convex_hull(shapes)))
 
+  coords <- sf::st_coordinates(outline)[, c('X', 'Y')]
 
   outline.hull <- INLA::inla.nonconvex.hull(coords,
                                             convex = pars$convex,
@@ -80,6 +78,7 @@ build_mesh <- function(shapes, mesh.args = NULL) {
     max.edge = pars$max.edge,
     cut = pars$cut,
     offset = pars$offset)
+
 
   return(mesh)
 }
