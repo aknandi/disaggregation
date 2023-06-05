@@ -116,7 +116,7 @@ print.disag_model <- function(x, ...){
 summary.disag_data <- function(object, ...) {
 
   n_polygons <- nrow(object$polygon_shapefile)
-  n_covariates <- raster::nlayers(object$covariate_rasters)
+  n_covariates <- terra::nlyr(object$covariate_rasters)
   
   cat(paste("They data contains", n_polygons, "polygons and", nrow(object$covariate_data), "pixels\n"))
   
@@ -157,7 +157,7 @@ summary.disag_data <- function(object, ...) {
 print.disag_data <- function(x, ...){
   
   n_polygons <- nrow(x$polygon_shapefile)
-  n_covariates <- raster::nlayers(x$covariate_rasters)
+  n_covariates <- terra::nlyr(x$covariate_rasters)
   
   cat(paste("They data contains", n_polygons, "polygons and", nrow(x$covariate_data), "pixels\n"))
   
