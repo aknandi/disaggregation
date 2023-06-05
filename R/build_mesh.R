@@ -13,7 +13,7 @@
 #' Defaults are:
 #' pars <- list(convex = -0.01, concave = -0.5, resolution = 300, max.edge = c(3.0, 8),  cut = 0.4, offset = c(1, 15)).
 #'
-#' @param shapes shapefile covering the region under investigation.
+#' @param shapes sf covering the region under investigation.
 #' @param mesh.args list of parameters that control the mesh structure. \emph{convex}, \emph{concave} and \emph{resolution},
 #' to control the boundary of the inner mesh, and \emph{max.edge}, \emph{cut} and \emph{offset}, to control the  mesh itself,
 #' with the parameters having the same meaning as in the INLA functions \emph{inla.convex.hull} and \emph{inla.mesh.2d}.
@@ -31,11 +31,6 @@
 #'   xmin = 2*(col - 1); xmax = 2*col; ymin = 2*(row - 1); ymax = 2*row
 #'   polygons[[i]] <- rbind(c(xmin, ymax), c(xmax,ymax), c(xmax, ymin),
 #'                          c(xmin,ymin), c(xmin, ymax))
-#' }
-#'
-#'
-#'
-#'
 #'
 #' polys <- sf::st_sfc(sf::st_polygon(polygons))
 #' response_df <- data.frame(area_id = 1:100,
