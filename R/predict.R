@@ -234,8 +234,8 @@ getAmatrix <- function(mesh, coords) {
 check_newdata <- function(newdata, model_output){
   if(is.null(newdata)) return(NULL)
   if(!is.null(newdata)){
-    if(!(inherits(newdata, c('RasterStack', 'RasterBrick', 'RasterLayer')))){
-      stop('newdata should be NULL or a RasterStack or a RasterBrick')
+    if(!(inherits(newdata, c('SpatRaster')))){
+      stop('newdata should be NULL or a SpatRaster')
     } 
     if(!all(names(model_output$data$covariate_rasters) %in% names(newdata))){
       stop('All covariates used to fit the model must be in newdata')
@@ -281,12 +281,14 @@ setup_objects <- function(model_output, newdata = NULL, predict_iid = FALSE) {
   }
   
   if(predict_iid) {
-    tmp_shp <- model_output$data$polygon_shapefile
-    tmp_shp@data <- data.frame(area_id = factor(model_output$data$polygon_data$area_id))
-    shapefile_raster <- raster::rasterize(tmp_shp, 
+    tmp_shp <- model_output$data$x
+    tmp_shp <- dplyr::bind_cols(tmp_shp, 
+                                area_id = 
+                                  factor(model_output$data$polygon_data$area_id))
+    shapefile_raster <- terra::rasterize(tmp_shp, 
                                           model_output$data$covariate_rasters, 
                                           field = 'area_id')
-    shapefile_ids <- raster::unique(shapefile_raster)
+    shapefile_ids <- terra::unique(shapefile_raster)
     iid_objects <- list(shapefile_raster = shapefile_raster, shapefile_ids = shapefile_ids)
   } else {
     iid_objects <- NULL
@@ -302,12 +304,12 @@ predict_single_raster <- function(model_parameters, objects, link_function) {
   
   # Create linear predictor
   covs_by_betas <- list()
-  for(i in seq_len(raster::nlayers(objects$covariates))){
+  for(i in seq_len(terra::nlyr(objects$covariates))){
     covs_by_betas[[i]] <- model_parameters$slope[i] * objects$covariates[[i]]
   }
   
-  cov_by_betas <- raster::stack(covs_by_betas)
-  if(raster::nlayers(cov_by_betas) > 1){
+  cov_by_betas <- terra::rast(covs_by_betas)
+  if(terra::nlyr(cov_by_betas) > 1){
     sum_cov_by_betas <- sum(cov_by_betas)
   } else { 
     # With only 1 covariate, there's nothing to sum. Do this to avoid warnings.
@@ -320,7 +322,9 @@ predict_single_raster <- function(model_parameters, objects, link_function) {
   if(!is.null(objects$field_objects)){
     # Extract field values
     field <- (objects$field_objects$Amatrix %*% model_parameters$nodemean)[, 1]
-    field_ras <- raster::rasterFromXYZ(cbind(objects$field_objects$coords, field))
+    field_ras <- terra::rast(cbind(objects$field_objects$coords, field), 
+                             type = 'xyz', 
+                             crs = crs(linear_pred))
     linear_pred <- linear_pred + field_ras
   } else {
     field_ras <- NULL
@@ -329,21 +333,27 @@ predict_single_raster <- function(model_parameters, objects, link_function) {
   if(!is.null(objects$iid_objects)) {
     iid_ras <- objects$iid_objects$shapefile_raster
     iideffect_sd <- 1/sqrt(exp(model_parameters$iideffect_log_tau))
+    # todo
     for(i in seq_along(model_parameters$iideffect)) {
-      iid_ras@data@values[which(objects$iid_objects$shapefile_raster@data@values == objects$iid_objects$shapefile_ids[i])] <- 
+      targetvals <- terra::values(objects$iid_objects$shapefile_raster, 
+                                  dataframe = FALSE, mat = FALSE)
+      whichvals <- which(targetvals == objects$iid_objects$shapefile_ids[1, i])
+      values(iid_ras)[whichvals] <- 
         model_parameters$iideffect[i]
-      na_pixels <- which(is.na(iid_ras@data@values))
+      na_pixels <- which(is.na(values(iid_ras, dataframe = FALSE, mat = FALSE)))
       na_iid_values <- stats::rnorm(length(na_pixels), 0, iideffect_sd)
-      iid_ras@data@values[na_pixels] <- na_iid_values
+      values(iid_ras)[na_pixels] <- na_iid_values
     }
-    if(raster::extent(iid_ras) != raster::extent(linear_pred)) {
+    if(terra::ext(iid_ras) != terra::ext(linear_pred)) {
       # Extent of prediction space is different to the original model. Keep any overlapping iid values but predict to the new extent
       raster_new_extent <- linear_pred
-      raster_new_extent@data@values <- NA
-      iid_ras <- raster::merge(iid_ras, raster_new_extent, ext = raster::extent(raster_new_extent))
-      missing_pixels <- which(is.na(iid_ras@data@values))
+      values(raster_new_extent) <- NA
+      # iid_ras <- terra::merge(iid_ras, raster_new_extent, ext = terra::ext(raster_new_extent))
+      # NOt sure why we no longer need the ext argument
+      iid_ras <- terra::merge(iid_ras, raster_new_extent)
+      missing_pixels <- which(is.na(values(iid_ras, dataframe = FALSE, mat = FALSE)))
       missing_iid_values <- stats::rnorm(length(missing_pixels), 0, iideffect_sd)
-      iid_ras@data@values[missing_pixels] <- missing_iid_values
+      values(iid_ras)[missing_pixels] <- missing_iid_values
     }
     linear_pred <- linear_pred + iid_ras
   } else {
