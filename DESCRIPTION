@@ -18,15 +18,11 @@ Encoding: UTF-8
 LazyData: true
 RoxygenNote: 7.2.1
 Imports: 
-    maptools,
-    raster,
     foreach,
     sp,
     parallel,
     doParallel,
-    rgeos,
     splancs,
-    rgdal,
     Matrix,
     stats,
     TMB,
@@ -34,6 +30,8 @@ Imports:
     ggplot2,
     cowplot,
     sparseMVN,
+    terra,
+    sf,
     utils
 Additional_repositories: https://inla.r-inla-download.org/R/stable
 Suggests: 
