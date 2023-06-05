@@ -356,9 +356,9 @@ make_model_object <- function(data,
   }
   
   # Construct sensible default field hyperpriors
-  limits <- sp::bbox(data$polygon_shapefile)
-  hypontenuse <- sqrt((limits[1,2] - limits[1,1])^2 + (limits[2,2] - limits[2,1])^2)
-  prior_rho <- hypontenuse/3
+  limits <- sf::st_bbox(data$x)
+  hypotenuse <- sqrt((limits$xmax - limits$xmin)^2 + (limits$ymax - limits$ymin)^2)
+  prior_rho <- hypotenuse/3
   
   prior_sigma <- sd(data$polygon_data$response/mean(data$polygon_data$response))
   
