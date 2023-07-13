@@ -51,6 +51,7 @@ library(dplyr, quietly = TRUE)
 library(sp, quietly = TRUE) 
 library(raster, quietly = TRUE)
 library(disaggregation, quietly = TRUE)
+library(sf)
 
 map <- NYleukemia$spatial.polygon
 df <- NYleukemia$data
@@ -85,10 +86,14 @@ pop_raster <- rasterize(polygon_data, cov_stack, field = 'pop_per_cell')
 
 ```
 
-To correct small inconsistencies in the polygon geometry, we run the line below
+To correct small inconsistencies in the polygon geometry, we run the code below.
+We are a bit in between packages at the moment.
+Most of the package is built on sp. But as rgeos has been depreciated we have to
+switch the polygons to simple features and back again.
 
 ```{r, fig.show='hold'}
-polygon_data <- rgeos::gBuffer(polygon_data, byid = TRUE, width = 0)
+polygon_data <- sf:::as_Spatial(st_buffer(st_as_sf(polygon_data), dist = 0))
+
 ```
 
 Now we have setup the data we can use the `prepare_data` function to create the objects needed to run the disaggregation model. The name of the response variable and id variable in the `SpatialPolygonsDataFrame` should be specified. 
