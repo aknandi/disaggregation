@@ -6,7 +6,8 @@ Disaggregation
 [![R-CMD-check](https://github.com/aknandi/disaggregation/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/aknandi/disaggregation/actions/workflows/R-CMD-check.yaml)
 
 
-A package containing useful functions for disaggregation modelling
+A package containing useful functions for disaggregation modelling.
+An overview of the package is given in [our paper](https://www.jstatsoft.org/article/view/v106i11).
 
 Installation
 ------------
