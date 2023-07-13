@@ -39,6 +39,8 @@
 #'  my_mesh <- build_mesh(spdf)
 #' }
 #'
+#'
+#'
 #' @export
 
 build_mesh <- function(shapes, mesh.args = NULL) {
@@ -61,13 +63,10 @@ build_mesh <- function(shapes, mesh.args = NULL) {
   
   pars[names(mesh.args)] <- mesh.args
 
-  outline <- maptools::unionSpatialPolygons(shapes, IDs = rep(1, length(shapes)))
-
-  coords <- list()
-  for(i in seq_len(length(outline@polygons[[1]]@Polygons))){
-    coords[[i]] <- outline@polygons[[1]]@Polygons[[i]]@coords
-  }
-  coords <- do.call(rbind, coords)
+  outline <- sf::st_union(sf::st_as_sf(shapes))
+  coords <- sf::st_coordinates(outline)
+  
+  
 
   outline.hull <- INLA::inla.nonconvex.hull(coords, 
                                             convex = pars$convex, 
