@@ -179,7 +179,7 @@ disag_model <- function(data,
   
   # Rename parameters to match layers
   # Need to change in sd_out as well
-  names(opt$par)[names(opt$par) == 'slope'] <- names(data$covariate_rasters)
+  # names(opt$par)[names(opt$par) == 'slope'] <- names(data$covariate_rasters)
   
   model_output <- list(obj = obj,
                        opt = opt,
