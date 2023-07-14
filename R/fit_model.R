@@ -178,6 +178,7 @@ disag_model <- function(data,
   sd_out <- TMB::sdreport(obj, getJointPrecision = TRUE)
   
   # Rename parameters to match layers
+  # Need to change in sd_out as well
   names(opt$par)[names(opt$par) == 'slope'] <- names(data$covariate_rasters)
   
   model_output <- list(obj = obj,
