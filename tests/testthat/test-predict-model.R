@@ -39,7 +39,7 @@ test_that("Check predict.disag_model function works as expected", {
   skip_if_not_installed('INLA')
   skip_on_cran()
   
-  result <- disag_model(test_data, iterations = 2)
+  result <- disag_model(test_data, iterations = 100)
 
   pred2 <- predict(result)
   
@@ -87,7 +87,7 @@ test_that("Check predict.disag_model function works as expected", {
   
   # For a model with no field or iid
   
-  result <- disag_model(test_data, iterations = 2, field = FALSE, iid = FALSE)
+  result <- disag_model(test_data, iterations = 100, field = FALSE, iid = FALSE)
   
   pred2 <- predict(result)
   
