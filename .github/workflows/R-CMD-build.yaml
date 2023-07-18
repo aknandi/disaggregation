@@ -4,8 +4,11 @@ on:
   push:
     branches:
       'build' 
+  pull_request:
+    branches:
+      - master
 
-name: R-CMD-build
+name: R-CMD-check
 
 jobs:
   R-CMD-check:
@@ -17,29 +20,40 @@ jobs:
       fail-fast: false
       matrix:
         config:
-          - {os: ubuntu-20.04, r: 'release', rspm: "https://packagemanager.rstudio.com/cran/__linux__/focal/latest"}
+          - {os: macOS-12, r: 'release'}
+          - {os: windows-latest, r: 'release'}
+          - {os: ubuntu-latest, r: 'devel', http-user-agent: 'release'}
+          - {os: ubuntu-latest, r: 'release'}
+          - {os: ubuntu-latest, r: 'oldrel-1'}
 
     env:
       R_REMOTES_NO_ERRORS_FROM_WARNINGS: true
-      RSPM: ${{ matrix.config.rspm }}
+      R_KEEP_PKG_SOURCE: yes
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
+
+      - uses: r-lib/actions/setup-pandoc@v2
 
       - uses: r-lib/actions/setup-r@v2
         with:
           r-version: ${{ matrix.config.r }}
-          extra-repositories: "https://inla.r-inla-download.org/R/stable"
-
-      - uses: r-lib/actions/setup-pandoc@v2
+          http-user-agent: ${{ matrix.config.http-user-agent }}
+          use-public-rspm: true
+          extra-repositories: "https://inla.r-inla-download.org/R/testing"
 
       - name: Install system dependencies on MacOS (X11, gdal)
         if: runner.os == 'macOS'
         run: |
           brew install --cask xquartz
           brew install pkg-config
-          brew install proj@8
+          brew install proj@9
           brew install gdal
+
+      - name: Install system dependencies on Linux (GL)
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update -y && sudo apt-get install -y libglu1-mesa-dev
 
       - uses: r-lib/actions/setup-r-dependencies@v2
         with:
@@ -59,10 +73,3 @@ jobs:
           _R_CHECK_CRAN_INCOMING_REMOTE_: false
         with:
           args: 'c("--no-manual", "--as-cran")'
-          
-      - name: Upload built package
-        uses: actions/upload-artifact@v2
-        with:
-          name: pkg
-          path: /home/runner/work/
-
