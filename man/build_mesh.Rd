@@ -48,4 +48,6 @@ pars <- list(convex = -0.01, concave = -0.5, resolution = 300, max.edge = c(3.0,
  my_mesh <- build_mesh(spdf)
 }
 
+
+
 }
