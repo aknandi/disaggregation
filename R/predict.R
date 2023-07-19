@@ -157,6 +157,12 @@ predict_uncertainty <- function(model_output, newdata = NULL, predict_iid = FALS
   # If we have either of the random effects, we have the jointPrecision matrix.
   #   but if we have neither, we don't get that matrix and should use the
   #   covariance matrix instead
+  
+  #CH <- Matrix::Cholesky(as(S, 'dsCMatrix'))
+  #x <- rmvn.sparse(10, mu, CH, prec=FALSE) ## 10 random draws of x
+  #d <- dmvn.sparse(x, mu, CH, prec=FALSE) ## densities of the 10 draws
+  
+  
   if(model_output$model_setup$iid | model_output$model_setup$field){
     ch <- Matrix::Cholesky(model_output$sd_out$jointPrecision)
     par_draws <- sparseMVN::rmvn.sparse(N, parameters, ch, prec = TRUE)
