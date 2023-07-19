@@ -142,22 +142,19 @@ plot.disag_prediction <- function(x, ...) {
 plot_polygon_data <- function(x, names) {
 
   # Rename the response variable for plotting
-  shp <- x
-  shp@data <- dplyr::rename(shp@data, 'response' = names$response_var)
-  shp@data <- dplyr::rename(shp@data, 'area_id' = names$id_var)
+  shp <- sf::st_as_sf(x)
+  shp <- dplyr::rename(shp, 'response' = names$response_var)
+  shp <- dplyr::rename(shp, 'area_id' = names$id_var)
   
   area_id <- long <- lat <- group <- response <- NULL
-  stopifnot(inherits(shp, 'SpatialPolygonsDataFrame'))
+  stopifnot(inherits(shp, 'sf'))
   
-  df_fortify <- fortify(shp, region = 'area_id')
-  
-  df <- shp@data
-  df <- dplyr::mutate(df, area_id = as.character(area_id)) 
-  df <- dplyr::left_join(df_fortify, df, by = c('id' = 'area_id'))
-  
-  p <- ggplot(df, aes(long, lat, group = group, fill = response)) + 
-    geom_polygon() +
-    coord_equal() +
+
+  shp <- dplyr::mutate(shp, area_id = as.character(area_id)) 
+
+  p <- ggplot(shp, aes(fill = response)) + 
+    geom_sf() +
+    #coord_equal() +
     scale_fill_viridis_c(trans = 'identity')
   
   return(invisible(p))
