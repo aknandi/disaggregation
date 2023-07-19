@@ -87,7 +87,7 @@ pop_raster <- rasterize(polygon_data, cov_stack, field = 'pop_per_cell')
 ```
 
 To correct small inconsistencies in the polygon geometry, we run the code below.
-We are a bit in between packages at the moment.
+We are a bit inbetween frameworks at the moment.
 Most of the package is built on sp. But as rgeos has been depreciated we have to
 switch the polygons to simple features and back again.
 
