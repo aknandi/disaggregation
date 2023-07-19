@@ -118,11 +118,14 @@ data_for_model <- prepare_data(polygon_data,
 plot(data_for_model)
 ```
 
-Now have our data object we are ready to run the model. Here we can specify the likelihood function as gaussian, binomial or poisson, and we can specify the link function as logit, log or identity. The disaggregation model makes predictions at the pixel level:
+Now have our data object we are ready to run the model. Here we can specify 
+the likelihood function as Gaussian, binomial or poisson, and we can specify 
+the link function as logit, log or identity. The disaggregation model makes 
+predictions at the pixel level:
   
   $link(pred_i) = \beta_0 + \beta X + GP(s_i) + u_i$
   
-  where $X$ are the covariates, $GP$ is the gaussian random field and $u_i$ is the iid random effect. The pixel predictions are then aggregated to the polygon level using the weighted sum (via the aggregation raster, $agg_i$):
+where $X$ are the covariates, $GP$ is the gaussian random field and $u_i$ is the iid random effect. The pixel predictions are then aggregated to the polygon level using the weighted sum (via the aggregation raster, $agg_i$):
   
   $cases_j = \sum_{i \epsilon j} pred_i \times agg_i$
   
