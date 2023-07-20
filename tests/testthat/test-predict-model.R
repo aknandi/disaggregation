@@ -39,14 +39,14 @@ test_that("Check predict.disag_model function works as expected", {
   skip_if_not_installed('INLA')
   skip_on_cran()
   
-  result <- disag_model(test_data, iterations = 100,
+  result <- disag_model(test_data, iterations = 1000,
                         iid = TRUE,
                         field = TRUE,
                         priors = list(priormean_intercept = 0,
-                                      priorsd_intercept = 1,
+                                      priorsd_intercept = 0.1,
                                       priormean_slope = 0.0,
-                                      priorsd_slope = 0.4,
-                                      prior_rho_min = 0.1,
+                                      priorsd_slope = 0.1,
+                                      prior_rho_min = 5,
                                       prior_rho_prob = 0.01,
                                       prior_sigma_max = 0.1,
                                       prior_sigma_prob = 0.01,
