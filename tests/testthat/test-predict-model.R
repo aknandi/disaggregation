@@ -40,13 +40,15 @@ test_that("Check predict.disag_model function works as expected", {
   skip_on_cran()
   
   result <- disag_model(test_data, iterations = 100,
+                        iid = TRUE,
+                        field = TRUE,
                         priors = list(priormean_intercept = 0,
                                       priorsd_intercept = 1,
                                       priormean_slope = 0.0,
                                       priorsd_slope = 0.4,
-                                      prior_rho_min = 3,
+                                      prior_rho_min = 1,
                                       prior_rho_prob = 0.01,
-                                      prior_sigma_max = 1,
+                                      prior_sigma_max = 0.1,
                                       prior_sigma_prob = 0.01,
                                       prior_iideffect_sd_max = 0.01,
                                       prior_iideffect_sd_prob = 0.01))
@@ -129,7 +131,19 @@ test_that("Check predict.disag_model function works with newdata", {
   skip_if_not_installed('INLA')
   skip_on_cran()
   
-  result <- disag_model(test_data, field = FALSE, iid = TRUE, iterations = 100)
+  result <- disag_model(test_data, field = FALSE, iid = TRUE, iterations = 100,
+                        iid = TRUE,
+                        field = TRUE,
+                        priors = list(priormean_intercept = 0,
+                                      priorsd_intercept = 1,
+                                      priormean_slope = 0.0,
+                                      priorsd_slope = 0.4,
+                                      prior_rho_min = 1,
+                                      prior_rho_prob = 0.01,
+                                      prior_sigma_max = 0.1,
+                                      prior_sigma_prob = 0.01,
+                                      prior_iideffect_sd_max = 0.0001,
+                                      prior_iideffect_sd_prob = 0.01))
   
   newdata <- raster::crop(raster::stack(r, r2), c(0, 10, 0, 10))
   pred1 <- predict(result)
@@ -190,7 +204,19 @@ test_that('Check that setup_objects works', {
   skip_if_not_installed('INLA')
   skip_on_cran()
   
-  result <- disag_model(test_data, iterations = 100)
+  result <- disag_model(test_data, iterations = 100,
+                        iid = FALSE,
+                        field = TRUE,
+                        priors = list(priormean_intercept = 0,
+                                      priorsd_intercept = 1,
+                                      priormean_slope = 0.0,
+                                      priorsd_slope = 0.4,
+                                      prior_rho_min = 1,
+                                      prior_rho_prob = 0.01,
+                                      prior_sigma_max = 0.1,
+                                      prior_sigma_prob = 0.01,
+                                      prior_iideffect_sd_max = 0.01,
+                                      prior_iideffect_sd_prob = 0.01))
   
   objects <- setup_objects(result)
   
@@ -224,7 +250,19 @@ test_that('Check that predict_single_raster works', {
   skip_if_not_installed('INLA')
   skip_on_cran()
   
-  result <- disag_model(test_data, iterations = 100)
+  result <- disag_model(test_data, iterations = 100,
+                        iid = TRUE,
+                        field = TRUE,
+                        priors = list(priormean_intercept = 0,
+                                      priorsd_intercept = 1,
+                                      priormean_slope = 0.0,
+                                      priorsd_slope = 0.4,
+                                      prior_rho_min = 1,
+                                      prior_rho_prob = 0.01,
+                                      prior_sigma_max = 0.1,
+                                      prior_sigma_prob = 0.01,
+                                      prior_iideffect_sd_max = 0.01,
+                                      prior_iideffect_sd_prob = 0.01))
   
   objects <- setup_objects(result)
   
