@@ -203,7 +203,7 @@ test_that('Check that setup_objects works', {
   skip_on_cran()
   
   result <- disag_model(test_data, iterations = 100,
-                        iid = FALSE,
+                        iid = TRUE,
                         field = TRUE,
                         priors = list(priormean_intercept = 0,
                                       priorsd_intercept = 1,
