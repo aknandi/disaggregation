@@ -132,7 +132,6 @@ test_that("Check predict.disag_model function works with newdata", {
   skip_on_cran()
   
   result <- disag_model(test_data, field = FALSE, iid = TRUE, iterations = 100,
-                        iid = TRUE,
                         field = TRUE,
                         priors = list(priormean_intercept = 0,
                                       priorsd_intercept = 1,
