@@ -42,6 +42,8 @@ test_that("Check predict.disag_model function works as expected", {
   result <- disag_model(test_data, iterations = 1000,
                         iid = TRUE,
                         field = TRUE,
+                        family = 'poisson',
+                        link = 'log',
                         priors = list(priormean_intercept = 0,
                                       priorsd_intercept = 0.1,
                                       priormean_slope = 0.0,
