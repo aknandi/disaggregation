@@ -46,11 +46,11 @@ test_that("Check predict.disag_model function works as expected", {
                                       priorsd_intercept = 1,
                                       priormean_slope = 0.0,
                                       priorsd_slope = 0.4,
-                                      prior_rho_min = 1,
+                                      prior_rho_min = 0.1,
                                       prior_rho_prob = 0.01,
                                       prior_sigma_max = 0.1,
                                       prior_sigma_prob = 0.01,
-                                      prior_iideffect_sd_max = 0.01,
+                                      prior_iideffect_sd_max = 0.0001,
                                       prior_iideffect_sd_prob = 0.01))
 
   pred2 <- predict(result)
