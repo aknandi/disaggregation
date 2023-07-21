@@ -65,11 +65,23 @@ plot.disag_model <- function(x, ...){
   posteriors <- as.data.frame(summary(x$sd_out, select = 'fixed'))
   posteriors <- dplyr::mutate(posteriors, name = rownames(posteriors))
   names(posteriors) <- c('mean', 'sd', 'parameter')
-
+  posteriors$fixed <- grepl('slope', posteriors$parameter)
+  posteriors$type <- ifelse(posteriors$fixed, 'Slope', 'Other')
+  
+  # Check name lengths match before substituting.
+  lengths_match <- raster::nlayers(x$data$covariate_rasters) == sum(posteriors$fixed)
+  if(lengths_match){
+    posteriors$parameter[grepl('slope', posteriors$parameter)] <- names(x$data$covariate_rasters)
+  }
+  
   fixedeffects <- ggplot() + 
-    geom_errorbar(posteriors, mapping = aes(x = parameter, ymin = mean - sd, ymax = mean + sd), width = 0.2, color = "blue") + 
+    geom_errorbar(posteriors, mapping = aes(x = parameter, ymin = mean - sd, 
+                                            ymax = mean + sd), 
+                  width = 0.2, color = "blue") + 
     geom_point(posteriors, mapping = aes(x = parameter, y = mean)) + 
-    ggtitle("Fixed effects")
+    facet_wrap( ~ type , scales = 'free') + 
+    coord_flip() +
+    ggtitle("Parameters (excluding random effects)")
   
   report <- x$obj$report()
   
