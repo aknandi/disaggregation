@@ -206,20 +206,22 @@ plot_mesh <- function(x, main = '', col = 'blue', lwd = 0.5, linecol = 'darkgrey
   
   segments <- rbind(segments, innerouter)
   
-  
+  #size = .data$type
   p <- ggplot2::ggplot(data = d, 
                        ggplot2::aes(.data$x, .data$y, 
-                                           colour = .data$type, 
-                                           size = .data$type)) +
+                                           colour = .data$type)) +
     ggplot2::geom_segment(data = segments, 
-                          ggplot2::aes(x = .data$x1, y = .data$y1, xend = .data$x2, yend = .data$y2)) +
-    ggplot2::geom_point() +
+                          ggplot2::aes(x = .data$x1, y = .data$y1, 
+                                       xend = .data$x2, yend = .data$y2,
+                                       linewidth = .data$type)) +
+    ggplot2::geom_point(aes(size = .data$type)) +
     ggplot2::theme_minimal() +
     ggplot2::theme(legend.position = 'none')
   #stroke
   p <- p +
     ggplot2::scale_colour_manual(values = c(col, linecol, 'black', 'black', 'black'), drop = FALSE) +
     ggplot2::scale_size_manual(values = c(size, lwd, 1.3, 1.3, 0), drop = FALSE) +
+    ggplot2::scale_linewidth_manual(values = c(size, lwd, 1.3, 1.3, 0), drop = FALSE) +
     ggtitle(main)
   
   return(invisible(p))
