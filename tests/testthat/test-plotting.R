@@ -106,7 +106,7 @@ test_that("Check plot.disag_prediction function works as expected", {
   skip_on_cran()
   
   
-  result <- disag_model(test_data, iterations = 1000,
+  fit_result <- disag_model(test_data, iterations = 1000,
                         iid = TRUE,
                         field = TRUE,
                         family = 'poisson',
