@@ -105,8 +105,22 @@ test_that("Check plot.disag_prediction function works as expected", {
   skip_if_not_installed('INLA')
   skip_on_cran()
   
-  fit_result <- disag_model(test_data, iterations = 100)
   
+  result <- disag_model(test_data, iterations = 1000,
+                        iid = TRUE,
+                        field = TRUE,
+                        family = 'poisson',
+                        link = 'log',
+                        priors = list(priormean_intercept = 0,
+                                      priorsd_intercept = 0.1,
+                                      priormean_slope = 0.0,
+                                      priorsd_slope = 0.1,
+                                      prior_rho_min = 5,
+                                      prior_rho_prob = 0.01,
+                                      prior_sigma_max = 0.1,
+                                      prior_sigma_prob = 0.01,
+                                      prior_iideffect_sd_max = 0.0001,
+                                      prior_iideffect_sd_prob = 0.01))
   pred <- predict(fit_result)
   p <- plot(pred)
   
