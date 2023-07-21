@@ -334,7 +334,7 @@ make_model_object <- function(data,
   }
   
   if(family == 'gaussian' & iid) {
-    warning('You are using both a gaussian likeihood and an iid effect. Using both of these is redundant as they are 
+    warning('You are using both a gaussian likelihood and an iid effect. Using both of these is redundant as they are 
             having the same effect on the model. Consider setting iid = FALSE.')
   }
   
