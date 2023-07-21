@@ -208,11 +208,11 @@ plot_mesh <- function(x, main = '', col = 'blue', lwd = 0.5, linecol = 'darkgrey
   
   
   p <- ggplot2::ggplot(data = d, 
-                       ggplot2::aes_string('x', 'y', 
-                                           colour = 'type', 
-                                           size = 'type')) +
+                       ggplot2::aes(.data$x, .data$y, 
+                                           colour = .data$type, 
+                                           size = .data$type)) +
     ggplot2::geom_segment(data = segments, 
-                          ggplot2::aes_string(x = 'x1', y = 'y1', xend = 'x2', yend = 'y2')) +
+                          ggplot2::aes(x = .data$x1, y = .data$y1, xend = .data$x2, yend = .data$y2)) +
     ggplot2::geom_point() +
     ggplot2::theme_minimal() +
     ggplot2::theme(legend.position = 'none')
