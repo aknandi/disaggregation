@@ -99,7 +99,17 @@ test_that("Check summary.disag_predictions function works as expected", {
   skip_if_not_installed('INLA')
   skip_on_cran()
   
-  result <- disag_model(test_data, iid = FALSE, iterations = 2)
+  result <- disag_model(test_data, iid = FALSE, iterations = 100,
+                        list(priormean_intercept = 0,
+                             priorsd_intercept = 0.1,
+                             priormean_slope = 0.0,
+                             priorsd_slope = 0.1,
+                             prior_rho_min = 5,
+                             prior_rho_prob = 0.01,
+                             prior_sigma_max = 0.1,
+                             prior_sigma_prob = 0.01,
+                             prior_iideffect_sd_max = 0.0001,
+                             prior_iideffect_sd_prob = 0.01))
   
   pred <- predict(result)
   
@@ -119,7 +129,17 @@ test_that("Check print.disag_predictions function works as expected", {
   skip_if_not_installed('INLA')
   skip_on_cran()
   
-  result <- disag_model(test_data, iid = FALSE, iterations = 2)
+  result <- disag_model(test_data, iid = FALSE, iterations = 100,
+                        list(priormean_intercept = 0,
+                             priorsd_intercept = 0.1,
+                             priormean_slope = 0.0,
+                             priorsd_slope = 0.1,
+                             prior_rho_min = 5,
+                             prior_rho_prob = 0.01,
+                             prior_sigma_max = 0.1,
+                             prior_sigma_prob = 0.01,
+                             prior_iideffect_sd_max = 0.0001,
+                             prior_iideffect_sd_prob = 0.01))
   
   pred <- predict(result)
   
