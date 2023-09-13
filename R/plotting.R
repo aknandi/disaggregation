@@ -2,7 +2,6 @@
 #'
 #' Plotting function for class \emph{disag_data} (the input data for disaggregation).
 #'
->>>>>>> Fix plot.disag_data
 #' Produces three plots: polygon response data, covariate rasters and INLA mesh.
 #'
 #' @param x Object of class \emph{disag_data} to be plotted.
@@ -28,7 +27,7 @@ plot.disag_data <- function(x, which = c(1,2,3), ...) {
 
   if(2 %in% which) {
     stopifnot(inherits(x$covariate_rasters, c('SpatRaster')))
-    plots$covariates <- sp::spplot(x$covariate_rasters)
+    plots$covariates <- plot(x$covariate_rasters)
     titles <- c(titles, 'Covariate rasters')
   }
 
@@ -70,7 +69,7 @@ plot.disag_model <- function(x, ...){
   posteriors$type <- ifelse(posteriors$fixed, 'Slope', 'Other')
 
   # Check name lengths match before substituting.
-  lengths_match <- raster::nlayers(x$data$covariate_rasters) == sum(posteriors$fixed)
+  lengths_match <- terra::nlyr(x$data$covariate_rasters) == sum(posteriors$fixed)
   if(lengths_match){
     posteriors$parameter[grepl('slope', posteriors$parameter)] <- names(x$data$covariate_rasters)
   }
@@ -133,10 +132,10 @@ plot.disag_model <- function(x, ...){
 
 plot.disag_prediction <- function(x, ...) {
 
-  rasters_to_plot <- raster::stack(x$mean_prediction$prediction, x$uncertainty_prediction$predictions_ci)
+  rasters_to_plot <- terra::rast(list(x$mean_prediction$prediction, x$uncertainty_prediction$predictions_ci))
   names(rasters_to_plot) <- c('mean prediction', 'lower CI', 'upper CI')
 
-  plots <- sp::spplot(rasters_to_plot)
+  plots <- plot(rasters_to_plot)
 
   print(plots)
 
@@ -162,7 +161,6 @@ plot_polygon_data <- function(x, names) {
 
   area_id <- long <- lat <- group <- response <- NULL
   stopifnot(inherits(shp, 'sf'))
-
 
   shp <- dplyr::mutate(shp, area_id = as.character(area_id))
 

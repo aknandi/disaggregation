@@ -68,8 +68,6 @@
 #' response_df <- data.frame(area_id = 1:100, response = runif(100, min = 0, max = 10))
 #' spdf <- sf::st_sf(response_df,geometry=polys)
 #'
-#' plot(spdf)
-#'
 #' r <- terra::rast(nrow=20,ncol=20)
 #' terra::ext(r) <- terra::ext(spdf)
 #' r[] <- sapply(1:terra::ncell(r), function(x) rnorm(1, ifelse(x %% 20 != 0, x %% 20, 20), 3))
@@ -78,6 +76,7 @@
 #' terra::ext(r2) <- terra::ext(spdf)
 #' r2[] <- sapply(1:terra::ncell(r), function(x) rnorm(1, ceiling(x/10), 3))
 #' cov_rasters <- c(r, r2)
+#'
 #' test_data <- prepare_data(x = spdf,
 #'                           covariate_rasters = cov_rasters)
 #' }
@@ -129,7 +128,6 @@ prepare_data <- function(x,
 
 
   covariate_rasters <- c(covariate_rasters, aggregation_raster)
-  #covariate_data <- parallelExtract(covariate_rasters, x, fun = NULL, id = id_var)
   covariate_data <- terra::extract(covariate_rasters, x, cells=TRUE, na.rm=TRUE, ID=TRUE)
   names(covariate_data)[1] <- id_var
 

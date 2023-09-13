@@ -15,17 +15,18 @@
 #'
 #' @export
 #' @examples {
-#'  polygons <- list()
-#'  for(i in 1:100) {
-#'    row <- ceiling(i/10)
-#'    col <- ifelse(i %% 10 != 0, i %% 10, 10)
-#'    xmin = 2*(col - 1); xmax = 2*col; ymin = 2*(row - 1); ymax = 2*row
-#'    polygons[[i]] <- rbind(c(xmin, ymax), c(xmax,ymax), c(xmax, ymin), c(xmin,ymin))
-#'  }
+#' polygons <- list()
+#' for(i in 1:100) {
+#'   row <- ceiling(i/10)
+#'   col <- ifelse(i %% 10 != 0, i %% 10, 10)
+#'   xmin = 2*(col - 1); xmax = 2*col; ymin = 2*(row - 1); ymax = 2*row
+#'   polygons[[i]] <- list(cbind(c(xmin, xmax, xmax, xmin, xmin),
+#'                               c(ymax, ymax, ymin, ymin, ymax)))
+#' }
 #'
-#'  polys <- do.call(raster::spPolygons, polygons)
-#'  response_df <- data.frame(area_id = 1:100, response = runif(100, min = 0, max = 10))
-#'  spdf <- sp::SpatialPolygonsDataFrame(polys, response_df)
+#' polys <- lapply(polygons,sf::st_polygon)
+#' response_df <- data.frame(area_id = 1:100, response = runif(100, min = 0, max = 10))
+#' spdf <- sf::st_sf(response_df,geometry=polys)
 #'
 #'  getPolygonData(spdf, id_var = 'area_id', response_var = 'response')
 #' }
@@ -49,13 +50,13 @@ getPolygonData <- function(shape, id_var = 'area_id', response_var = 'response',
 
 #' Get a RasterStack of covariates from a folder containing .tif files
 #'
-#' Looks in a specified folder for raster files. Returns a RasterStack of the rasters cropped to the extent specified by the shape parameter.
+#' Looks in a specified folder for raster files. Returns a multi-layered SpatRaster of the rasters cropped to the extent specified by the shape parameter.
 #'
 #' @param directory Filepath to the directory containing the rasters.
 #' @param file_pattern Pattern the filenames must match. Default is all files ending in .tif .
 #' @param shape An object with an extent that the rasters will be cropped to.
 #'
-#' @return A RasterStack of the raster files in the directory
+#' @return A multi-layered SpatRaster of the raster files in the directory
 #'
 #' @export
 #' @examples
@@ -71,10 +72,11 @@ getCovariateRasters <- function(directory, file_pattern = '.tif$', shape) {
   covariate_files <- list.files(directory, pattern = file_pattern, full.names = TRUE)
   stopifnot(length(covariate_files) != 0)
 
-  covariate_rasters <- lapply(covariate_files, function(x) raster::raster(x))
-  covariate_stack <- raster::stack(covariate_rasters)
+  covariate_rasters <- lapply(covariate_files, function(x) terra::rast(x))
+  covariate_stack <- terra::rast(covariate_rasters)
 
-  covariate_stack <- raster::crop(covariate_stack, shape)
+  covariate_stack <- terra::crop(covariate_stack, shape)
+  covariate_stack <- terra::mask(covariate_stack, shape)
 
   return(covariate_stack)
 }

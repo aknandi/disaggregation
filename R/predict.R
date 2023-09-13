@@ -185,10 +185,12 @@ predict_uncertainty <- function(model_output, newdata = NULL, predict_iid = FALS
     predictions[[r]] <- prediction_result$prediction
   }
 
-  predictions <- raster::stack(predictions)
+  predictions <- terra::rast(predictions)
 
   probs <- c((1 - CI) / 2, 1 - (1 - CI) / 2)
-  predictions_ci <- raster::calc(predictions, function(x) stats::quantile(x, probs = probs, na.rm = TRUE))
+  predictions_ci <- terra::app(predictions, function(x) stats::quantile(x, probs = probs, na.rm = TRUE))
+
+
   names(predictions_ci) <- c('lower CI', 'upper CI')
 
   uncertainty <- list(realisations = predictions,
@@ -208,9 +210,9 @@ predict_uncertainty <- function(model_output, newdata = NULL, predict_iid = FALS
 getCoords <- function(data) {
 
   points_raster <- data$covariate_rasters[[1]]
-  points_raster[is.na(points_raster)] <- -9999
-  raster_pts <- raster::rasterToPoints(points_raster, spatial = TRUE)
-  coords <- raster_pts@coords
+  points_raster[is.na(terra::values(points_raster, mat = FALSE))] <- -9999
+  raster_pts <- terra::as.points(points_raster)
+  coords <- terra::crds(raster_pts)
 
     return(coords)
 }
