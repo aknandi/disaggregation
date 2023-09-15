@@ -358,7 +358,7 @@ make_model_object <- function(data,
   }
 
   # Construct sensible default field hyperpriors
-  limits <- sf::st_bbox(data$x)
+  limits <- sf::st_bbox(data$polygon_shapefile)
   hypotenuse <- sqrt((limits$xmax - limits$xmin)^2 + (limits$ymax - limits$ymin)^2)
   prior_rho <- hypotenuse/3
 
