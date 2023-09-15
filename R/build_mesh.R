@@ -64,7 +64,7 @@ build_mesh <- function(shapes, mesh.args = NULL) {
   pars[names(mesh.args)] <- mesh.args
 
   #outline <- maptools::unionSpatialPolygons(shapes_old, IDs = rep(1, length(shapes_old)))
-  outline <- st_sf(sf::st_union(sf::st_convex_hull(shapes)))
+  outline <- sf::st_sf(sf::st_union(sf::st_convex_hull(shapes)))
 
   coords <- sf::st_coordinates(outline)[, c('X', 'Y')]
 

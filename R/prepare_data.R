@@ -85,7 +85,7 @@
 #'
 #'
 
-prepare_data <- function(x,
+prepare_data <- function(polygon_shapefile,
                          covariate_rasters,
                          aggregation_raster = NULL,
                          id_var = 'area_id',
@@ -96,7 +96,7 @@ prepare_data <- function(x,
                          makeMesh = TRUE,
                          ncores = 2) {
 
-  stopifnot(inherits(x, 'sf'))
+  stopifnot(inherits(polygon_shapefile, 'sf'))
   stopifnot(inherits(covariate_rasters, 'SpatRaster'))
   if(!is.null(aggregation_raster)) stopifnot(inherits(aggregation_raster, 'SpatRaster'))
   stopifnot(inherits(id_var, 'character'))
@@ -104,16 +104,16 @@ prepare_data <- function(x,
   if(!is.null(mesh.args)) stopifnot(inherits(mesh.args, 'list'))
 
   # Check for NAs in response data
-  na_rows <- is.na(x[, response_var, drop = TRUE])
+  na_rows <- is.na(polygon_shapefile[, response_var, drop = TRUE])
   if(sum(na_rows) != 0) {
     if(na.action) {
-      x <- x[!na_rows, ]
+      polygon_shapefile <- polygon_shapefile[!na_rows, ]
     } else {
       stop('There are NAs in the response data. Please deal with these, or set na.action = TRUE')
     }
   }
 
-  polygon_data <- getPolygonData(x, id_var, response_var, sample_size_var)
+  polygon_data <- getPolygonData(polygon_shapefile, id_var, response_var, sample_size_var)
 
 
   # Save raster layer names so we can reassign it to make sure names don't change.
@@ -128,7 +128,7 @@ prepare_data <- function(x,
 
 
   covariate_rasters <- c(covariate_rasters, aggregation_raster)
-  covariate_data <- terra::extract(covariate_rasters, x, cells=TRUE, na.rm=TRUE, ID=TRUE)
+  covariate_data <- terra::extract(covariate_rasters, polygon_shapefile, cells=TRUE, na.rm=TRUE, ID=TRUE)
   names(covariate_data)[1] <- id_var
 
   # Remove the aggregation raster
@@ -136,8 +136,9 @@ prepare_data <- function(x,
 
   names(covariate_rasters) <- cov_names
 
-  aggregation_pixels <- as.numeric(covariate_data[ , terra::ncol(covariate_data)])
-  covariate_data <- covariate_data[, -terra::ncol(covariate_data)]
+  agg_filter <- names(covariate_data) %in% c('aggregation_raster')
+  aggregation_pixels <- as.numeric(covariate_data[ , agg_filter])
+  covariate_data <- covariate_data[, !agg_filter]
 
   # Check for NAs in population data
   if(sum(is.na(aggregation_pixels)) != 0) {
@@ -151,13 +152,14 @@ prepare_data <- function(x,
   # Check for NAs in covariate data
   if(sum(is.na(covariate_data)) != 0) {
     if(na.action) {
-      covariate_data[-c(1:2)] <- sapply(covariate_data[-c(1:2)], function(x) { x[is.na(x)] <- stats::median(x, na.rm = T); return(x) })
+      cov_filter <- !(names(covariate_data) %in% c(id_var,'cell'))
+      covariate_data[ , cov_filter] <- sapply(covariate_data[ , cov_filter], function(x) { x[is.na(x)] <- stats::median(x, na.rm = T); return(x) })
     } else {
       stop('There are NAs in the covariate rasters within polygons. Please deal with these, or set na.action = TRUE')
     }
   }
 
-  coordsForFit <- extractCoordsForMesh(covariate_rasters, selectIds = covariate_data$cellid)
+  coordsForFit <- extractCoordsForMesh(covariate_rasters, selectIds = covariate_data$cell)
 
   coordsForPrediction <- extractCoordsForMesh(covariate_rasters)
 
@@ -168,14 +170,14 @@ prepare_data <- function(x,
       mesh <- NULL
       message("Cannot build mesh as INLA is not installed. If you need a spatial field in your model, you must install INLA.")
     } else {
-      mesh <- build_mesh(x, mesh.args)
+      mesh <- build_mesh(polygon_shapefile, mesh.args)
     }
   } else {
     mesh <- NULL
     message("A mesh is not being built. You will not be able to run a spatial model without a mesh.")
   }
 
-  disag_data <- list(x = x,
+  disag_data <- list(polygon_shapefile = polygon_shapefile,
                      shapefile_names = list(id_var = id_var, response_var = response_var),
                      covariate_rasters = covariate_rasters,
                      polygon_data = polygon_data,
@@ -223,7 +225,7 @@ prepare_data <- function(x,
 #' @export
 
 
-as.disag_data <- function(x,
+as.disag_data <- function(polygon_shapefile,
                           shapefile_names,
                           covariate_rasters,
                           polygon_data,
@@ -234,9 +236,9 @@ as.disag_data <- function(x,
                           startendindex,
                           mesh = NULL) {
 
-  stopifnot(inherits(x, 'SpatialPolygonsDataFrame'))
+  stopifnot(inherits(polygon_shapefile, 'sf'))
   stopifnot(inherits(shapefile_names, 'list'))
-  stopifnot(inherits(covariate_rasters, c('RasterBrick', 'RasterStack')))
+  stopifnot(inherits(covariate_rasters, 'SpatRaster'))
   stopifnot(inherits(polygon_data, 'data.frame'))
   stopifnot(inherits(covariate_data, 'data.frame'))
   stopifnot(inherits(aggregation_pixels, 'numeric'))
@@ -247,7 +249,7 @@ as.disag_data <- function(x,
     stopifnot(inherits(mesh, 'inla.mesh'))
   }
 
-  disag_data <- list(x = x,
+  disag_data <- list(polygon_shapefile = polygon_shapefile,
                      shapefile_names = shapefile_names,
                      covariate_rasters = covariate_rasters,
                      polygon_data = polygon_data,
