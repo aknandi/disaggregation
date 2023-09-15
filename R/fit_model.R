@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 #' Fit the disaggregation model
 #'
 #' \emph{fit_model} function takes a \emph{disag_data} object created by

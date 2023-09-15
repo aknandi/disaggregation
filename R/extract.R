@@ -26,7 +26,7 @@
 #'
 #' polys <- lapply(polygons,sf::st_polygon)
 #' response_df <- data.frame(area_id = 1:100, response = runif(100, min = 0, max = 10))
-#' spdf <- sf::st_sf(response_df,geometry=polys)
+#' spdf <- sf::st_sf(response_df, geometry = polys)
 #'
 #'  getPolygonData(spdf, id_var = 'area_id', response_var = 'response')
 #' }
@@ -76,7 +76,7 @@ getCovariateRasters <- function(directory, file_pattern = '.tif$', shape) {
   covariate_stack <- terra::rast(covariate_rasters)
 
   covariate_stack <- terra::crop(covariate_stack, shape)
-  covariate_stack <- terra::mask(covariate_stack, shape)
+  #covariate_stack <- terra::mask(covariate_stack, shape)
 
   return(covariate_stack)
 }

@@ -45,4 +45,3 @@ LinkingTo:
     RcppEigen
 SystemRequirements: GNU make
 VignetteBuilder: knitr
->>>>>>> Change imports in description to match new backends.
