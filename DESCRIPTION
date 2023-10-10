@@ -19,7 +19,6 @@ LazyData: true
 RoxygenNote: 7.2.3
 Imports: 
     foreach,
-    sp,
     splancs,
     Matrix,
     stats,

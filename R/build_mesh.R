@@ -29,11 +29,11 @@
 #'   row <- ceiling(i/10)
 #'   col <- ifelse(i %% 10 != 0, i %% 10, 10)
 #'   xmin = 2*(col - 1); xmax = 2*col; ymin = 2*(row - 1); ymax = 2*row
-#'   polygons[[i]] <- rbind(c(xmin, ymax), c(xmax,ymax), c(xmax, ymin),
-#'                          c(xmin,ymin), c(xmin, ymax))
+#' polygons[[i]] <- list(cbind(c(xmin, xmax, xmax, xmin, xmin),
+#'                             c(ymax, ymax, ymin, ymin, ymax)))
 #' }
 #'
-#' polys <- sf::st_sfc(sf::st_polygon(polygons))
+#' polys <- lapply(polygons, sf::st_polygon)
 #' response_df <- data.frame(area_id = 1:100,
 #'                           response = runif(100, min = 0, max = 10))
 #' spdf <- sf::st_sf(polys, response_df)

@@ -72,32 +72,37 @@
 #'
 #' @examples
 #' \dontrun{
-#'  polygons <- list()
-#'  for(i in 1:100) {
-#'   row <- ceiling(i/10)
-#'   col <- ifelse(i %% 10 != 0, i %% 10, 10)
+#' polygons <- list()
+#' n_polygon_per_side <- 10
+#' n_polygons <- n_polygon_per_side * n_polygon_per_side
+#' n_pixels_per_side <- n_polygon_per_side * 2
+#'
+#' for(i in 1:n_polygons) {
+#'   row <- ceiling(i/n_polygon_per_side)
+#'   col <- ifelse(i %% n_polygon_per_side != 0, i %% n_polygon_per_side, n_polygon_per_side)
 #'   xmin = 2*(col - 1); xmax = 2*col; ymin = 2*(row - 1); ymax = 2*row
-#'   polygons[[i]] <- rbind(c(xmin, ymax), c(xmax,ymax), c(xmax, ymin), c(xmin,ymin))
-#'  }
+#'   polygons[[i]] <- list(cbind(c(xmin, xmax, xmax, xmin, xmin),
+#'                               c(ymax, ymax, ymin, ymin, ymax)))
+#' }
 #'
-#'  polys <- do.call(raster::spPolygons, polygons)
-#'  response_df <- data.frame(area_id = 1:100, response = runif(100, min = 0, max = 10))
-#'  spdf <- sp::SpatialPolygonsDataFrame(polys, response_df)
+#' polys <- lapply(polygons,sf::st_polygon)
+#' N <- floor(runif(n_polygons, min = 1, max = 100))
+#' response_df <- data.frame(area_id = 1:n_polygons, response = runif(n_polygons, min = 0, max = 1000))
 #'
-#'  r <- raster::raster(ncol=20, nrow=20)
-#'  r <- raster::setExtent(r, raster::extent(spdf))
-#'  r[] <- sapply(1:raster::ncell(r), function(x) rnorm(1, ifelse(x %% 20 != 0, x %% 20, 20), 3))
-#'  r2 <- raster::raster(ncol=20, nrow=20)
-#'  r2 <- raster::setExtent(r2, raster::extent(spdf))
-#'  r2[] <- sapply(1:raster::ncell(r), function(x) rnorm(1, ceiling(x/10), 3))
-#'  cov_rasters <- raster::stack(r, r2)
+#' spdf <- sf::st_sf(response_df, geometry = polys)
 #'
-#'  cl <- parallel::makeCluster(2)
-#'  doParallel::registerDoParallel(cl)
-#'  test_data <- prepare_data(polygon_shapefile = spdf,
-#'                            covariate_rasters = cov_rasters)
-#'  parallel::stopCluster(cl)
-#'  foreach::registerDoSEQ()
+#' # Create raster stack
+#' r <- terra::rast(ncol=n_pixels_per_side, nrow=n_pixels_per_side)
+#' terra::ext(r) <- terra::ext(spdf)
+#' r[] <- sapply(1:terra::ncell(r), function(x) rnorm(1, ifelse(x %% n_pixels_per_side != 0, x %% n_pixels_per_side, n_pixels_per_side), 3))
+#' r2 <- terra::rast(ncol=n_pixels_per_side, nrow=n_pixels_per_side)
+#' terra::ext(r2) <- terra::ext(spdf)
+#' r2[] <- sapply(1:terra::ncell(r), function(x) rnorm(1, ceiling(x/n_pixels_per_side), 3))
+#' cov_stack <- c(r, r2)
+#' names(cov_stack) <- c('layer1', 'layer2')
+#'
+#' test_data <- prepare_data(polygon_shapefile = spdf,
+#'                           covariate_rasters = cov_stack)
 #'
 #'  result <- fit_model(test_data, iterations = 2)
 #'  }
@@ -264,32 +269,37 @@ disag_model <- function(data,
 #'
 #' @examples
 #' \dontrun{
-#'  polygons <- list()
-#'  for(i in 1:100) {
-#'   row <- ceiling(i/10)
-#'   col <- ifelse(i %% 10 != 0, i %% 10, 10)
+#' polygons <- list()
+#' n_polygon_per_side <- 10
+#' n_polygons <- n_polygon_per_side * n_polygon_per_side
+#' n_pixels_per_side <- n_polygon_per_side * 2
+#'
+#' for(i in 1:n_polygons) {
+#'   row <- ceiling(i/n_polygon_per_side)
+#'   col <- ifelse(i %% n_polygon_per_side != 0, i %% n_polygon_per_side, n_polygon_per_side)
 #'   xmin = 2*(col - 1); xmax = 2*col; ymin = 2*(row - 1); ymax = 2*row
-#'   polygons[[i]] <- rbind(c(xmin, ymax), c(xmax,ymax), c(xmax, ymin), c(xmin,ymin))
-#'  }
+#'   polygons[[i]] <- list(cbind(c(xmin, xmax, xmax, xmin, xmin),
+#'                               c(ymax, ymax, ymin, ymin, ymax)))
+#' }
 #'
-#'  polys <- do.call(raster::spPolygons, polygons)
-#'  response_df <- data.frame(area_id = 1:100, response = runif(100, min = 0, max = 10))
-#'  spdf <- sp::SpatialPolygonsDataFrame(polys, response_df)
+#' polys <- lapply(polygons,sf::st_polygon)
+#' N <- floor(runif(n_polygons, min = 1, max = 100))
+#' response_df <- data.frame(area_id = 1:n_polygons, response = runif(n_polygons, min = 0, max = 1000))
 #'
-#'  r <- raster::raster(ncol=20, nrow=20)
-#'  r <- raster::setExtent(r, raster::extent(spdf))
-#'  r[] <- sapply(1:raster::ncell(r), function(x) rnorm(1, ifelse(x %% 20 != 0, x %% 20, 20), 3))
-#'  r2 <- raster::raster(ncol=20, nrow=20)
-#'  r2 <- raster::setExtent(r2, raster::extent(spdf))
-#'  r2[] <- sapply(1:raster::ncell(r), function(x) rnorm(1, ceiling(x/10), 3))
-#'  cov_rasters <- raster::stack(r, r2)
+#' spdf <- sf::st_sf(response_df, geometry = polys)
 #'
-#'  cl <- parallel::makeCluster(2)
-#'  doParallel::registerDoParallel(cl)
-#'  test_data <- prepare_data(polygon_shapefile = spdf,
-#'                            covariate_rasters = cov_rasters)
-#'  parallel::stopCluster(cl)
-#'  foreach::registerDoSEQ()
+#' # Create raster stack
+#' r <- terra::rast(ncol=n_pixels_per_side, nrow=n_pixels_per_side)
+#' terra::ext(r) <- terra::ext(spdf)
+#' r[] <- sapply(1:terra::ncell(r), function(x) rnorm(1, ifelse(x %% n_pixels_per_side != 0, x %% n_pixels_per_side, n_pixels_per_side), 3))
+#' r2 <- terra::rast(ncol=n_pixels_per_side, nrow=n_pixels_per_side)
+#' terra::ext(r2) <- terra::ext(spdf)
+#' r2[] <- sapply(1:terra::ncell(r), function(x) rnorm(1, ceiling(x/n_pixels_per_side), 3))
+#' cov_stack <- c(r, r2)
+#' names(cov_stack) <- c('layer1', 'layer2')
+#'
+#' test_data <- prepare_data(polygon_shapefile = spdf,
+#'                           covariate_rasters = cov_stack)
 #'
 #'  result <- make_model_object(test_data)
 #'  }
