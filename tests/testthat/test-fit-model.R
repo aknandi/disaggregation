@@ -1,51 +1,8 @@
 
 context("Fitting model")
 
-polygons <- list()
-n_polygon_per_side <- 10
-n_polygons <- n_polygon_per_side * n_polygon_per_side
-n_pixels_per_side <- n_polygon_per_side * 2
-
-for(i in 1:n_polygons) {
-  row <- ceiling(i/n_polygon_per_side)
-  col <- ifelse(i %% n_polygon_per_side != 0, i %% n_polygon_per_side, n_polygon_per_side)
-  xmin = 2*(col - 1); xmax = 2*col; ymin = 2*(row - 1); ymax = 2*row
-  polygons[[i]] <- list(cbind(c(xmin, xmax, xmax, xmin, xmin),
-                              c(ymax, ymax, ymin, ymin, ymax)))
-}
-
-polys <- lapply(polygons,sf::st_polygon)
-N <- floor(runif(n_polygons, min = 1, max = 100))
-response_df <- data.frame(area_id = 1:n_polygons, response = runif(n_polygons, min = 0, max = 1000))
-response_na_df <- data.frame(area_id = 1:n_polygons, response = c(runif(n_polygons - 1, min = 0, max = 1000), NA))
-response_binom_df <- data.frame(area_id = 1:n_polygons, response = N*runif(n_polygons, min = 0, max = 1), sample_size = N)
-
-spdf <- sf::st_sf(response_df, geometry = polys)
-spdf_na <- sf::st_sf(response_na_df, geometry = polys)
-spdf_binom <- sf::st_sf(response_binom_df, geometry = polys)
-
-# Create raster stack
-r <- terra::rast(ncol=n_pixels_per_side, nrow=n_pixels_per_side)
-terra::ext(r) <- terra::ext(spdf)
-r[] <- sapply(1:terra::ncell(r), function(x) rnorm(1, ifelse(x %% n_pixels_per_side != 0, x %% n_pixels_per_side, n_pixels_per_side), 3))
-r2 <- terra::rast(ncol=n_pixels_per_side, nrow=n_pixels_per_side)
-terra::ext(r2) <- terra::ext(spdf)
-r2[] <- sapply(1:terra::ncell(r), function(x) rnorm(1, ceiling(x/n_pixels_per_side), 3))
-cov_stack <- c(r, r2)
-
-
-if(identical(Sys.getenv("NOT_CRAN"), "true")) {
-  test_data <- prepare_data(polygon_shapefile = spdf,
-                            covariate_rasters = cov_stack)
-} else {
-  test_data <- prepare_data(polygon_shapefile = spdf,
-                            covariate_rasters = cov_stack,
-                            makeMesh = FALSE)
-}
-
 test_that("disag_model produces errors when expected", {
 
-  skip_if_not_installed('INLA')
   skip_on_cran()
 
   expect_error(disag_model(list()))
@@ -59,7 +16,6 @@ test_that("disag_model produces errors when expected", {
 
 test_that("disag_model behaves as expected", {
 
-  skip_if_not_installed('INLA')
   skip_on_cran()
 
   result <- disag_model(test_data, iterations = 100, iid = FALSE)
@@ -68,7 +24,6 @@ test_that("disag_model behaves as expected", {
   expect_equal(length(result), 5)
   expect_equal(length(result$sd_out$par.fixed), terra::nlyr(test_data$covariate_rasters) + 4)
   expect_equal(unique(names(result$sd_out$par.random)), c("nodemean"))
-
 
 
 })
