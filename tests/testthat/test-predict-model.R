@@ -27,6 +27,8 @@ terra::ext(r2) <- terra::ext(spdf)
 r2[] <- sapply(1:terra::ncell(r), function(x) rnorm(1, ceiling(x/n_pixels_per_side), 3))
 cov_stack <- c(r, r2)
 
+names(cov_stack) <- c('layer1', 'layer2')
+
 if(identical(Sys.getenv("NOT_CRAN"), "true")) {
   test_data <- prepare_data(polygon_shapefile = spdf,
                             covariate_rasters = cov_stack)
@@ -38,7 +40,6 @@ if(identical(Sys.getenv("NOT_CRAN"), "true")) {
 
 test_that("Check predict.disag_model function works as expected", {
 
-  skip_if_not_installed('INLA')
   skip_on_cran()
 
   result <- disag_model(test_data, iterations = 1000,
@@ -132,7 +133,6 @@ test_that("Check predict.disag_model function works as expected", {
 
 test_that("Check predict.disag_model function works with newdata", {
 
-  skip_if_not_installed('INLA')
   skip_on_cran()
 
   result <- disag_model(test_data, field = FALSE, iid = TRUE, iterations = 100,
@@ -148,6 +148,7 @@ test_that("Check predict.disag_model function works with newdata", {
                                       prior_iideffect_sd_prob = 0.01))
 
   newdata <- terra::crop(c(r, r2), c(0, 10, 0, 10))
+  names(newdata) <- c('layer1', 'layer2')
   pred1 <- predict(result)
   pred2 <- predict(result, newdata, predict_iid = TRUE, N = 5)
 
@@ -178,17 +179,18 @@ test_that("Check predict.disag_model function works with newdata", {
 
 test_that('Check that check_newdata works', {
 
-  skip_if_not_installed('INLA')
   skip_on_cran()
 
   result <- disag_model(test_data, field = FALSE, iterations = 100)
 
   newdata <- terra::crop(c(r, r2), c(0, 10, 0, 10))
+  names(newdata) <- c('layer1', 'layer2')
+
   nd1 <- check_newdata(newdata, result)
   expect_is(nd1, 'SpatRaster')
 
   nn <- newdata[[1]]
-  names(nn) <- 'extra_uneeded'
+  names(nn) <- 'extra_unneeded'
   newdata2 <- c(newdata, nn)
   expect_error(check_newdata(newdata2, result), NA)
 
@@ -203,7 +205,6 @@ test_that('Check that check_newdata works', {
 
 test_that('Check that setup_objects works', {
 
-  skip_if_not_installed('INLA')
   skip_on_cran()
 
   result <- disag_model(test_data, iterations = 100,
@@ -229,6 +230,7 @@ test_that('Check that setup_objects works', {
   expect_true(is.null(objects$iid_objects))
 
   newdata <- terra::crop(c(r, r2), c(0, 180, -90, 90))
+  names(newdata) <- c('layer1', 'layer2')
   objects2 <- setup_objects(result, newdata)
 
   expect_is(objects2, 'list')
@@ -249,7 +251,6 @@ test_that('Check that setup_objects works', {
 
 test_that('Check that predict_single_raster works', {
 
-  skip_if_not_installed('INLA')
   skip_on_cran()
 
   result <- disag_model(test_data, iterations = 100,

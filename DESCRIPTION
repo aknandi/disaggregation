@@ -20,8 +20,6 @@ RoxygenNote: 7.2.3
 Imports: 
     foreach,
     sp,
-    parallel,
-    doParallel,
     splancs,
     Matrix,
     stats,
@@ -37,7 +35,6 @@ Imports:
 Additional_repositories: https://inla.r-inla-download.org/R/stable
 Suggests: 
     testthat,
-    INLA,
     knitr,
     rmarkdown,
     SpatialEpi
