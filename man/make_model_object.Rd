@@ -33,7 +33,7 @@ make_model_object(
 The TMB model object returned by \code{\link[TMB]{MakeADFun}}.
 }
 \description{
-\emph{make_model_object} function takes a \emph{disag_data} object created by \code{\link{prepare_data}} 
+\emph{make_model_object} function takes a \emph{disag_data} object created by \code{\link{prepare_data}}
 and creates a TMB model object to be used in fitting.
 }
 \details{
@@ -48,20 +48,20 @@ And then aggregates these predictions to the polygon level using the weighted su
 
 The different likelihood correspond to slightly different models (\eqn{y_j}{yi} is the response count data):
 \itemize{
-  \item Gaussian: 
-   If \eqn{\sigma} is the dispersion of the pixel data, \eqn{\sigma_j}{\sigmaj} is the dispersion of the polygon data, where 
+  \item Gaussian:
+   If \eqn{\sigma} is the dispersion of the pixel data, \eqn{\sigma_j}{\sigmaj} is the dispersion of the polygon data, where
    \eqn{\sigma_j = \sigma \sqrt{\sum agg_i^2} / \sum agg_i }{\sigmaj = \sigma x { \sqrt \sum (aggi ^ 2) } / \sum aggi}
    \deqn{dnorm(y_j/\sum agg_i, rate_j, \sigma_j)}{dnorm(yj / \sum aggi, ratej, \sigmaj)} - predicts incidence rate.
-  \item Binomial: 
+  \item Binomial:
    For a survey in polygon j, \eqn{y_j}{yj} is the number positive and \eqn{N_j}{Nj} is the number tested.
    \deqn{dbinom(y_j, N_j, rate_j)}{dbinom(yj, Nj, ratej)} - predicts prevalence rate.
-  \item Poisson: 
+  \item Poisson:
    \deqn{dpois(y_j, cases_j)}{dpois(yj, casesj)} - predicts incidence count.
 }
 
-Specify priors for the regression parameters, field and iid effect as a single named list. Hyperpriors for the field 
-are given as penalised complexity priors you specify \eqn{\rho_{min}} and \eqn{\rho_{prob}} for the range of the field 
-where \eqn{P(\rho < \rho_{min}) = \rho_{prob}}, and \eqn{\sigma_{min}} and \eqn{\sigma_{prob}} for the variation of the field 
+Specify priors for the regression parameters, field and iid effect as a single named list. Hyperpriors for the field
+are given as penalised complexity priors you specify \eqn{\rho_{min}} and \eqn{\rho_{prob}} for the range of the field
+where \eqn{P(\rho < \rho_{min}) = \rho_{prob}}, and \eqn{\sigma_{min}} and \eqn{\sigma_{prob}} for the variation of the field
 where \eqn{P(\sigma > \sigma_{min}) = \sigma_{prob}}. Also, specify pc priors for the iid effect.
 
 The precise names and default values for these priors are:
@@ -78,8 +78,8 @@ The precise names and default values for these priors are:
 \item prior_iideffect_sd_prob: 0.01
 }
 
-The \emph{family} and \emph{link} arguments are used to specify the likelihood and link function respectively. 
-The likelihood function can be one of \emph{gaussian}, \emph{poisson} or \emph{binomial}. 
+The \emph{family} and \emph{link} arguments are used to specify the likelihood and link function respectively.
+The likelihood function can be one of \emph{gaussian}, \emph{poisson} or \emph{binomial}.
 The link function can be one of \emph{logit}, \emph{log} or \emph{identity}.
 These are specified as strings.
 
@@ -113,12 +113,12 @@ The \emph{silent} argument can be used to publish/supress verbose output. Defaul
 
  cl <- parallel::makeCluster(2)
  doParallel::registerDoParallel(cl)
- test_data <- prepare_data(polygon_shapefile = spdf, 
+ test_data <- prepare_data(polygon_shapefile = spdf,
                            covariate_rasters = cov_rasters)
  parallel::stopCluster(cl)
  foreach::registerDoSEQ()
-                         
+
  result <- make_model_object(test_data)
  }
- 
+
 }

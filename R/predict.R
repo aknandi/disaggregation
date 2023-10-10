@@ -236,7 +236,6 @@ getAmatrix <- function(mesh, coords) {
   return(Amatrix)
 }
 
-
 # Helper to check and sort out new raster data.
 check_newdata <- function(newdata, model_output){
   if(is.null(newdata)) return(NULL)
@@ -288,10 +287,13 @@ setup_objects <- function(model_output, newdata = NULL, predict_iid = FALSE) {
   }
 
   if(predict_iid) {
-    tmp_shp <- model_output$data$x
-    tmp_shp <- dplyr::bind_cols(tmp_shp,
-                                area_id =
-                                  factor(model_output$data$polygon_data$area_id))
+    tmp_shp <- model_output$data$polygon_shapefile
+    #needed to avoid errors in testing
+    if (!("area_id" %in% names(model_output$data$polygon_shapefile))){
+      tmp_shp <- dplyr::bind_cols(tmp_shp,
+                                  area_id =
+                                    factor(model_output$data$polygon_data$area_id))
+    }
     shapefile_raster <- terra::rasterize(tmp_shp,
                                           model_output$data$covariate_rasters,
                                           field = 'area_id')
@@ -330,13 +332,13 @@ predict_single_raster <- function(model_parameters, objects, link_function) {
     field <- (objects$field_objects$Amatrix %*% model_parameters$nodemean)[, 1]
     field_ras <- terra::rast(cbind(objects$field_objects$coords, field),
                              type = 'xyz',
-                             crs = crs(linear_pred))
+                             crs = terra::crs(linear_pred))
     linear_pred <- linear_pred + field_ras
   } else {
     field_ras <- NULL
   }
 
-  if(!is.null(objects$iid_objects)) {
+    if(!is.null(objects$iid_objects)) {
     iid_ras <- objects$iid_objects$shapefile_raster
     iideffect_sd <- 1/sqrt(exp(model_parameters$iideffect_log_tau))
     # todo
@@ -344,22 +346,24 @@ predict_single_raster <- function(model_parameters, objects, link_function) {
       targetvals <- terra::values(objects$iid_objects$shapefile_raster,
                                   dataframe = FALSE, mat = FALSE)
       whichvals <- which(targetvals == objects$iid_objects$shapefile_ids[1, i])
-      values(iid_ras)[whichvals] <-
+      terra::values(iid_ras)[whichvals] <-
         model_parameters$iideffect[i]
-      na_pixels <- which(is.na(values(iid_ras, dataframe = FALSE, mat = FALSE)))
+      na_pixels <- which(is.na(terra::values(iid_ras, dataframe = FALSE, mat = FALSE)))
       na_iid_values <- stats::rnorm(length(na_pixels), 0, iideffect_sd)
-      values(iid_ras)[na_pixels] <- na_iid_values
+      terra::values(iid_ras)[na_pixels] <- na_iid_values
     }
     if(terra::ext(iid_ras) != terra::ext(linear_pred)) {
       # Extent of prediction space is different to the original model. Keep any overlapping iid values but predict to the new extent
       raster_new_extent <- linear_pred
-      values(raster_new_extent) <- NA
-      # iid_ras <- terra::merge(iid_ras, raster_new_extent, ext = terra::ext(raster_new_extent))
+      terra::values(raster_new_extent) <- NA
+      #iid_ras <- terra::merge(iid_ras, raster_new_extent, ext = terra::ext(raster_new_extent))
       # NOt sure why we no longer need the ext argument
+      # SS - added a crop which I think does the same thing
       iid_ras <- terra::merge(iid_ras, raster_new_extent)
-      missing_pixels <- which(is.na(values(iid_ras, dataframe = FALSE, mat = FALSE)))
+      iid_ras <- terra::crop(iid_ras, raster_new_extent)
+      missing_pixels <- which(is.na(terra::values(iid_ras, dataframe = FALSE, mat = FALSE)))
       missing_iid_values <- stats::rnorm(length(missing_pixels), 0, iideffect_sd)
-      values(iid_ras)[missing_pixels] <- missing_iid_values
+      terra::values(iid_ras)[missing_pixels] <- missing_iid_values
     }
     linear_pred <- linear_pred + iid_ras
   } else {

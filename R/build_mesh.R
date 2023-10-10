@@ -63,17 +63,16 @@ build_mesh <- function(shapes, mesh.args = NULL) {
 
   pars[names(mesh.args)] <- mesh.args
 
-  #outline <- maptools::unionSpatialPolygons(shapes_old, IDs = rep(1, length(shapes_old)))
   outline <- sf::st_sf(sf::st_union(sf::st_convex_hull(shapes)))
 
   coords <- sf::st_coordinates(outline)[, c('X', 'Y')]
 
-  outline.hull <- INLA::inla.nonconvex.hull(coords,
+  outline.hull <- fmesher::fm_nonconvex_hull_inla(coords,
                                             convex = pars$convex,
                                             concave = pars$concave,
                                             resolution = pars$resolution)
 
-  mesh <- INLA::inla.mesh.2d(
+  mesh <- fmesher::fm_mesh_2d(
     boundary = outline.hull,
     max.edge = pars$max.edge,
     cut = pars$cut,

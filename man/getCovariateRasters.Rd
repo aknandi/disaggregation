@@ -14,10 +14,10 @@ getCovariateRasters(directory, file_pattern = ".tif$", shape)
 \item{shape}{An object with an extent that the rasters will be cropped to.}
 }
 \value{
-A RasterStack of the raster files in the directory
+A multi-layered SpatRaster of the raster files in the directory
 }
 \description{
-Looks in a specified folder for raster files. Returns a RasterStack of the rasters cropped to the extent specified by the shape parameter.
+Looks in a specified folder for raster files. Returns a multi-layered SpatRaster of the rasters cropped to the extent specified by the shape parameter.
 }
 \examples{
 \dontrun{

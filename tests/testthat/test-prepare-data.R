@@ -17,9 +17,11 @@ for(i in 1:n_polygons) {
 polys <- lapply(polygons,sf::st_polygon)
 N <- floor(runif(n_polygons, min = 1, max = 100))
 response_df <- data.frame(area_id = 1:n_polygons, response = runif(n_polygons, min = 0, max = 1000))
+response_na_df <- data.frame(area_id = 1:n_polygons, response = c(runif(n_polygons - 1, min = 0, max = 1000), NA))
 response_binom_df <- data.frame(area_id = 1:n_polygons, response = N*runif(n_polygons, min = 0, max = 1), sample_size = N)
 
 spdf <- sf::st_sf(response_df, geometry = polys)
+spdf_na <- sf::st_sf(response_na_df, geometry = polys)
 spdf_binom <- sf::st_sf(response_binom_df, geometry = polys)
 
 # Create raster stack

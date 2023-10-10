@@ -30,6 +30,7 @@ Imports:
     ggplot2,
     cowplot,
     sparseMVN,
+    fmesher,
     terra,
     sf,
     utils
