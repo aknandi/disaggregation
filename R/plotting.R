@@ -21,7 +21,7 @@ plot.disag_data <- function(x, which = c(1,2,3), ...) {
   titles <- c()
 
   if(1 %in% which) {
-    plots$polygon <- plot_polygon_data(x$x, x$shapefile_names)
+    plots$polygon <- plot_polygon_data(x$polygon_shapefile, x$shapefile_names)
     titles <- c(titles, 'Polygon response data')
   }
 
@@ -155,7 +155,7 @@ plot.disag_prediction <- function(x, ...) {
 plot_polygon_data <- function(x, names) {
 
   # Rename the response variable for plotting
-  shp <- sf::st_as_sf(x)
+  shp <- x
   shp <- dplyr::rename(shp, 'response' = names$response_var)
   shp <- dplyr::rename(shp, 'area_id' = names$id_var)
 
