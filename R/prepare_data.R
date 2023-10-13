@@ -27,11 +27,11 @@
 #' and sets covariate NAs pixels to the median value for the that covariate.
 #'
 #' @param x sf object containing at least three columns: one with the geometried, one with the id for the polygons (\emph{id_var}) and one with the response count data (\emph{response_var}); for binomial data, i.e survey data, it can also contain a sample size column (\emph{sample_size_var}).
-#' @param covariate_rasters RasterStack of covariate rasters to be used in the model.
-#' @param aggregation_raster Raster to aggregate pixel level predictions to polygon level e.g. population to aggregate prevalence. If this is not supplied a uniform raster will be used.
-#' @param id_var Name of column in SpatialPolygonDataFrame object with the polygon id.
-#' @param response_var Name of column in SpatialPolygonDataFrame object with the response data.
-#' @param sample_size_var For survey data, name of column in SpatialPolygonDataFrame object (if it exists) with the sample size data.
+#' @param covariate_rasters SpatRaster of covariate rasters to be used in the model.
+#' @param aggregation_raster SpatRaster to aggregate pixel level predictions to polygon level e.g. population to aggregate prevalence. If this is not supplied a uniform raster will be used.
+#' @param id_var Name of column in sf object with the polygon id.
+#' @param response_var Name of column in sf object with the response data.
+#' @param sample_size_var For survey data, name of column in sf object (if it exists) with the sample size data.
 #' @param mesh.args list of parameters that control the mesh structure with the same names as used by INLA.
 #' @param na.action logical. If TRUE, NAs in response will be removed, covariate NAs will be given the median value, aggregation NAs will be set to zero. Default FALSE (NAs in response or covariate data within the polygons will give errors).
 #' @param makeMesh logical. If TRUE, build INLA mesh, takes some time. Default TRUE.
@@ -77,7 +77,7 @@
 #' r2[] <- sapply(1:terra::ncell(r), function(x) rnorm(1, ceiling(x/10), 3))
 #' cov_rasters <- c(r, r2)
 #'
-#' test_data <- prepare_data(x = spdf,
+#' test_data <- prepare_data(polygon_shapefile = spdf,
 #'                           covariate_rasters = cov_rasters)
 #' }
 #'
