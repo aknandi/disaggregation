@@ -129,7 +129,12 @@ prepare_data <- function(polygon_shapefile,
 
   covariate_rasters <- c(covariate_rasters, aggregation_raster)
   covariate_data <- terra::extract(covariate_rasters, polygon_shapefile, cells=TRUE, na.rm=TRUE, ID=TRUE)
-  names(covariate_data)[1] <- id_var
+  #merge to transfer area_id and then tidy up
+  polygon_data$area_n <- 1:nrow(polygon_data)
+  covariate_data <- merge(covariate_data, polygon_data, by.x = "ID", by.y = "area_n")
+  covariate_data <- covariate_data[ , !(names(covariate_data) %in% c("ID", "cell", "response", "N"))]
+  colnames(covariate_data )[colnames(covariate_data ) == "area_id"] <- id_var
+  polygon_data <- polygon_data[ , !(names(polygon_data) %in% c("area_n"))]
 
   # Remove the aggregation raster
   covariate_rasters <- covariate_rasters[[seq(terra::nlyr(covariate_rasters) - 1)]]
