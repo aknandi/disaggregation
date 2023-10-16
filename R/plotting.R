@@ -27,7 +27,7 @@ plot.disag_data <- function(x, which = c(1,2,3), ...) {
 
   if(2 %in% which) {
     stopifnot(inherits(x$covariate_rasters, c('SpatRaster')))
-    plots$covariates <- plot(x$covariate_rasters)
+    plots$covariates <- ggplot2::ggplot() + tidyterra::geom_spatraster(data=x$covariate_rasters) + ggplot2::facet_wrap(~lyr) + tidyterra::scale_fill_terrain_c()
     titles <- c(titles, 'Covariate rasters')
   }
 
@@ -135,7 +135,7 @@ plot.disag_prediction <- function(x, ...) {
   rasters_to_plot <- terra::rast(list(x$mean_prediction$prediction, x$uncertainty_prediction$predictions_ci))
   names(rasters_to_plot) <- c('mean prediction', 'lower CI', 'upper CI')
 
-  plots <- plot(rasters_to_plot)
+  plots <- ggplot2::ggplot() + tidyterra::geom_spatraster(data=rasters_to_plot) + ggplot2::facet_wrap(~lyr) + tidyterra::scale_fill_terrain_c()
 
   print(plots)
 

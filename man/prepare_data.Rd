@@ -18,15 +18,15 @@ prepare_data(
 )
 }
 \arguments{
-\item{covariate_rasters}{RasterStack of covariate rasters to be used in the model.}
+\item{covariate_rasters}{SpatRaster of covariate rasters to be used in the model.}
 
-\item{aggregation_raster}{Raster to aggregate pixel level predictions to polygon level e.g. population to aggregate prevalence. If this is not supplied a uniform raster will be used.}
+\item{aggregation_raster}{SpatRaster to aggregate pixel level predictions to polygon level e.g. population to aggregate prevalence. If this is not supplied a uniform raster will be used.}
 
-\item{id_var}{Name of column in SpatialPolygonDataFrame object with the polygon id.}
+\item{id_var}{Name of column in sf object with the polygon id.}
 
-\item{response_var}{Name of column in SpatialPolygonDataFrame object with the response data.}
+\item{response_var}{Name of column in sf object with the response data.}
 
-\item{sample_size_var}{For survey data, name of column in SpatialPolygonDataFrame object (if it exists) with the sample size data.}
+\item{sample_size_var}{For survey data, name of column in sf object (if it exists) with the sample size data.}
 
 \item{mesh.args}{list of parameters that control the mesh structure with the same names as used by INLA.}
 
@@ -104,7 +104,7 @@ terra::ext(r2) <- terra::ext(spdf)
 r2[] <- sapply(1:terra::ncell(r), function(x) rnorm(1, ceiling(x/10), 3))
 cov_rasters <- c(r, r2)
 
-test_data <- prepare_data(x = spdf,
+test_data <- prepare_data(polygon_shapefile = spdf,
                           covariate_rasters = cov_rasters)
 }
 

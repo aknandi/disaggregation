@@ -68,7 +68,7 @@ predict.disag_model <- function(object, newdata = NULL, predict_iid = FALSE, N =
 #' to the linear predictor.
 #'
 #' To predict over a different spatial extent to that used in the model,
-#' a RasterStack covering the region to make predictions over is passed to the argument \emph{newdata}.
+#' a SpatRaster covering the region to make predictions over is passed to the argument \emph{newdata}.
 #' If this is not given predictions are made over the data used in the fit.
 #'
 #' The \emph{predict_iid} logical flag should be set to TRUE if the results of the iid effect from the model are to be used in the prediction.

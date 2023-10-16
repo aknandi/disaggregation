@@ -17,7 +17,7 @@ test_that("Getting start and end index returns the right object", {
 
   result <- getStartendindex(covs, response, 'id')
   save(result, file = paste0(tempdir(), '/test_startendindex.RData'))
-  
+
   expect_is(result, "matrix")
   expect_equal(nrow(result), nrow(response))
   expect_equal(ncol(result), 2)

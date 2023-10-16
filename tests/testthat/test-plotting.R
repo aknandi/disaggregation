@@ -66,7 +66,6 @@ test_that("Check plot.disag_prediction function works as expected", {
 
   skip_on_cran()
 
-
   fit_result <- disag_model(test_data, iterations = 1000,
                         iid = TRUE,
                         field = TRUE,
@@ -85,7 +84,7 @@ test_that("Check plot.disag_prediction function works as expected", {
   pred <- predict(fit_result)
   p <- plot(pred)
 
-  expect_is(p, 'trellis')
+  expect_is(p, 'gg')
 
 })
 

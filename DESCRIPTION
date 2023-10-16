@@ -28,6 +28,7 @@ Imports:
     cowplot,
     sparseMVN,
     fmesher,
+    tidyterra,
     terra,
     sf,
     utils
