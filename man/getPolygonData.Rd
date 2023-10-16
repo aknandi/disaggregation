@@ -2,7 +2,7 @@
 % Please edit documentation in R/extract.R
 \name{getPolygonData}
 \alias{getPolygonData}
-\title{Extract polygon id and response data into a data.frame from a SpatialPolygonsDataFrame}
+\title{Extract polygon id and response data into a data.frame from a sf object}
 \usage{
 getPolygonData(
   shape,
@@ -18,15 +18,15 @@ getPolygonData(
 
 \item{response_var}{Name of column in shape object with the response data. Default 'response'.}
 
-\item{sample_size_var}{For survey data, name of column in SpatialPolygonDataFrame object (if it exists) with the sample size data. Default NULL.}
+\item{sample_size_var}{For survey data, name of column in sf object (if it exists) with the sample size data. Default NULL.}
 }
 \value{
-A data.frame with a row for each polygon in the SpatialPolygonDataFrame and columns: area_id, response and N, containing the id of the
+A data.frame with a row for each polygon in the sf object and columns: area_id, response and N, containing the id of the
 polygon, the values of the response for that polygon, and the sample size respectively. If the data is not survey data (the sample size does
 not exist), this column will contain NAs.
 }
 \description{
-Returns a data.frame with a row for each polygon in the SpatialPolygonDataFrame and columns: area_id, response and N, containing the id of the
+Returns a data.frame with a row for each polygon in the sf object and columns: area_id, response and N, containing the id of the
 polygon, the values of the response for that polygon, and the sample size respectively. If the data is not survey data (the sample size does
 not exist), this column will contain NAs.
 }

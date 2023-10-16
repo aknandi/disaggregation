@@ -3,7 +3,7 @@
 #' \emph{prepare_data} function is used to extract all the data required for fitting a disaggregation model.
 #' Designed to be used in the \emph{disaggregation::fit_model} function.
 #'
-#' Takes a SpatialPolygonDataFrame with the response data and a RasterStack of covariates.
+#' Takes a sf object with the response data and a SpatRaster of covariates.
 #'
 #' Extract the values of the covariates (as well as the aggregation raster, if given) at each pixel within the polygons
 #' (\emph{parallelExtract} function). This is done in parallel and \emph{n.cores} argument is used to set the number of cores
@@ -201,9 +201,9 @@ prepare_data <- function(polygon_shapefile,
 
 #' Function to fit the disaggregation model
 #'
-#' @param x SpatialPolygonDataFrame containing the response data
+#' @param polygon_shapefile sf object containing the response data
 #' @param shapefile_names List of 2: polygon id variable name and response variable name from x
-#' @param covariate_rasters RasterStack of covariates
+#' @param covariate_rasters SpatRaster of covariates
 #' @param polygon_data data.frame with two columns: polygon id and response
 #' @param covariate_data data.frame with cell id, polygon id and covariate columns
 #' @param aggregation_pixels vector with value of aggregation raster at each pixel
@@ -215,8 +215,8 @@ prepare_data <- function(polygon_shapefile,
 #' @return A list is returned of class \code{disag_data}.
 #' The functions \emph{summary}, \emph{print} and \emph{plot} can be used on \code{disag_data}.
 #' The list  of class \code{disag_data} contains:
-#'  \item{x }{The SpatialPolygonDataFrame used as an input.}
-#'  \item{covariate_rasters }{The RasterStack used as an input.}
+#'  \item{x }{The sf object used as an input.}
+#'  \item{covariate_rasters }{The SpatRaster used as an input.}
 #'  \item{polygon_data }{A data frame with columns of \emph{area_id}, \emph{response} and \emph{N} (sample size: all NAs unless using binomial data). Each row represents a polygon.}
 #'  \item{covariate_data }{A data frame with columns of \emph{area_id}, \emph{cell_id} and one for each covariate in \emph{covariate_rasters}. Each row represents a pixel in a polygon.}
 #'  \item{aggregation_pixels }{An array with the value of the aggregation raster for each pixel in the same order as the rows of \emph{covariate_data}.}

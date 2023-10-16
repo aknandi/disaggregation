@@ -17,7 +17,7 @@ with the parameters having the same meaning as in the INLA functions \emph{inla.
 An inla.mesh object
 }
 \description{
-\emph{build_mesh} function takes a SpatialPolygons object and mesh arguments to build an appropriate mesh for the spatial field.
+\emph{build_mesh} function takes a sf object and mesh arguments to build an appropriate mesh for the spatial field.
 }
 \details{
 The mesh is created by finding a tight boundary around the polygon data, and creating a fine mesh within the boundary

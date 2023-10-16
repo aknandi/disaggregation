@@ -1,15 +1,15 @@
-#' Extract polygon id and response data into a data.frame from a SpatialPolygonsDataFrame
+#' Extract polygon id and response data into a data.frame from a sf object
 #'
-#' Returns a data.frame with a row for each polygon in the SpatialPolygonDataFrame and columns: area_id, response and N, containing the id of the
+#' Returns a data.frame with a row for each polygon in the sf object and columns: area_id, response and N, containing the id of the
 #' polygon, the values of the response for that polygon, and the sample size respectively. If the data is not survey data (the sample size does
 #' not exist), this column will contain NAs.
 #'
 #' @param shape A sf object containing response data.
 #' @param id_var Name of column in shape object with the polygon id. Default 'area_id'.
 #' @param response_var Name of column in shape object with the response data. Default 'response'.
-#' @param sample_size_var For survey data, name of column in SpatialPolygonDataFrame object (if it exists) with the sample size data. Default NULL.
+#' @param sample_size_var For survey data, name of column in sf object (if it exists) with the sample size data. Default NULL.
 #'
-#' @return A data.frame with a row for each polygon in the SpatialPolygonDataFrame and columns: area_id, response and N, containing the id of the
+#' @return A data.frame with a row for each polygon in the sf object and columns: area_id, response and N, containing the id of the
 #' polygon, the values of the response for that polygon, and the sample size respectively. If the data is not survey data (the sample size does
 #' not exist), this column will contain NAs.
 #'
@@ -48,7 +48,7 @@ getPolygonData <- function(shape, id_var = 'area_id', response_var = 'response',
 }
 
 
-#' Get a RasterStack of covariates from a folder containing .tif files
+#' Get a SpatRaster of covariates from a folder containing .tif files
 #'
 #' Looks in a specified folder for raster files. Returns a multi-layered SpatRaster of the rasters cropped to the extent specified by the shape parameter.
 #'
@@ -83,7 +83,7 @@ getCovariateRasters <- function(directory, file_pattern = '.tif$', shape) {
 
 # Extract coordinates from raster to use constructing the INLA mesh
 #
-# @param cov_rasters RasterStack of the covariate rasters.
+# @param cov_rasters SpatRaster of the covariate rasters.
 # @param selectIds numeric vector containing cell ids to retain. Default NULL retains all cell ids in the covariate rasters.
 #
 # @return A matrix containing the coordinates used to make the mesh
@@ -106,6 +106,3 @@ extractCoordsForMesh <- function(cov_rasters, selectIds = NULL) {
   return(coords)
 
 }
-
-
-

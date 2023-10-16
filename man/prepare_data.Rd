@@ -57,7 +57,7 @@ The list  of class \code{disag_data} contains:
 Designed to be used in the \emph{disaggregation::fit_model} function.
 }
 \details{
-Takes a SpatialPolygonDataFrame with the response data and a RasterStack of covariates.
+Takes a sf object with the response data and a SpatRaster of covariates.
 
 Extract the values of the covariates (as well as the aggregation raster, if given) at each pixel within the polygons
 (\emph{parallelExtract} function). This is done in parallel and \emph{n.cores} argument is used to set the number of cores

@@ -1,6 +1,6 @@
 #' Build mesh for disaggregaton model
 #'
-#' \emph{build_mesh} function takes a SpatialPolygons object and mesh arguments to build an appropriate mesh for the spatial field.
+#' \emph{build_mesh} function takes a sf object and mesh arguments to build an appropriate mesh for the spatial field.
 #'
 #' The mesh is created by finding a tight boundary around the polygon data, and creating a fine mesh within the boundary
 #' and a coarser mesh outside. This speeds up computation time by only having a very fine mesh within the area of interest

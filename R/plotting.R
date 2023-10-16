@@ -143,7 +143,7 @@ plot.disag_prediction <- function(x, ...) {
 }
 
 
-# Plot polygon data from SpatialPolygonDataFrame
+# Plot polygon data from sf object
 #
 # @param x Object to be plotted
 # @param names list of 2 names: polygon id variable and response variable names
@@ -152,10 +152,10 @@ plot.disag_prediction <- function(x, ...) {
 #
 # @name plot_polygon_data
 
-plot_polygon_data <- function(x, names) {
+plot_polygon_data <- function(polygon_shapefile, names) {
 
   # Rename the response variable for plotting
-  shp <- x
+  shp <- polygon_shapefile
   shp <- dplyr::rename(shp, 'response' = names$response_var)
   shp <- dplyr::rename(shp, 'area_id' = names$id_var)
 

@@ -2,7 +2,7 @@
 % Please edit documentation in R/extract.R
 \name{getCovariateRasters}
 \alias{getCovariateRasters}
-\title{Get a RasterStack of covariates from a folder containing .tif files}
+\title{Get a SpatRaster of covariates from a folder containing .tif files}
 \usage{
 getCovariateRasters(directory, file_pattern = ".tif$", shape)
 }

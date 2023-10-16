@@ -31,8 +31,8 @@ An object of class \emph{disag_prediction} which consists of a list of two objec
   }}
  \item{uncertainty_prediction: }{List of:
   \itemize{
-   \item \emph{realisations} RasterStack of realisations of predictions. Number of realisations defined by argument \emph{N}.
-   \item \emph{predictions_ci} RasterStack of the upper and lower credible intervals. Defined by argument \emph{CI}.
+   \item \emph{realisations} SpatRaster of realisations of predictions. Number of realisations defined by argument \emph{N}.
+   \item \emph{predictions_ci} SpatRaster of the upper and lower credible intervals. Defined by argument \emph{CI}.
   }}
 }
 \description{
@@ -41,7 +41,7 @@ predicts mean and uncertainty maps.
 }
 \details{
 To predict over a different spatial extent to that used in the model,
-a RasterStack covering the region to make predictions over is passed to the argument \emph{newdata}.
+a SpatRaster covering the region to make predictions over is passed to the argument \emph{newdata}.
 If this is not given predictions are made over the data used in the fit.
 
 The \emph{predict_iid} logical flag should be set to TRUE if the results of the iid effect from the model are to be used in the prediction.
