@@ -217,25 +217,6 @@ getCoords <- function(data) {
     return(coords)
 }
 
-# Get Amatrix for field
-#
-# @param mesh mesh used in the model fitting
-# @param coords coordinates extracted from raster
-#
-# @return An Amatrix object for the field
-#
-# @name getAmatrix
-
-getAmatrix <- function(mesh, coords) {
-
-  spde <- (INLA::inla.spde2.matern(mesh, alpha = 2)$param.inla)[c("M0", "M1", "M2")]
-  n_s <- nrow(spde$M0)
-
-  # Amatrix <- INLA::inla.mesh.project(mesh, loc = as.matrix(coords))$A
-  Amatrix <- fmesher::fm_evaluate(mesh, loc = as.matrix(coords))$A
-  return(Amatrix)
-}
-
 # Helper to check and sort out new raster data.
 check_newdata <- function(newdata, model_output){
   if(is.null(newdata)) return(NULL)
@@ -280,7 +261,7 @@ setup_objects <- function(model_output, newdata = NULL, predict_iid = FALSE) {
     } else {
       coords <- getCoords(data)
     }
-    Amatrix <- getAmatrix(data$mesh, coords)
+    Amatrix <- fmesher::fm_evaluate(data$mesh, loc = as.matrix(coords))$A
     field_objects <- list(coords = coords, Amatrix = Amatrix)
   } else {
     field_objects <- NULL
