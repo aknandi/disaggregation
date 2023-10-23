@@ -355,7 +355,8 @@ make_model_object <- function(data,
   nu = 1
   # Sort out mesh bits
   spde <- (INLA::inla.spde2.matern(data$mesh, alpha = nu + 1)$param.inla)[c("M0", "M1", "M2")]
-  Apix <- INLA::inla.mesh.project(data$mesh, loc = data$coordsForFit)$A
+  # Apix <- INLA::inla.mesh.project(data$mesh, loc = data$coordsForFit)$A
+  Apix <- fmesher::fm_evaluate(data$mesh, loc = data$coordsForFit)$A
   n_s <- nrow(spde$M0)
 
   cov_matrix <- as.matrix(data$covariate_data[, -c("area_id")])

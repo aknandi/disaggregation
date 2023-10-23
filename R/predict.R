@@ -231,8 +231,8 @@ getAmatrix <- function(mesh, coords) {
   spde <- (INLA::inla.spde2.matern(mesh, alpha = 2)$param.inla)[c("M0", "M1", "M2")]
   n_s <- nrow(spde$M0)
 
-  Amatrix <- INLA::inla.mesh.project(mesh, loc = as.matrix(coords))$A
-
+  # Amatrix <- INLA::inla.mesh.project(mesh, loc = as.matrix(coords))$A
+  Amatrix <- fmesher::fm_evaluate(mesh, loc = as.matrix(coords))$A
   return(Amatrix)
 }
 
