@@ -358,7 +358,7 @@ make_model_object <- function(data,
   Apix <- INLA::inla.mesh.project(data$mesh, loc = data$coordsForFit)$A
   n_s <- nrow(spde$M0)
 
-  cov_matrix <- as.matrix(data$covariate_data[, -c(1:2)])
+  cov_matrix <- as.matrix(data$covariate_data[, -c("area_id")])
   # If we have exactly one column we don't have to transpose. Sure this
   #   this could be cleaner but I don't know how.
   if(ncol(cov_matrix) == 1){
