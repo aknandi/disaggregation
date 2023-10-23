@@ -128,7 +128,7 @@ prepare_data <- function(polygon_shapefile,
 
 
   covariate_rasters <- c(covariate_rasters, aggregation_raster)
-  covariate_data <- terra::extract(covariate_rasters, polygon_shapefile, cells=TRUE, na.rm=TRUE, ID=TRUE)
+  covariate_data <- terra::extract(covariate_rasters, terra::vect(polygon_shapefile), cells=TRUE, na.rm=TRUE, ID=TRUE)
   #merge to transfer area_id and then tidy up
   polygon_data$area_n <- 1:nrow(polygon_data)
   covariate_data <- merge(covariate_data, polygon_data, by.x = "ID", by.y = "area_n")
@@ -137,8 +137,8 @@ prepare_data <- function(polygon_shapefile,
   polygon_data <- polygon_data[ , !(names(polygon_data) %in% c("area_n"))]
 
   # Remove the aggregation raster
-  covariate_rasters <- covariate_rasters[[seq(terra::nlyr(covariate_rasters) - 1)]]
-
+  cov_filter <- !(names(covariate_data) %in% c('aggregation_raster'))
+  covariate_rasters <- covariate_rasters[[cov_filter]]
   names(covariate_rasters) <- cov_names
 
   agg_filter <- names(covariate_data) %in% c('aggregation_raster')
