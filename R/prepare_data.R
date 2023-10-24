@@ -35,7 +35,7 @@
 #' @param mesh.args list of parameters that control the mesh structure with the same names as used by INLA.
 #' @param na.action logical. If TRUE, NAs in response will be removed, covariate NAs will be given the median value, aggregation NAs will be set to zero. Default FALSE (NAs in response or covariate data within the polygons will give errors).
 #' @param makeMesh logical. If TRUE, build INLA mesh, takes some time. Default TRUE.
-#' @param ncores Number of cores used to perform covariate extraction.
+#' @param ncores Deprecated.
 #'
 #' @return A list is returned of class \code{disag_data}.
 #' The functions \emph{summary}, \emph{print} and \emph{plot} can be used on \code{disag_data}.
@@ -94,7 +94,10 @@ prepare_data <- function(polygon_shapefile,
                          mesh.args = NULL,
                          na.action = FALSE,
                          makeMesh = TRUE,
-                         ncores = 2) {
+                         ncores = NULL) {
+
+    if (!missing("ncores"))
+      warning("The ncores argument has been deprecated")
 
   stopifnot(inherits(polygon_shapefile, 'sf'))
   stopifnot(inherits(covariate_rasters, 'SpatRaster'))

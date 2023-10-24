@@ -14,7 +14,7 @@ prepare_data(
   mesh.args = NULL,
   na.action = FALSE,
   makeMesh = TRUE,
-  ncores = 2
+  ncores = NULL
 )
 }
 \arguments{
@@ -34,7 +34,7 @@ prepare_data(
 
 \item{makeMesh}{logical. If TRUE, build INLA mesh, takes some time. Default TRUE.}
 
-\item{ncores}{Number of cores used to perform covariate extraction.}
+\item{ncores}{Deprecated.}
 
 \item{x}{sf object containing at least three columns: one with the geometried, one with the id for the polygons (\emph{id_var}) and one with the response count data (\emph{response_var}); for binomial data, i.e survey data, it can also contain a sample size column (\emph{sample_size_var}).}
 }
