@@ -355,11 +355,10 @@ make_model_object <- function(data,
   nu = 1
   # Sort out mesh bits
   spde <- (INLA::inla.spde2.matern(data$mesh, alpha = nu + 1)$param.inla)[c("M0", "M1", "M2")]
-  # Apix <- INLA::inla.mesh.project(data$mesh, loc = data$coordsForFit)$A
-  Apix <- fmesher::fm_evaluate(data$mesh, loc = data$coordsForFit)$A
+  Apix <- fmesher::fm_evaluator(data$mesh, loc = data$coordsForFit)$proj$A
   n_s <- nrow(spde$M0)
 
-  cov_matrix <- as.matrix(data$covariate_data[, -c("area_id")])
+  cov_matrix <- as.matrix(data$covariate_data[, (names(data$covariate_data) %in% names(data$covariate_rasters))])
   # If we have exactly one column we don't have to transpose. Sure this
   #   this could be cleaner but I don't know how.
   if(ncol(cov_matrix) == 1){
