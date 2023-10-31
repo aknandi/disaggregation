@@ -45,10 +45,10 @@ test_that("extractCoordsForMesh function behaves as it should", {
 
   skip_on_cran()
 
-  cov_data <- terra::extract(cov_stack, spdf, cells=TRUE, na.rm=TRUE, ID=TRUE)
+  cov_data <- terra::extract(cov_stack, spdf, cells = TRUE, na.rm = TRUE, ID = TRUE)
   names(cov_data)[1] <- 'area_id'
 
-  result <- extractCoordsForMesh(cov_stack, cov_data$cellid)
+  result <- extractCoordsForMesh(cov_stack, cov_data$cell)
 
   result2 <- extractCoordsForMesh(cov_stack)
 
