@@ -135,7 +135,7 @@ prepare_data <- function(polygon_shapefile,
   #merge to transfer area_id and then tidy up
   polygon_data$area_n <- 1:nrow(polygon_data)
   covariate_data <- merge(covariate_data, polygon_data, by.x = "ID", by.y = "area_n")
-  covariate_data <- covariate_data[ , !(names(covariate_data) %in% c("ID", "cell", "response", "N"))]
+  covariate_data <- covariate_data[ , !(names(covariate_data) %in% c("ID", "response", "N"))]
   colnames(covariate_data )[colnames(covariate_data ) == "area_id"] <- id_var
   polygon_data <- polygon_data[ , !(names(polygon_data) %in% c("area_n"))]
 
