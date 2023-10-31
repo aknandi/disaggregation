@@ -3,6 +3,7 @@ context("Fitting model")
 
 test_that("disag_model produces errors when expected", {
 
+  skip_if_not_installed('INLA')
   skip_on_cran()
 
   expect_error(disag_model(list()))

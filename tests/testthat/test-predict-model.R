@@ -2,6 +2,7 @@ context("Predict model")
 
 test_that("Check predict.disag_model function works as expected", {
 
+  skip_if_not_installed('INLA')
   skip_on_cran()
 
   result <- disag_model(test_data, iterations = 1000,
@@ -95,6 +96,7 @@ test_that("Check predict.disag_model function works as expected", {
 
 test_that("Check predict.disag_model function works with newdata", {
 
+  skip_if_not_installed('INLA')
   skip_on_cran()
 
   result <- disag_model(test_data, field = FALSE, iid = TRUE, iterations = 100,
@@ -141,6 +143,7 @@ test_that("Check predict.disag_model function works with newdata", {
 
 test_that('Check that check_newdata works', {
 
+  skip_if_not_installed('INLA')
   skip_on_cran()
 
   result <- disag_model(test_data, field = FALSE, iterations = 100)
@@ -213,6 +216,7 @@ test_that('Check that setup_objects works', {
 
 test_that('Check that predict_single_raster works', {
 
+  skip_if_not_installed('INLA')
   skip_on_cran()
 
   result <- disag_model(test_data, iterations = 100,

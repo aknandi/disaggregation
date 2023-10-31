@@ -2,7 +2,6 @@ context("Preparing data")
 
 test_that("Check prepare_data function works as expected", {
 
-  skip_if_not_installed('INLA')
   skip_on_cran()
 
   result <- prepare_data(polygon_shapefile = spdf,

@@ -15,6 +15,7 @@ test_that("Check plot_polygon_data function works as expected", {
 
 test_that("Check plot.disag.data function works as expected", {
 
+  skip_if_not_installed('INLA')
   skip_on_cran()
 
   test_data2 <- prepare_data(polygon_shapefile = spdf2,
@@ -43,6 +44,7 @@ test_that("Check plot.disag.data function works as expected", {
 
 test_that("Check plot.disag_model function works as expected", {
 
+  skip_if_not_installed('INLA')
   skip_on_cran()
 
   fit_result <- disag_model(test_data, iterations = 10)
@@ -64,6 +66,7 @@ test_that("Check plot.disag_model function works as expected", {
 
 test_that("Check plot.disag_prediction function works as expected", {
 
+  skip_if_not_installed('INLA')
   skip_on_cran()
 
   fit_result <- disag_model(test_data, iterations = 1000,
