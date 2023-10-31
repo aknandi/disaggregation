@@ -21,7 +21,7 @@ Overview
 
 ## Data preparation
 
-Function prepare_data takes in SpatialPolygonDataFrame (response) and RasterStack (covariates) to produce a data structure required for the disaggregation modelling. Calls functions to extract covariate data, polygon data, aggregation (population data), match points to polygons and build an INLA mesh for the spatial field (build_mesh)
+Function prepare_data takes in sf (response) and SpatRaster (covariates) to produce a data structure required for the disaggregation modelling. Calls functions to extract covariate data, polygon data, aggregation (population data), match points to polygons and build an INLA mesh for the spatial field (build_mesh)
 
 ```R
 data_for_model <- prepare_data(polygon_shapefile = shps, 
@@ -33,9 +33,9 @@ data_for_model <- prepare_data(polygon_shapefile = shps,
 
 ### Input data
 
-* A RasterStack of covariate rasters to be used in the model (covariate_rasters)
-* A SpatialPolygonsDataFrame (polygon_shapefile) containing at least two columns: one with the id for the polygons (id_var) and one with the response count data (response_var); for binomial data, i.e survey data, it can also contain a sample size column (sample_size_var).
-* (Optional) Raster used to aggregate the pixel level predictions (aggregation_raster) to polygon level (usually population). If this is not supplied a uniform raster will be used
+* A SpatRaster of covariate rasters to be used in the model (covariate_rasters)
+* A  sf (polygon_shapefile) containing at least two columns: one with the id for the polygons (id_var) and one with the response count data (response_var); for binomial data, i.e survey data, it can also contain a sample size column (sample_size_var).
+* (Optional) SpatRaster used to aggregate the pixel level predictions (aggregation_raster) to polygon level (usually population). If this is not supplied a uniform raster will be used
 
 ### Controlling the mesh
 
