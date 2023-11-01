@@ -170,6 +170,7 @@ test_that('Check that check_newdata works', {
 
 test_that('Check that setup_objects works', {
 
+  skip_if_not_installed('INLA')
   skip_on_cran()
 
   result <- disag_model(test_data, iterations = 100,
