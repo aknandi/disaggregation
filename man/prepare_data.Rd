@@ -18,6 +18,8 @@ prepare_data(
 )
 }
 \arguments{
+\item{polygon_shapefile}{sf object containing at least three columns: one with the geometried, one with the id for the polygons (\emph{id_var}) and one with the response count data (\emph{response_var}); for binomial data, i.e survey data, it can also contain a sample size column (\emph{sample_size_var}).}
+
 \item{covariate_rasters}{SpatRaster of covariate rasters to be used in the model.}
 
 \item{aggregation_raster}{SpatRaster to aggregate pixel level predictions to polygon level e.g. population to aggregate prevalence. If this is not supplied a uniform raster will be used.}
@@ -35,8 +37,6 @@ prepare_data(
 \item{makeMesh}{logical. If TRUE, build INLA mesh, takes some time. Default TRUE.}
 
 \item{ncores}{Deprecated.}
-
-\item{x}{sf object containing at least three columns: one with the geometried, one with the id for the polygons (\emph{id_var}) and one with the response count data (\emph{response_var}); for binomial data, i.e survey data, it can also contain a sample size column (\emph{sample_size_var}).}
 }
 \value{
 A list is returned of class \code{disag_data}.

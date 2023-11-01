@@ -17,6 +17,7 @@ test_that("disag_model produces errors when expected", {
 
 test_that("disag_model behaves as expected", {
 
+  skip_if_not_installed('INLA')
   skip_on_cran()
 
   result <- disag_model(test_data, iterations = 100, iid = FALSE)
@@ -26,11 +27,7 @@ test_that("disag_model behaves as expected", {
   expect_equal(length(result$sd_out$par.fixed), terra::nlyr(test_data$covariate_rasters) + 4)
   expect_equal(unique(names(result$sd_out$par.random)), c("nodemean"))
 
-
 })
-
-
-
 
 test_that("disag_model with 1 covariate behaves as expected", {
 

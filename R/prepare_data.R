@@ -26,7 +26,7 @@
 #' will automatically deal with NAs. It removes any polygons that have NAs as a response, sets any aggregation pixels with NA to zero
 #' and sets covariate NAs pixels to the median value for the that covariate.
 #'
-#' @param x sf object containing at least three columns: one with the geometried, one with the id for the polygons (\emph{id_var}) and one with the response count data (\emph{response_var}); for binomial data, i.e survey data, it can also contain a sample size column (\emph{sample_size_var}).
+#' @param polygon_shapefile sf object containing at least three columns: one with the geometried, one with the id for the polygons (\emph{id_var}) and one with the response count data (\emph{response_var}); for binomial data, i.e survey data, it can also contain a sample size column (\emph{sample_size_var}).
 #' @param covariate_rasters SpatRaster of covariate rasters to be used in the model.
 #' @param aggregation_raster SpatRaster to aggregate pixel level predictions to polygon level e.g. population to aggregate prevalence. If this is not supplied a uniform raster will be used.
 #' @param id_var Name of column in sf object with the polygon id.
