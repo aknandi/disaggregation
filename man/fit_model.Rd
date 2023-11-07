@@ -133,7 +133,8 @@ spdf <- sf::st_sf(response_df, geometry = polys)
 # Create raster stack
 r <- terra::rast(ncol=n_pixels_per_side, nrow=n_pixels_per_side)
 terra::ext(r) <- terra::ext(spdf)
-r[] <- sapply(1:terra::ncell(r), function(x) rnorm(1, ifelse(x \%\% n_pixels_per_side != 0, x \%\% n_pixels_per_side, n_pixels_per_side), 3))
+r[] <- sapply(1:terra::ncell(r), function(x){
+rnorm(1, ifelse(x \%\% n_pixels_per_side != 0, x \%\% n_pixels_per_side, n_pixels_per_side), 3))}
 r2 <- terra::rast(ncol=n_pixels_per_side, nrow=n_pixels_per_side)
 terra::ext(r2) <- terra::ext(spdf)
 r2[] <- sapply(1:terra::ncell(r), function(x) rnorm(1, ceiling(x/n_pixels_per_side), 3))
