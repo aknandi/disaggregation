@@ -74,7 +74,7 @@ test_that("Check summary.disag_predictions function works as expected", {
                              prior_rho_prob = 0.01,
                              prior_sigma_max = 0.1,
                              prior_sigma_prob = 0.01,
-                             prior_iideffect_sd_max = 0.0001,
+                             prior_iideffect_sd_max = 0.00001,
                              prior_iideffect_sd_prob = 0.01))
 
   pred <- predict(result)
