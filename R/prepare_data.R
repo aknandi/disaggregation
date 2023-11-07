@@ -174,13 +174,8 @@ prepare_data <- function(polygon_shapefile,
   startendindex <- getStartendindex(covariate_data, polygon_data, id_var = id_var)
 
   if(makeMesh) {
-    if(!requireNamespace('INLA', quietly = TRUE)) {
-      mesh <- NULL
-      message("Cannot build mesh as INLA is not installed. If you need a spatial field in your model, you must install INLA.")
-    } else {
       mesh <- build_mesh(polygon_shapefile, mesh.args)
-    }
-  } else {
+    } else {
     mesh <- NULL
     message("A mesh is not being built. You will not be able to run a spatial model without a mesh.")
   }
