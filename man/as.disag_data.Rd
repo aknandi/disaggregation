@@ -18,11 +18,11 @@ as.disag_data(
 )
 }
 \arguments{
-\item{polygon_shapefile}{SpatialPolygonDataFrame containing the response data}
+\item{polygon_shapefile}{sf object containing the response data}
 
-\item{shapefile_names}{List of 2: polygon id variable name and response variable name from polygon_shapefile}
+\item{shapefile_names}{List of 2: polygon id variable name and response variable name from x}
 
-\item{covariate_rasters}{RasterStack of covariates}
+\item{covariate_rasters}{SpatRaster of covariates}
 
 \item{polygon_data}{data.frame with two columns: polygon id and response}
 
@@ -30,7 +30,7 @@ as.disag_data(
 
 \item{aggregation_pixels}{vector with value of aggregation raster at each pixel}
 
-\item{coordsForFit}{coordinates of the covariate data points within the polygons in polygon_shapefile}
+\item{coordsForFit}{coordinates of the covariate data points within the polygons in x}
 
 \item{coordsForPrediction}{coordinates of the covariate data points in the whole raster extent}
 
@@ -39,11 +39,11 @@ as.disag_data(
 \item{mesh}{inla.mesh object to use in the fit}
 }
 \value{
-A list is returned of class \code{disag_data}. 
-The functions \emph{summary}, \emph{print} and \emph{plot} can be used on \code{disag_data}. 
+A list is returned of class \code{disag_data}.
+The functions \emph{summary}, \emph{print} and \emph{plot} can be used on \code{disag_data}.
 The list  of class \code{disag_data} contains:
- \item{polygon_shapefile }{The SpatialPolygonDataFrame used as an input.} 
- \item{covariate_rasters }{The RasterStack used as an input.} 
+ \item{x }{The sf object used as an input.}
+ \item{covariate_rasters }{The SpatRaster used as an input.}
  \item{polygon_data }{A data frame with columns of \emph{area_id}, \emph{response} and \emph{N} (sample size: all NAs unless using binomial data). Each row represents a polygon.}
  \item{covariate_data }{A data frame with columns of \emph{area_id}, \emph{cell_id} and one for each covariate in \emph{covariate_rasters}. Each row represents a pixel in a polygon.}
  \item{aggregation_pixels }{An array with the value of the aggregation raster for each pixel in the same order as the rows of \emph{covariate_data}.}
