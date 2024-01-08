@@ -7,3 +7,5 @@ inst/doc
 *.so
 vignettes/disaggregation_cache/*
 vignettes/disaggregation_files/*
+.github/workflows/R-CMD-check-HTML5.archyaml
+vignettes/spatio_temporal_disaggregation.Rmd

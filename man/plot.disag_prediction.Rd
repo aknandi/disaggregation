@@ -15,7 +15,7 @@
 A list of plots of rasters from the prediction: mean prediction, lower CI and upper CI.
 }
 \description{
-Plotting function for class \emph{disag_prediction} (the mean and uncertainty predictions of the disaggragation fitting).
+Plotting function for class \emph{disag_prediction} (the mean and uncertainty predictions of the disaggregation fitting).
 }
 \details{
 Produces raster plots of the mean prediction, and the lower and upper confidence intervals.

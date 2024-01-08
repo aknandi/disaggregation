@@ -1,10 +1,13 @@
 Disaggregation
 ==============
 
-[![Build Status](https://travis-ci.org/aknandi/disaggregation.svg?branch=master)](https://travis-ci.org/aknandi/disaggregation?branch=master)
-[![codecov.io](https://codecov.io/github/aknandi/disaggregation/coverage.svg?branch=master)](https://codecov.io/github/aknandi/disaggregation?branch=master)
 
-A package containing useful functions for disaggregation modelling
+[![CRANstatus](https://www.r-pkg.org/badges/version/disaggregation)](https://cran.r-project.org/package=disaggregation)
+[![R-CMD-check](https://github.com/aknandi/disaggregation/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/aknandi/disaggregation/actions/workflows/R-CMD-check.yaml)
+
+
+A package containing useful functions for disaggregation modelling.
+An overview of the package is given in [our paper](https://www.jstatsoft.org/article/view/v106i11).
 
 Installation
 ------------
@@ -18,7 +21,7 @@ Overview
 
 ## Data preparation
 
-Function prepare_data takes in SpatialPolygonDataFrame (response) and RasterStack (covariates) to produce a data structure required for the disaggregation modelling. Calls functions to extract covariate data, polygon data, aggregation (population data), match points to polygons and build an INLA mesh for the spatial field (build_mesh)
+Function prepare_data takes in sf (response) and SpatRaster (covariates) to produce a data structure required for the disaggregation modelling. Calls functions to extract covariate data, polygon data, aggregation (population data), match points to polygons and build an INLA mesh for the spatial field (build_mesh)
 
 ```R
 data_for_model <- prepare_data(polygon_shapefile = shps, 
@@ -30,9 +33,9 @@ data_for_model <- prepare_data(polygon_shapefile = shps,
 
 ### Input data
 
-* A RasterStack of covariate rasters to be used in the model (covariate_rasters)
-* A SpatialPolygonsDataFrame (polygon_shapefile) containing at least two columns: one with the id for the polygons (id_var) and one with the response count data (response_var); for binomial data, i.e survey data, it can also contain a sample size column (sample_size_var).
-* (Optional) Raster used to aggregate the pixel level predictions (aggregation_raster) to polygon level (usually population). If this is not supplied a uniform raster will be used
+* A SpatRaster of covariate rasters to be used in the model (covariate_rasters)
+* A  sf (polygon_shapefile) containing at least two columns: one with the id for the polygons (id_var) and one with the response count data (response_var); for binomial data, i.e survey data, it can also contain a sample size column (sample_size_var).
+* (Optional) SpatRaster used to aggregate the pixel level predictions (aggregation_raster) to polygon level (usually population). If this is not supplied a uniform raster will be used
 
 ### Controlling the mesh
 
@@ -106,4 +109,3 @@ Summary functions for input data and model results
 summary(data_for_model)  
 summary(model_result) 
 ```
-

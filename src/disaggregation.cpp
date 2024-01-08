@@ -127,7 +127,7 @@ Type objective_function<Type>::operator()()
     Type lambda = -log(prior_iideffect_sd_prob) / prior_iideffect_sd_max;
     Type log_pcdensity_iid = log(lambda / 2) - (3/2)*iideffect_log_tau - lambda * pow(iideffect_tau, -1/2);
     // log(iideffect_sd) from the Jacobian
-    nll -= log_pcdensity_iid + log(iideffect_sd);
+    nll -= log_pcdensity_iid + iideffect_log_tau;
     
     // Likelihood of random effect for polygons
     for(int p = 0; p < iideffect.size(); p++) {

@@ -7,7 +7,7 @@
 build_mesh(shapes, mesh.args = NULL)
 }
 \arguments{
-\item{shapes}{shapefile covering the region under investigation.}
+\item{shapes}{sf covering the region under investigation.}
 
 \item{mesh.args}{list of parameters that control the mesh structure. \emph{convex}, \emph{concave} and \emph{resolution},
 to control the boundary of the inner mesh, and \emph{max.edge}, \emph{cut} and \emph{offset}, to control the  mesh itself,
@@ -17,35 +17,37 @@ with the parameters having the same meaning as in the INLA functions \emph{inla.
 An inla.mesh object
 }
 \description{
-\emph{build_mesh} function takes a SpatialPolygons object and mesh arguments to build an appropriate mesh for the spatial field.
+\emph{build_mesh} function takes a sf object and mesh arguments to build an appropriate mesh for the spatial field.
 }
 \details{
-The mesh is created by finding a tight boundary around the polygon data, and creating a fine mesh within the boundary 
-and a coarser mesh outside. This speeds up computation time by only having a very fine mesh within the area of interest 
+The mesh is created by finding a tight boundary around the polygon data, and creating a fine mesh within the boundary
+and a coarser mesh outside. This speeds up computation time by only having a very fine mesh within the area of interest
 and having a small region outside with a coarser mesh to avoid edge effects.
 
 Six mesh parameters can be specified as arguments: \emph{convex}, \emph{concave} and \emph{resolution},
 to control the boundary of the inner mesh, and \emph{max.edge}, \emph{cut} and \emph{offset}, to control the  mesh itself,
-with the names meaing the same as used by INLA functions \emph{inla.convex.hull} and \emph{inla.mesh.2d}.
+with the names meaning the same as used by INLA functions \emph{inla.convex.hull} and \emph{inla.mesh.2d}.
 
 Defaults are:
 pars <- list(convex = -0.01, concave = -0.5, resolution = 300, max.edge = c(3.0, 8),  cut = 0.4, offset = c(1, 15)).
 }
 \examples{
 \dontrun{
- polygons <- list()
- for(i in 1:100) {
-   row <- ceiling(i/10)
-   col <- ifelse(i \%\% 10 != 0, i \%\% 10, 10)
-   xmin = 2*(col - 1); xmax = 2*col; ymin = 2*(row - 1); ymax = 2*row
-   polygons[[i]] <- rbind(c(xmin, ymax), c(xmax,ymax), c(xmax, ymin), c(xmin,ymin))
- }
+polygons <- list()
+for(i in 1:14) {
+  row <- ceiling(i/10)
+  col <- ifelse(i \%\% 10 != 0, i \%\% 10, 10)
+  xmin = 2*(col - 1); xmax = 2*col; ymin = 2*(row - 1); ymax = 2*row
+polygons[[i]] <- list(cbind(c(xmin, xmax, xmax, xmin, xmin),
+                            c(ymax, ymax, ymin, ymin, ymax)))
+}
 
- polys <- do.call(raster::spPolygons, polygons)
- response_df <- data.frame(area_id = 1:100, response = runif(100, min = 0, max = 10))
- spdf <- sp::SpatialPolygonsDataFrame(polys, response_df)
+polys <- lapply(polygons, sf::st_polygon)
+response_df <- data.frame(area_id = 1:100,
+                          response = runif(100, min = 0, max = 10))
+spdf <- sf::st_sf(polys, response_df)
 
- my_mesh <- build_mesh(spdf)
+my_mesh <- build_mesh(spdf)
 }
 
 }
