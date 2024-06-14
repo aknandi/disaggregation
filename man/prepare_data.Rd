@@ -14,21 +14,21 @@ prepare_data(
   mesh.args = NULL,
   na.action = FALSE,
   makeMesh = TRUE,
-  ncores = 2
+  ncores = NULL
 )
 }
 \arguments{
-\item{polygon_shapefile}{SpatialPolygonDataFrame  containing at least two columns: one with the id for the polygons (\emph{id_var}) and one with the response count data (\emph{response_var}); for binomial data, i.e survey data, it can also contain a sample size column (\emph{sample_size_var}).}
+\item{polygon_shapefile}{sf object containing at least three columns: one with the geometried, one with the id for the polygons (\emph{id_var}) and one with the response count data (\emph{response_var}); for binomial data, i.e survey data, it can also contain a sample size column (\emph{sample_size_var}).}
 
-\item{covariate_rasters}{RasterStack of covariate rasters to be used in the model.}
+\item{covariate_rasters}{SpatRaster of covariate rasters to be used in the model.}
 
-\item{aggregation_raster}{Raster to aggregate pixel level predictions to polygon level e.g. population to aggregate prevalence. If this is not supplied a uniform raster will be used.}
+\item{aggregation_raster}{SpatRaster to aggregate pixel level predictions to polygon level e.g. population to aggregate prevalence. If this is not supplied a uniform raster will be used.}
 
-\item{id_var}{Name of column in SpatialPolygonDataFrame object with the polygon id.}
+\item{id_var}{Name of column in sf object with the polygon id.}
 
-\item{response_var}{Name of column in SpatialPolygonDataFrame object with the response data.}
+\item{response_var}{Name of column in sf object with the response data.}
 
-\item{sample_size_var}{For survey data, name of column in SpatialPolygonDataFrame object (if it exists) with the sample size data.}
+\item{sample_size_var}{For survey data, name of column in sf object (if it exists) with the sample size data.}
 
 \item{mesh.args}{list of parameters that control the mesh structure with the same names as used by INLA.}
 
@@ -36,14 +36,14 @@ prepare_data(
 
 \item{makeMesh}{logical. If TRUE, build INLA mesh, takes some time. Default TRUE.}
 
-\item{ncores}{Number of cores used to perform covariate extraction.}
+\item{ncores}{Deprecated.}
 }
 \value{
-A list is returned of class \code{disag_data}. 
-The functions \emph{summary}, \emph{print} and \emph{plot} can be used on \code{disag_data}. 
+A list is returned of class \code{disag_data}.
+The functions \emph{summary}, \emph{print} and \emph{plot} can be used on \code{disag_data}.
 The list  of class \code{disag_data} contains:
- \item{polygon_shapefile }{The SpatialPolygonDataFrame used as an input.} 
- \item{covariate_rasters }{The RasterStack used as an input.} 
+ \item{x }{The sf object used as an input.}
+ \item{covariate_rasters }{The SpatRaster used as an input.}
  \item{polygon_data }{A data frame with columns of \emph{area_id}, \emph{response} and \emph{N} (sample size: all NAs unless using binomial data). Each row represents a polygon.}
  \item{covariate_data }{A data frame with columns of \emph{area_id}, \emph{cell_id} and one for each covariate in \emph{covariate_rasters}. Each row represents a pixel in a polygon.}
  \item{aggregation_pixels }{An array with the value of the aggregation raster for each pixel in the same order as the rows of \emph{covariate_data}.}
@@ -53,57 +53,59 @@ The list  of class \code{disag_data} contains:
  \item{mesh }{A INLA mesh to be used for the spatial field of the disaggregation model.}
 }
 \description{
-\emph{prepare_data} function is used to extract all the data required for fitting a disaggregation model. 
+\emph{prepare_data} function is used to extract all the data required for fitting a disaggregation model.
 Designed to be used in the \emph{disaggregation::fit_model} function.
 }
 \details{
-Takes a SpatialPolygonDataFrame with the response data and a RasterStack of covariates. 
+Takes a sf object with the response data and a SpatRaster of covariates.
 
-Extract the values of the covariates (as well as the aggregation raster, if given) at each pixel within the polygons 
-(\emph{parallelExtract} function). This is done in parallel and \emph{n.cores} argument is used to set the number of cores 
+Extract the values of the covariates (as well as the aggregation raster, if given) at each pixel within the polygons
+(\emph{parallelExtract} function). This is done in parallel and \emph{n.cores} argument is used to set the number of cores
 to use for covariate extraction. This can be the number of covariates used in the model.
 
-The aggregation raster defines how the pixels within each polygon are aggregated. 
+The aggregation raster defines how the pixels within each polygon are aggregated.
 The disaggregation model performs a weighted sum of the pixel prediction, weighted by the pixel values in the aggregation raster.
-For disease incidence rate you use the population raster to aggregate pixel incidence rate by summing the number of cases 
-(rate weighted by population). If no aggregation raster is provided a uniform distribution is assumed, i.e. the pixel predictions 
+For disease incidence rate you use the population raster to aggregate pixel incidence rate by summing the number of cases
+(rate weighted by population). If no aggregation raster is provided a uniform distribution is assumed, i.e. the pixel predictions
 are aggregated to polygon level by summing the pixel values.
 
-Makes a matrix that contains the start and end pixel index for each polygon. Builds an INLA mesh to use for the spatial field 
+Makes a matrix that contains the start and end pixel index for each polygon. Builds an INLA mesh to use for the spatial field
 (\emph{getStartendindex} function).
 
-The \emph{mesh.args} argument allows you to supply a list of INLA mesh parameters to control the mesh used for the spatial field 
+The \emph{mesh.args} argument allows you to supply a list of INLA mesh parameters to control the mesh used for the spatial field
 (\emph{build_mesh} function).
 
-The \emph{na.action} flag is automatically off. If there are any NAs in the response or covariate data within the polygons the 
-\emph{prepare_data} method will error. Ideally the NAs in the data would be dealt with beforehand, however, setting na.action = TRUE 
-will automatically deal with NAs. It removes any polygons that have NAs as a response, sets any aggregation pixels with NA to zero 
+The \emph{na.action} flag is automatically off. If there are any NAs in the response or covariate data within the polygons the
+\emph{prepare_data} method will error. Ideally the NAs in the data would be dealt with beforehand, however, setting na.action = TRUE
+will automatically deal with NAs. It removes any polygons that have NAs as a response, sets any aggregation pixels with NA to zero
 and sets covariate NAs pixels to the median value for the that covariate.
 }
 \examples{
 \donttest{
- polygons <- list()
- for(i in 1:100) {
+polygons <- list()
+for(i in 1:100) {
   row <- ceiling(i/10)
   col <- ifelse(i \%\% 10 != 0, i \%\% 10, 10)
   xmin = 2*(col - 1); xmax = 2*col; ymin = 2*(row - 1); ymax = 2*row
-  polygons[[i]] <- rbind(c(xmin, ymax), c(xmax,ymax), c(xmax, ymin), c(xmin,ymin))
- }
+  polygons[[i]] <- list(cbind(c(xmin, xmax, xmax, xmin, xmin),
+                              c(ymax, ymax, ymin, ymin, ymax)))
+}
 
- polys <- do.call(raster::spPolygons, polygons)
- response_df <- data.frame(area_id = 1:100, response = runif(100, min = 0, max = 10))
- spdf <- sp::SpatialPolygonsDataFrame(polys, response_df)
+polys <- lapply(polygons,sf::st_polygon)
+response_df <- data.frame(area_id = 1:100, response = runif(100, min = 0, max = 10))
+spdf <- sf::st_sf(response_df,geometry=polys)
 
- r <- raster::raster(ncol=20, nrow=20)
- r <- raster::setExtent(r, raster::extent(spdf))
- r[] <- sapply(1:raster::ncell(r), function(x) rnorm(1, ifelse(x \%\% 20 != 0, x \%\% 20, 20), 3))
- r2 <- raster::raster(ncol=20, nrow=20)
- r2 <- raster::setExtent(r2, raster::extent(spdf))
- r2[] <- sapply(1:raster::ncell(r), function(x) rnorm(1, ceiling(x/10), 3))
- cov_rasters <- raster::stack(r, r2)
+r <- terra::rast(nrow=20,ncol=20)
+terra::ext(r) <- terra::ext(spdf)
+r[] <- sapply(1:terra::ncell(r), function(x) rnorm(1, ifelse(x \%\% 20 != 0, x \%\% 20, 20), 3))
 
- test_data <- prepare_data(polygon_shapefile = spdf, 
-                           covariate_rasters = cov_rasters)
-} 
-                   
+r2 <- terra::rast(nrow=20,ncol=20)
+terra::ext(r2) <- terra::ext(spdf)
+r2[] <- sapply(1:terra::ncell(r), function(x) rnorm(1, ceiling(x/10), 3))
+cov_rasters <- c(r, r2)
+
+test_data <- prepare_data(polygon_shapefile = spdf,
+                          covariate_rasters = cov_rasters)
+}
+
 }

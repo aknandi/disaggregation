@@ -1,12 +1,13 @@
 Package: disaggregation
 Type: Package
 Title: Disaggregation Modelling
-Version: 0.2.1
+Version: 0.3.0
 Authors@R: c(
     person("Anita", "Nandi", email = "anita.k.nandi@gmail.com", role = "aut", comment = c(ORCID = "0000-0002-5087-2494")),
     person("Tim", "Lucas", email =  "timcdlucas@gmail.com", role = c("aut", "cre"), comment = c(ORCID = "0000-0003-4694-8107")),
     person("Rohan", "Arambepola", email = "rarambepola@gmail.com", role = "aut"),
-    person("Andre", "Python", email = "python.andre@gmail.com", role = "aut", comment = c(ORCID = "0000-0001-8094-7226"))
+    person("Andre", "Python", email = "python.andre@gmail.com", role = "aut", comment = c(ORCID = "0000-0001-8094-7226")),
+    person("Simon", "Smart", email = "simon.smart@cantab.net", role = "ctb")
     )
 Description: Fits disaggregation regression models using 'TMB' ('Template Model
     Builder'). When the response data are aggregated to polygon level but
@@ -18,12 +19,6 @@ Encoding: UTF-8
 LazyData: true
 RoxygenNote: 7.2.3
 Imports: 
-    raster,
-    foreach,
-    sp,
-    sf,
-    parallel,
-    doParallel,
     splancs,
     Matrix,
     stats,
@@ -32,6 +27,10 @@ Imports:
     ggplot2,
     cowplot,
     sparseMVN,
+    fmesher,
+    tidyterra,
+    terra,
+    sf,
     utils
 Additional_repositories: https://inla.r-inla-download.org/R/stable
 Suggests: 

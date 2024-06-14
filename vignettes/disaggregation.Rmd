@@ -23,7 +23,7 @@ knitr::opts_chunk$set(
 isINLA <- requireNamespace('INLA', quietly = TRUE)
 ```
 
-The **disaggregation** package contains functions to run Bayesian disaggregation models. Aggregated response data over large heterogenous regions can be used alongside fine-scale covariate information to predict fine-scale response across the region. The github page for this package can be found [here](https://github.com/aknandi/disaggregation).
+The **disaggregation** package contains functions to run Bayesian disaggregation models. Aggregated response data over large heterogeneous regions can be used alongside fine-scale covariate information to predict fine-scale response across the region. The github page for this package can be found [here](https://github.com/aknandi/disaggregation).
 
 Install **disaggregation** using:
 
@@ -39,7 +39,7 @@ devtools::install_github("aknandi/disaggregation")
 
 The key functions are `prepare_data`, `fit_model` and `predict`. The `prepare_data` function takes the aggregated data and covariate data to be used in the model and produces an object to be use by `fit_model`. This functions runs the disaggregation model and the out can be passed to `predict` to produce fine-scale predicted maps of the response variable. 
 
-To use the disaggregation `prepare_data` function, you must have the aggregated data as a `SpatialPolygonDataFrame` object and a `RasterStack` of the covariate data to be used in the model.
+To use the disaggregation `prepare_data` function, you must have the aggregated data as a `sf` object and a `SpatRaster` of the covariate data to be used in the model.
 
 ## Example
 
@@ -48,84 +48,95 @@ We will demonstrate an example of the **disaggregation** package using areal dat
 ```{r}
 library(SpatialEpi, quietly = TRUE)
 library(dplyr, quietly = TRUE)
-library(sp, quietly = TRUE) 
-library(raster, quietly = TRUE)
 library(disaggregation, quietly = TRUE)
+library(ggplot2)
 library(sf)
+library(terra)
 
-map <- NYleukemia$spatial.polygon
-df <- NYleukemia$data
+polygons <- sf::st_as_sf(NYleukemia$spatial.polygon)
 
-polygon_data <- SpatialPolygonsDataFrame(map, df)
-polygon_data
+df <- cbind(polygons, NYleukemia$data)
+
+
+ggplot() + geom_sf(data = df, aes(fill = cases / population)) + scale_fill_viridis_c(lim = c(0, 0.003))
+
 ```
 
-Now we simulate two covariate rasters for the area of interest and make a `RasterStack`. They are simulated at the resolution of approximately 1km2.
+Now we simulate two covariate rasters for the area of interest and make a two-layered `SpatRaster`. They are simulated at the resolution of approximately 1km<sup>2</sup>.
 
 ```{r, fig.show='hold'}
-extent_in_km <- 111*(polygon_data@bbox[, 2] - polygon_data@bbox[, 1])
+
+bbox <- sf::st_bbox(df)
+
+extent_in_km <- 111*(bbox[c(3, 4)] - bbox[c(1, 2)])
 n_pixels_x <- floor(extent_in_km[[1]])
 n_pixels_y <- floor(extent_in_km[[2]])
-r <- raster::raster(ncol = n_pixels_x, nrow = n_pixels_y)
-r <- raster::setExtent(r, raster::extent(polygon_data))
-r[] <- sapply(1:raster::ncell(r), function(x) rnorm(1, ifelse(x %% n_pixels_x != 0, x %% n_pixels_x, n_pixels_x), 3))
-r2 <- raster::raster(ncol = n_pixels_x, nrow = n_pixels_y)
-r2 <- raster::setExtent(r2, raster::extent(polygon_data))
-r2[] <- sapply(1:raster::ncell(r), function(x) rnorm(1, ceiling(x/n_pixels_y), 3))
-cov_stack <- raster::stack(r, r2)
-cov_stack <- raster::scale(cov_stack)
+
+r <- terra::rast(ncols = n_pixels_x, nrows = n_pixels_y)
+terra::ext(r) <- terra::ext(df)
+
+data_generate <- function(x){
+  rnorm(1, ifelse(x %% n_pixels_x != 0, x %% n_pixels_x, n_pixels_x), 3)
+}
+
+terra::values(r) <- sapply(seq(terra::ncell(r)), data_generate)
+r2 <- terra::rast(ncol = n_pixels_x, nrow = n_pixels_y)
+terra::ext(r2) <- terra::ext(df)
+terra::values(r2) <- sapply(seq(terra::ncell(r2)), 
+                     function(x) rnorm(1, ceiling(x/n_pixels_y), 3))
+
+
+cov_stack <- terra::rast(list(r, r2))
+cov_stack <- terra::scale(cov_stack)
+names(cov_stack) <- c('layer1', 'layer2')
+
 ```
 
 We also create a population raster. This is to allow the model to correctly aggregated the pixel values to the polygon level. For this simple example we assume that the population within each polygon is uniformly distributed.
 
 ```{r, fig.show='hold'}
-extracted <- raster::extract(r, polygon_data)
-n_cells <- sapply(extracted, length)
-polygon_data@data$pop_per_cell <- polygon_data@data$population/n_cells
-pop_raster <- rasterize(polygon_data, cov_stack, field = 'pop_per_cell')
+extracted <- terra::extract(r, terra::vect(df$geometry), fun = sum)
+n_cells <- terra::extract(r, terra::vect(df$geometry), fun = length)
+df$pop_per_cell <- df$population/n_cells$lyr.1
+pop_raster <- terra::rasterize(terra::vect(df), cov_stack, field = 'pop_per_cell')
 
 ```
 
 To correct small inconsistencies in the polygon geometry, we run the code below.
-We are a bit inbetween frameworks at the moment.
-Most of the package is built on sp. But as rgeos has been depreciated we have to
-switch the polygons to simple features and back again.
 
 ```{r, fig.show='hold'}
-polygon_data <- sf:::as_Spatial(st_buffer(st_as_sf(polygon_data), dist = 0))
-
+df <- sf::st_buffer(df, dist = 0)
 ```
 
-Now we have setup the data we can use the `prepare_data` function to create the objects needed to run the disaggregation model. The name of the response variable and id variable in the `SpatialPolygonsDataFrame` should be specified. 
+Now we have setup the data we can use the `prepare_data` function to create the objects needed to run the disaggregation model. The name of the response variable and id variable in the `sf` object should be specified. 
 
-The user can also control the parameters of the mesh that is used to create the spatial field. The mesh is created by finding a tight boundary around the polygon data, and creating a fine mesh within the boundary and a coarser mesh outside. This speeds up computation time by only having a very fine mesh within the area of interest and having a small region outside with a coarser mesh to avoid edge effects. The mesh parameters: `concave`, `convex` and `resolution` refer to the parameters used to create the mesh boundary using the [inla.noncovex.hull function](https://rdrr.io/github/andrewzm/INLA/man/inla.nonconvex.hull.html), while the mesh parameters `max.edge`, `cut` and `offset` refer to the parameters used to create the mesh using the [inla.mesh.2d function](https://rdrr.io/github/andrewzm/INLA/man/inla.mesh.2d.html).
+The user can also control the parameters of the mesh that is used to create the spatial field. The mesh is created by finding a tight boundary around the polygon data, and creating a fine mesh within the boundary and a coarser mesh outside. This speeds up computation time by only having a very fine mesh within the area of interest and having a small region outside with a coarser mesh to avoid edge effects. The mesh parameters: `concave`, `convex` and `resolution` refer to the parameters used to create the mesh boundary using the [fm_nonconvex_hull_inla function](https://rdrr.io/cran/fmesher/man/fm_nonconvex_hull_inla.html), while the mesh parameters `max.edge`, `cut` and `offset` refer to the parameters used to create the mesh using the [fm_mesh_2d function](https://rdrr.io/cran/fmesher/man/fm_mesh_2d.html).
 
 ```{r, fig.show='hold', eval= isINLA}
-data_for_model <- prepare_data(polygon_data,
-                               cov_stack,
-                               pop_raster,
+data_for_model <- prepare_data(polygon_shapefile = df,
+                               covariate_rasters = cov_stack,
+                               aggregation_raster = pop_raster,
                                response_var = 'cases',
                                id_var = 'censustract.FIPS',
                                mesh.args = list(cut = 0.01,
                                                 offset = c(0.1, 0.5),
                                                 max.edge = c(0.1, 0.2),
                                                 resolution = 250),
-                               na.action = TRUE,
-                               ncores = 1)
+                               na.action = TRUE)
 ```
 
 ```{r, fig.show='hold', eval= isINLA}
 plot(data_for_model)
 ```
 
-Now have our data object we are ready to run the model. Here we can specify 
+Now we have our data object we are ready to run the model. Here we can specify 
 the likelihood function as Gaussian, binomial or poisson, and we can specify 
 the link function as logit, log or identity. The disaggregation model makes 
 predictions at the pixel level:
   
   $link(pred_i) = \beta_0 + \beta X + GP(s_i) + u_i$
   
-where $X$ are the covariates, $GP$ is the gaussian random field and $u_i$ is the iid random effect. The pixel predictions are then aggregated to the polygon level using the weighted sum (via the aggregation raster, $agg_i$):
+where $X$ are the covariates, $GP$ is the Gaussian random field and $u_i$ is the iid random effect. The pixel predictions are then aggregated to the polygon level using the weighted sum (via the aggregation raster, $agg_i$):
   
   $cases_j = \sum_{i \epsilon j} pred_i \times agg_i$
   

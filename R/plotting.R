@@ -1,90 +1,90 @@
 #' Plot input data for disaggregation
 #'
 #' Plotting function for class \emph{disag_data} (the input data for disaggregation).
-#' 
+#'
 #' Produces three plots: polygon response data, covariate rasters and INLA mesh.
 #'
 #' @param x Object of class \emph{disag_data} to be plotted.
 #' @param which If a subset of plots is required, specify a subset of the numbers 1:3
 #' @param ... Further arguments to \emph{plot} function.
-#' 
+#'
 #' @return A list of three plots: the polygon plot (ggplot), covariate plot (spplot) and INLA mesh plot (ggplot)
-#' 
+#'
 #' @import ggplot2
 #' @method plot disag_data
-#' 
+#'
 #' @export
 
 plot.disag_data <- function(x, which = c(1,2,3), ...) {
-  
+
   plots <- list()
   titles <- c()
-  
+
   if(1 %in% which) {
     plots$polygon <- plot_polygon_data(x$polygon_shapefile, x$shapefile_names)
     titles <- c(titles, 'Polygon response data')
   }
-  
+
   if(2 %in% which) {
-    stopifnot(inherits(x$covariate_rasters, c('RasterStack', 'RasterBrick')))
-    plots$covariates <- sp::spplot(x$covariate_rasters)
+    stopifnot(inherits(x$covariate_rasters, c('SpatRaster')))
+    plots$covariates <- ggplot2::ggplot() + tidyterra::geom_spatraster(data=x$covariate_rasters) + ggplot2::facet_wrap(~lyr) + tidyterra::scale_fill_terrain_c()
     titles <- c(titles, 'Covariate rasters')
   }
-  
+
   if(3 %in% which & !is.null(x$mesh)) {
     stopifnot(inherits(x$mesh, 'inla.mesh'))
     plots$mesh <- plot_mesh(x$mesh)
     titles <- c(titles, 'INLA mesh for spatial field')
   }
-  
+
   print(cowplot::plot_grid(plotlist = plots, labels = titles, label_size = 10))
-  
+
   return(invisible(plots))
 }
 
 #' Plot results of fitted model
 #'
 #' Plotting function for class \emph{disag_model} (the result of the disaggregation fitting).
-#' 
+#'
 #' Produces two plots: results of the fixed effects and in-sample observed vs predicted plot.
-#' 
+#'
 #' @param x Object of class \emph{disag_model} to be plotted.
 #' @param ... Further arguments to \emph{plot} function.
-#' 
-#' @return A list of two ggplot plots: results of the fixed effects and an in-sample observed vs predicted plot 
-#' 
+#'
+#' @return A list of two ggplot plots: results of the fixed effects and an in-sample observed vs predicted plot
+#'
 #' @import ggplot2
 #' @method plot disag_model
-#' 
+#'
 #' @export
 
 
 plot.disag_model <- function(x, ...){
-  
+
   parameter <- sd <- obs <- pred <- NULL
   posteriors <- as.data.frame(summary(x$sd_out, select = 'fixed'))
   posteriors <- dplyr::mutate(posteriors, name = rownames(posteriors))
   names(posteriors) <- c('mean', 'sd', 'parameter')
   posteriors$fixed <- grepl('slope', posteriors$parameter)
   posteriors$type <- ifelse(posteriors$fixed, 'Slope', 'Other')
-  
+
   # Check name lengths match before substituting.
-  lengths_match <- raster::nlayers(x$data$covariate_rasters) == sum(posteriors$fixed)
+  lengths_match <- terra::nlyr(x$data$covariate_rasters) == sum(posteriors$fixed)
   if(lengths_match){
     posteriors$parameter[grepl('slope', posteriors$parameter)] <- names(x$data$covariate_rasters)
   }
-  
-  fixedeffects <- ggplot() + 
-    geom_errorbar(posteriors, mapping = aes(x = parameter, ymin = mean - sd, 
-                                            ymax = mean + sd), 
-                  width = 0.2, color = "blue") + 
-    geom_point(posteriors, mapping = aes(x = parameter, y = mean)) + 
-    facet_wrap( ~ type , scales = 'free') + 
+
+  fixedeffects <- ggplot() +
+    geom_errorbar(posteriors, mapping = aes(x = parameter, ymin = mean - sd,
+                                            ymax = mean + sd),
+                  width = 0.2, color = "blue") +
+    geom_point(posteriors, mapping = aes(x = parameter, y = mean)) +
+    facet_wrap( ~ type , scales = 'free') +
     coord_flip() +
     ggtitle("Parameters (excluding random effects)")
-  
+
   report <- x$obj$report()
-  
+
   # Form of the observed and predicted results depends on the likelihood function used
   if(x$model_setup$family == 'gaussian') {
     observed_data = report$polygon_response_data/report$reportnormalisation
@@ -99,76 +99,76 @@ plot.disag_model <- function(x, ...){
     predicted_data = report$reportprediction_rate
     title <- 'In sample performance: incidence rate'
   }
-  
+
   data <- data.frame(obs = observed_data, pred = predicted_data)
-  
-  obspred <- ggplot(data, aes(x = obs, y = pred)) + 
-    geom_point() + 
-    geom_abline(intercept = 0, slope = 1, color = 'blue') + 
+
+  obspred <- ggplot(data, aes(x = obs, y = pred)) +
+    geom_point() +
+    geom_abline(intercept = 0, slope = 1, color = 'blue') +
     ggtitle(title)
-  
+
   plots <- list(fixedeffects, obspred)
   print(cowplot::plot_grid(plotlist = plots))
-  
+
   return(invisible(plots))
 }
 
 #' Plot mean and uncertainty predictions from the disaggregation model results
 #'
 #' Plotting function for class \emph{disag_prediction} (the mean and uncertainty predictions of the disaggregation fitting).
-#' 
+#'
+#'
 #' Produces raster plots of the mean prediction, and the lower and upper confidence intervals.
 #'
 #' @param x Object of class \emph{disag_prediction} to be plotted.
 #' @param ... Further arguments to \emph{plot} function.
-#' 
+#'
 #' @return A list of plots of rasters from the prediction: mean prediction, lower CI and upper CI.
-#' 
+#'
 #' @method plot disag_prediction
-#' 
+#'
 #' @export
 
 
 plot.disag_prediction <- function(x, ...) {
 
-  rasters_to_plot <- raster::stack(x$mean_prediction$prediction, x$uncertainty_prediction$predictions_ci)
+  rasters_to_plot <- terra::rast(list(x$mean_prediction$prediction, x$uncertainty_prediction$predictions_ci))
   names(rasters_to_plot) <- c('mean prediction', 'lower CI', 'upper CI')
-  
-  plots <- sp::spplot(rasters_to_plot)
-  
+
+  plots <- ggplot2::ggplot() + tidyterra::geom_spatraster(data=rasters_to_plot) + ggplot2::facet_wrap(~lyr) + tidyterra::scale_fill_terrain_c()
+
   print(plots)
-  
+
   return(invisible(plots))
 }
 
 
-# Plot polygon data from SpatialPolygonDataFrame
+# Plot polygon data from sf object
 #
 # @param x Object to be plotted
 # @param names list of 2 names: polygon id variable and response variable names
-# 
+#
 # @return A ggplot of the polygon data
-# 
+#
 # @name plot_polygon_data
 
-plot_polygon_data <- function(x, names) {
+plot_polygon_data <- function(polygon_shapefile, names) {
 
   # Rename the response variable for plotting
-  shp <- sf::st_as_sf(x)
+  shp <- polygon_shapefile
   shp <- dplyr::rename(shp, 'response' = names$response_var)
   shp <- dplyr::rename(shp, 'area_id' = names$id_var)
-  
+
   area_id <- long <- lat <- group <- response <- NULL
   stopifnot(inherits(shp, 'sf'))
-  
 
-  shp <- dplyr::mutate(shp, area_id = as.character(area_id)) 
+  shp <- dplyr::mutate(shp, area_id = as.character(area_id))
 
-  p <- ggplot(shp, aes(fill = response)) + 
+  p <- ggplot(shp, aes(fill = response)) +
     geom_sf() +
     #coord_equal() +
     scale_fill_viridis_c(trans = 'identity')
-  
+
   return(invisible(p))
 }
 
@@ -179,24 +179,24 @@ plot_polygon_data <- function(x, names) {
 # @param lwd Line width
 # @param linecol The colour for the mesh edges
 # @param size size Size of data points
-# 
+#
 # @name plot_mesh
 
 plot_mesh <- function(x, main = '', col = 'blue', lwd = 0.5, linecol = 'darkgrey', size = 1.2) {
-  
+
   mesh <- x
   # extract point data
   d <- data.frame(x = mesh$loc[, 1], y = mesh$loc[, 2], type = 'evertices')
   levels(d$type) <- c('evertices', 'adata')
   d[mesh$idx$loc, 'type'] <- 'adata'
-  # extract lines data. 
+  # extract lines data.
   # mesh$graph$tv column 1, 2, 3 are points in triangles.
   # Therefore need 1 to 2, 2 to 3 and 3 to 1.
-  idx = rbind(mesh$graph$tv[, 1:2, drop = FALSE], 
-              mesh$graph$tv[, 2:3, drop = FALSE], 
+  idx = rbind(mesh$graph$tv[, 1:2, drop = FALSE],
+              mesh$graph$tv[, 2:3, drop = FALSE],
               mesh$graph$tv[, c(3, 1), drop = FALSE])
   segments <- data.frame(mesh$loc[idx[, 1], 1:2], mesh$loc[idx[, 2], 1:2], type = 'bsegments')
-  
+
   innerouter <- data.frame(mesh$loc[mesh$segm$bnd$idx[, 1], 1:2],
                            mesh$loc[mesh$segm$bnd$idx[, 2], 1:2],
                            type = 'cbinding', stringsAsFactors = FALSE)
@@ -211,19 +211,19 @@ plot_mesh <- function(x, main = '', col = 'blue', lwd = 0.5, linecol = 'darkgrey
     #innerouter[nrow(innerouter), 5] <- 'dinternal'
     innerouter$type = factor(innerouter$type, levels = c('dinternal', 'cbinding'))
   }
-  
-  
+
+
   names(segments) <- c('x1', 'y1', 'x2', 'y2', 'type')
   names(innerouter) <- c('x1', 'y1', 'x2', 'y2', 'type')
-  
+
   segments <- rbind(segments, innerouter)
-  
+
   #size = .data$type
-  p <- ggplot2::ggplot(data = d, 
-                       ggplot2::aes(.data$x, .data$y, 
+  p <- ggplot2::ggplot(data = d,
+                       ggplot2::aes(.data$x, .data$y,
                                            colour = .data$type)) +
-    ggplot2::geom_segment(data = segments, 
-                          ggplot2::aes(x = .data$x1, y = .data$y1, 
+    ggplot2::geom_segment(data = segments,
+                          ggplot2::aes(x = .data$x1, y = .data$y1,
                                        xend = .data$x2, yend = .data$y2,
                                        linewidth = .data$type)) +
     ggplot2::geom_point(aes(size = .data$type)) +
@@ -235,6 +235,6 @@ plot_mesh <- function(x, main = '', col = 'blue', lwd = 0.5, linecol = 'darkgrey
     ggplot2::scale_size_manual(values = c(size, lwd, 1.3, 1.3, 0), drop = FALSE) +
     ggplot2::scale_linewidth_manual(values = c(size, lwd, 1.3, 1.3, 0), drop = FALSE) +
     ggtitle(main)
-  
+
   return(invisible(p))
 }
