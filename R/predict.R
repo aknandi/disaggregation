@@ -275,11 +275,7 @@ setup_objects <- function(model_output, newdata = NULL, predict_iid = FALSE) {
                                   area_id =
                                     factor(model_output$data$polygon_data$area_id))
     }
-    shapefile_raster <- terra::rasterize(tmp_shp,
-                                          model_output$data$covariate_rasters,
-                                          field = 'area_id')
-    shapefile_ids <- terra::unique(shapefile_raster)
-    iid_objects <- list(shapefile_raster = shapefile_raster, shapefile_ids = shapefile_ids)
+    iid_objects <- list(shapefile = tmp_shp, template = model_output$data$covariate_rasters)
   } else {
     iid_objects <- NULL
   }
@@ -320,23 +316,22 @@ predict_single_raster <- function(model_parameters, objects, link_function) {
   }
 
     if(!is.null(objects$iid_objects)) {
-    iid_ras <- objects$iid_objects$shapefile_raster
+
+    objects$iid_objects$shapefile$iid <- model_parameters$iideffect
+
+    iid_ras <- terra::rasterize(objects$iid_objects$shapefile, objects$iid_objects$template, field = 'iid')
     iideffect_sd <- 1/sqrt(exp(model_parameters$iideffect_log_tau))
-    # todo
-    for(i in seq_along(model_parameters$iideffect)) {
-      targetvals <- terra::values(objects$iid_objects$shapefile_raster,
-                                  dataframe = FALSE, mat = FALSE)
-      whichvals <- which(targetvals == objects$iid_objects$shapefile_ids[1, i])
-      terra::values(iid_ras)[whichvals] <-
-        model_parameters$iideffect[i]
-      na_pixels <- which(is.na(terra::values(iid_ras, dataframe = FALSE, mat = FALSE)))
+
+    na_pixels <- which(is.na(terra::values(iid_ras, dataframe = FALSE, mat = FALSE)))
+    if (length(na_pixels) != 0){
       na_iid_values <- stats::rnorm(length(na_pixels), 0, iideffect_sd)
-      terra::values(iid_ras)[na_pixels] <- na_iid_values
+      iid_ras[na_pixels] <- na_iid_values
     }
+
     if(terra::ext(iid_ras) != terra::ext(linear_pred)) {
       # Extent of prediction space is different to the original model. Keep any overlapping iid values but predict to the new extent
       raster_new_extent <- linear_pred
-      terra::values(raster_new_extent) <- NA
+      raster_new_extent[1:terra::ncell(raster_new_extent)] <- NA
       #iid_ras <- terra::merge(iid_ras, raster_new_extent, ext = terra::ext(raster_new_extent))
       # NOt sure why we no longer need the ext argument
       # SS - added a crop which I think does the same thing
@@ -344,7 +339,7 @@ predict_single_raster <- function(model_parameters, objects, link_function) {
       iid_ras <- terra::crop(iid_ras, raster_new_extent)
       missing_pixels <- which(is.na(terra::values(iid_ras, dataframe = FALSE, mat = FALSE)))
       missing_iid_values <- stats::rnorm(length(missing_pixels), 0, iideffect_sd)
-      terra::values(iid_ras)[missing_pixels] <- missing_iid_values
+      iid_ras[missing_pixels] <- missing_iid_values
     }
     linear_pred <- linear_pred + iid_ras
   } else {
