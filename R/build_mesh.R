@@ -44,7 +44,7 @@
 #'
 #' @export
 
-build_mesh <- function(shapes, mesh_args = NULL) {
+build_mesh <- function(shapes, mesh_args = NULL, mesh.args = NULL) {
 
   if (!is.null(mesh.args) && missing(mesh_args)) {
     mesh_args <- mesh.args

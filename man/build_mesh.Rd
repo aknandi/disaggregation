@@ -4,7 +4,7 @@
 \alias{build_mesh}
 \title{Build mesh for disaggregaton model}
 \usage{
-build_mesh(shapes, mesh_args = NULL)
+build_mesh(shapes, mesh_args = NULL, mesh.args = NULL)
 }
 \arguments{
 \item{shapes}{sf covering the region under investigation.}

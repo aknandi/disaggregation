@@ -11,10 +11,13 @@ as.disag_data(
   polygon_data,
   covariate_data,
   aggregation_pixels,
-  coordsForFit,
-  coordsForPrediction,
-  startendindex,
-  mesh = NULL
+  coords_for_fit,
+  coords_for_prediction,
+  start_end_index,
+  mesh = NULL,
+  coordsForFit = NULL,
+  coordsForPrediction = NULL,
+  startendindex = NULL
 )
 }
 \arguments{
@@ -30,13 +33,19 @@ as.disag_data(
 
 \item{aggregation_pixels}{vector with value of aggregation raster at each pixel}
 
-\item{coordsForFit}{coordinates of the covariate data points within the polygons in x}
+\item{coords_for_fit}{coordinates of the covariate data points within the polygons in x}
 
-\item{coordsForPrediction}{coordinates of the covariate data points in the whole raster extent}
+\item{coords_for_prediction}{coordinates of the covariate data points in the whole raster extent}
 
-\item{startendindex}{matrix containing the start and end index for each polygon}
+\item{start_end_index}{matrix containing the start and end index for each polygon}
 
 \item{mesh}{inla.mesh object to use in the fit}
+
+\item{coordsForFit}{Deprecated.}
+
+\item{coordsForPrediction}{Deprecated.}
+
+\item{startendindex}{Deprecated.}
 }
 \value{
 A list is returned of class \code{disag_data}.
@@ -47,9 +56,9 @@ The list  of class \code{disag_data} contains:
  \item{polygon_data }{A data frame with columns of \emph{area_id}, \emph{response} and \emph{N} (sample size: all NAs unless using binomial data). Each row represents a polygon.}
  \item{covariate_data }{A data frame with columns of \emph{area_id}, \emph{cell_id} and one for each covariate in \emph{covariate_rasters}. Each row represents a pixel in a polygon.}
  \item{aggregation_pixels }{An array with the value of the aggregation raster for each pixel in the same order as the rows of \emph{covariate_data}.}
- \item{coordsForFit }{A matrix with two columns of x, y coordinates of pixels within the polygons. Used to make the spatial field.}
- \item{coordsForPrediction }{A matrix with two columns of x, y coordinates of pixels in the whole Raster. Used to make predictions.}
- \item{startendindex }{A matrix with two columns containing the start and end index of the pixels within each polygon.}
+ \item{coords_for_fit }{A matrix with two columns of x, y coordinates of pixels within the polygons. Used to make the spatial field.}
+ \item{coords_for_prediction }{A matrix with two columns of x, y coordinates of pixels in the whole Raster. Used to make predictions.}
+ \item{start_end_index }{A matrix with two columns containing the start and end index of the pixels within each polygon.}
  \item{mesh }{A INLA mesh to be used for the spatial field of the disaggregation model.}
 }
 \description{

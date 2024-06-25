@@ -48,9 +48,9 @@
 #'  \item{polygon_data }{A data frame with columns of \emph{area_id}, \emph{response} and \emph{N} (sample size: all NAs unless using binomial data). Each row represents a polygon.}
 #'  \item{covariate_data }{A data frame with columns of \emph{area_id}, \emph{cell_id} and one for each covariate in \emph{covariate_rasters}. Each row represents a pixel in a polygon.}
 #'  \item{aggregation_pixels }{An array with the value of the aggregation raster for each pixel in the same order as the rows of \emph{covariate_data}.}
-#'  \item{coordsForFit }{A matrix with two columns of x, y coordinates of pixels within the polygons. Used to make the spatial field.}
-#'  \item{coordsForPrediction }{A matrix with two columns of x, y coordinates of pixels in the whole Raster. Used to make predictions.}
-#'  \item{startendindex }{A matrix with two columns containing the start and end index of the pixels within each polygon.}
+#'  \item{coords_for_fit }{A matrix with two columns of x, y coordinates of pixels within the polygons. Used to make the spatial field.}
+#'  \item{coords_for_prediction }{A matrix with two columns of x, y coordinates of pixels in the whole Raster. Used to make predictions.}
+#'  \item{start_end_index }{A matrix with two columns containing the start and end index of the pixels within each polygon.}
 #'  \item{mesh }{A INLA mesh to be used for the spatial field of the disaggregation model.}
 #' @import splancs
 #' @import utils
@@ -190,11 +190,11 @@ prepare_data <- function(polygon_shapefile,
     }
   }
 
-  coordsForFit <- extractCoordsForMesh(covariate_rasters, selectIds = covariate_data$cell)
+  coords_for_fit <- extractCoordsForMesh(covariate_rasters, selectIds = covariate_data$cell)
 
-  coordsForPrediction <- extractCoordsForMesh(covariate_rasters)
+  coords_for_prediction <- extractCoordsForMesh(covariate_rasters)
 
-  startendindex <- getStartendindex(covariate_data, polygon_data, id_var = id_var)
+  start_end_index <- getStartendindex(covariate_data, polygon_data, id_var = id_var)
 
   if(make_mesh) {
       mesh <- build_mesh(polygon_shapefile, mesh_args)
@@ -209,9 +209,9 @@ prepare_data <- function(polygon_shapefile,
                      polygon_data = polygon_data,
                      covariate_data = covariate_data,
                      aggregation_pixels = aggregation_pixels,
-                     coordsForFit = coordsForFit,
-                     coordsForPrediction = coordsForPrediction,
-                     startendindex = startendindex,
+                     coords_for_fit = coords_for_fit,
+                     coords_for_prediction = coords_for_prediction,
+                     start_end_index = start_end_index,
                      mesh = mesh)
 
   class(disag_data) <- c('disag_data', 'list')
@@ -228,9 +228,12 @@ prepare_data <- function(polygon_shapefile,
 #' @param polygon_data data.frame with two columns: polygon id and response
 #' @param covariate_data data.frame with cell id, polygon id and covariate columns
 #' @param aggregation_pixels vector with value of aggregation raster at each pixel
-#' @param coordsForFit coordinates of the covariate data points within the polygons in x
-#' @param coordsForPrediction coordinates of the covariate data points in the whole raster extent
-#' @param startendindex matrix containing the start and end index for each polygon
+#' @param coords_for_fit coordinates of the covariate data points within the polygons in x
+#' @param coords_for_prediction coordinates of the covariate data points in the whole raster extent
+#' @param start_end_index matrix containing the start and end index for each polygon
+#' @param coordsForFit Deprecated.
+#' @param coordsForPrediction Deprecated.
+#' @param startendindex Deprecated.
 #' @param mesh inla.mesh object to use in the fit
 #'
 #' @return A list is returned of class \code{disag_data}.
@@ -241,9 +244,9 @@ prepare_data <- function(polygon_shapefile,
 #'  \item{polygon_data }{A data frame with columns of \emph{area_id}, \emph{response} and \emph{N} (sample size: all NAs unless using binomial data). Each row represents a polygon.}
 #'  \item{covariate_data }{A data frame with columns of \emph{area_id}, \emph{cell_id} and one for each covariate in \emph{covariate_rasters}. Each row represents a pixel in a polygon.}
 #'  \item{aggregation_pixels }{An array with the value of the aggregation raster for each pixel in the same order as the rows of \emph{covariate_data}.}
-#'  \item{coordsForFit }{A matrix with two columns of x, y coordinates of pixels within the polygons. Used to make the spatial field.}
-#'  \item{coordsForPrediction }{A matrix with two columns of x, y coordinates of pixels in the whole Raster. Used to make predictions.}
-#'  \item{startendindex }{A matrix with two columns containing the start and end index of the pixels within each polygon.}
+#'  \item{coords_for_fit }{A matrix with two columns of x, y coordinates of pixels within the polygons. Used to make the spatial field.}
+#'  \item{coords_for_prediction }{A matrix with two columns of x, y coordinates of pixels in the whole Raster. Used to make predictions.}
+#'  \item{start_end_index }{A matrix with two columns containing the start and end index of the pixels within each polygon.}
 #'  \item{mesh }{A INLA mesh to be used for the spatial field of the disaggregation model.}
 #'
 #' @name as.disag_data
@@ -257,10 +260,29 @@ as.disag_data <- function(polygon_shapefile,
                           polygon_data,
                           covariate_data,
                           aggregation_pixels,
-                          coordsForFit,
-                          coordsForPrediction,
-                          startendindex,
-                          mesh = NULL) {
+                          coords_for_fit,
+                          coords_for_prediction,
+                          start_end_index,
+                          mesh = NULL,
+                          coordsForFit = NULL,
+                          coordsForPrediction = NULL,
+                          startendindex = NULL) {
+
+  # Handle deprecated variables
+  if (!is.null(coordsForFit) && missing(coords_for_fit)) {
+    coords_for_fit <- coordsForFit
+    message("coordsForFit is deprecated and will be removed in a future version - please use coords_for_fit instead")
+  }
+
+  if (!is.null(coordsForPrediction) && missing(coords_for_prediction)) {
+    coords_for_prediction <- coordsForPrediction
+    message("coordsForPrediction is deprecated and will be removed in a future version - please use coords_for_prediction instead")
+  }
+
+  if (!is.null(startendindex) && missing(start_end_index)) {
+    start_end_index <- startendindex
+    message("startendindex is deprecated and will be removed in a future version - please use start_end_index instead")
+  }
 
   stopifnot(inherits(polygon_shapefile, 'sf'))
   stopifnot(inherits(shapefile_names, 'list'))
@@ -268,9 +290,9 @@ as.disag_data <- function(polygon_shapefile,
   stopifnot(inherits(polygon_data, 'data.frame'))
   stopifnot(inherits(covariate_data, 'data.frame'))
   stopifnot(inherits(aggregation_pixels, 'numeric'))
-  stopifnot(inherits(coordsForFit, 'matrix'))
-  stopifnot(inherits(coordsForPrediction, 'matrix'))
-  stopifnot(inherits(startendindex, 'matrix'))
+  stopifnot(inherits(coords_for_fit, 'matrix'))
+  stopifnot(inherits(coords_for_prediction, 'matrix'))
+  stopifnot(inherits(start_end_index, 'matrix'))
   if(!is.null(mesh)) {
     stopifnot(inherits(mesh, 'inla.mesh'))
   }
@@ -281,9 +303,9 @@ as.disag_data <- function(polygon_shapefile,
                      polygon_data = polygon_data,
                      covariate_data = covariate_data,
                      aggregation_pixels = aggregation_pixels,
-                     coordsForFit = coordsForFit,
-                     coordsForPrediction = coordsForPrediction,
-                     startendindex = startendindex,
+                     coords_for_fit = coords_for_fit,
+                     coords_for_prediction = coords_for_prediction,
+                     start_end_index = start_end_index,
                      mesh = mesh)
 
   class(disag_data) <- c('disag_data', 'list')

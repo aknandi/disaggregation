@@ -275,7 +275,7 @@ setup_objects <- function(model_output, new_data = NULL, predict_iid = FALSE) {
 
   if(model_output$model_setup$field) {
     if(is.null(new_data)) {
-      coords <- data$coordsForPrediction
+      coords <- data$coords_for_prediction
     } else {
       coords <- getCoords(data)
     }

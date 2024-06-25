@@ -327,7 +327,7 @@ make_model_object <- function(data,
   spde <- rSPDE::matern.operators(mesh = data$mesh, alpha = nu + 1, compute_higher_order = TRUE)$fem_mesh_matrices
   spde[[4]] <- NULL
   names(spde) <- c("M0", "M1", "M2")
-  Apix <- fmesher::fm_evaluator(data$mesh, loc = data$coordsForFit)$proj$A
+  Apix <- fmesher::fm_evaluator(data$mesh, loc = data$coords_for_fit)$proj$A
   n_s <- nrow(spde$M0)
 
   cov_matrix <- as.matrix(data$covariate_data[, (names(data$covariate_data) %in% names(data$covariate_rasters))])
@@ -393,7 +393,7 @@ make_model_object <- function(data,
                      aggregation_values = data$aggregation_pixels,
                      Apixel = Apix,
                      spde = spde,
-                     startendindex = data$startendindex,
+                     start_end_index = data$start_end_index,
                      polygon_response_data = data$polygon_data$response,
                      response_sample_size = data$polygon_data$N,
                      family = family_id,
