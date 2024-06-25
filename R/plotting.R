@@ -42,24 +42,18 @@ plot.disag_data <- function(x, which = c(1,2,3), ...) {
   return(invisible(plots))
 }
 
-#' Plot results of fitted model
-#'
-#' Plotting function for class \emph{disag_model} (the result of the disaggregation fitting).
-#'
-#' Produces two plots: results of the fixed effects and in-sample observed vs predicted plot.
+
+#' Convert results of the model ready for plotting
 #'
 #' @param x Object of class \emph{disag_model} to be plotted.
-#' @param ... Further arguments to \emph{plot} function.
 #'
-#' @return A list of two ggplot plots: results of the fixed effects and an in-sample observed vs predicted plot
-#'
-#' @import ggplot2
-#' @method plot disag_model
+#' @return A list that contains:
+#' \item{posteriors} A data.frame of posteriors
+#' \item{data} A data.frame of observed and predicted data
+#' \item{title} The title of the observed vs. predicted plot
 #'
 #' @export
-
-
-plot.disag_model <- function(x, ...){
+plot_disag_model_data <- function(x){
 
   parameter <- sd <- obs <- pred <- NULL
   posteriors <- as.data.frame(summary(x$sd_out, select = 'fixed'))
@@ -73,15 +67,6 @@ plot.disag_model <- function(x, ...){
   if(lengths_match){
     posteriors$parameter[grepl('slope', posteriors$parameter)] <- names(x$data$covariate_rasters)
   }
-
-  fixedeffects <- ggplot() +
-    geom_errorbar(posteriors, mapping = aes(x = parameter, ymin = mean - sd,
-                                            ymax = mean + sd),
-                  width = 0.2, color = "blue") +
-    geom_point(posteriors, mapping = aes(x = parameter, y = mean)) +
-    facet_wrap( ~ type , scales = 'free') +
-    coord_flip() +
-    ggtitle("Parameters (excluding random effects)")
 
   report <- x$obj$report()
 
@@ -101,6 +86,45 @@ plot.disag_model <- function(x, ...){
   }
 
   data <- data.frame(obs = observed_data, pred = predicted_data)
+
+  return(list(posteriors = posteriors,
+              data = data,
+              title = title))
+
+}
+
+#' Plot results of fitted model
+#'
+#' Plotting function for class \emph{disag_model} (the result of the disaggregation fitting).
+#'
+#' Produces two plots: results of the fixed effects and in-sample observed vs predicted plot.
+#'
+#' @param x Object of class \emph{disag_model} to be plotted.
+#' @param ... Further arguments to \emph{plot} function.
+#'
+#' @return A list of two ggplot plots: results of the fixed effects and an in-sample observed vs predicted plot
+#'
+#' @import ggplot2
+#' @method plot disag_model
+#'
+#' @export
+
+plot.disag_model <- function(x, ...){
+
+  x <- plot_disag_model_data(x)
+
+  posteriors <- x$posteriors
+  data <- x$data
+  title <- x$title
+
+  fixedeffects <- ggplot() +
+    geom_errorbar(posteriors, mapping = aes(x = parameter, ymin = mean - sd,
+                                            ymax = mean + sd),
+                  width = 0.2, color = "blue") +
+    geom_point(posteriors, mapping = aes(x = parameter, y = mean)) +
+    facet_wrap( ~ type , scales = 'free') +
+    coord_flip() +
+    ggtitle("Parameters (excluding random effects)")
 
   obspred <- ggplot(data, aes(x = obs, y = pred)) +
     geom_point() +
