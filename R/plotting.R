@@ -156,8 +156,8 @@ plot_polygon_data <- function(polygon_shapefile, names) {
 
   # Rename the response variable for plotting
   shp <- polygon_shapefile
-  shp <- dplyr::rename(shp, 'response' = names$response_var)
-  shp <- dplyr::rename(shp, 'area_id' = names$id_var)
+  names(shp)[names(shp) == names$id_var] <- 'area_id'
+  names(shp)[names(shp) == names$response_var] <- 'response'
 
   area_id <- long <- lat <- group <- response <- NULL
   stopifnot(inherits(shp, 'sf'))
