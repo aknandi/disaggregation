@@ -3,8 +3,6 @@ context("Extract covariates and polygon data")
 
 test_that("getPolygonData function", {
 
-  skip_on_cran()
-
   expect_error(getPolygonData(spdf, id_var = 'id', response_var = 'response'))
   expect_error(getPolygonData(spdf, id_var = 'area_id', response_var = 'data'))
 
@@ -29,8 +27,6 @@ test_that("getPolygonData function", {
 
 test_that("getCovariateData function gives errors when it should", {
 
-  skip_on_cran()
-
   expect_error(getCovariateRasters('/home/rasters', '.tif$', spdf))
 
   # Save .tif files in tempdir()
@@ -42,8 +38,6 @@ test_that("getCovariateData function gives errors when it should", {
 })
 
 test_that("extractCoordsForMesh function behaves as it should", {
-
-  skip_on_cran()
 
   cov_data <- terra::extract(cov_stack, spdf, cells = TRUE, na.rm = TRUE, ID = TRUE)
   names(cov_data)[1] <- 'area_id'

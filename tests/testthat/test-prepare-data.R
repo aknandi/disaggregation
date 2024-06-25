@@ -2,8 +2,6 @@ context("Preparing data")
 
 test_that("Check prepare_data function works as expected", {
 
-  skip_on_cran()
-
   result <- prepare_data(polygon_shapefile = spdf,
                          covariate_rasters = cov_stack)
 
@@ -28,8 +26,6 @@ test_that("Check prepare_data function works as expected", {
 })
 
 test_that("Check prepare_data function with sample size works as expected", {
-
-  skip_on_cran()
 
   result <- prepare_data(polygon_shapefile = spdf_binom,
                          covariate_rasters = cov_stack,
@@ -57,8 +53,6 @@ test_that("Check prepare_data function with sample size works as expected", {
 })
 
 test_that("Check prepare_data function deals with NAs as expected", {
-
-  skip_on_cran()
 
   cov_stack_na <- cov_stack
   cov_stack_na[[1]][c(1:10)] <- NA
@@ -99,8 +93,6 @@ test_that("Check prepare_data function deals with NAs as expected", {
 
 
 test_that("Check as.disag_data function works as expected", {
-
-  skip_on_cran()
 
   polygon_data <- getPolygonData(spdf, id_var = 'area_id', response_var = 'response')
 

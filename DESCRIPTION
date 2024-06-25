@@ -26,16 +26,15 @@ Imports:
     dplyr,
     ggplot2,
     cowplot,
+    rSPDE,
     sparseMVN,
     fmesher,
     tidyterra,
     terra,
     sf,
     utils
-Additional_repositories: https://inla.r-inla-download.org/R/stable
 Suggests: 
     testthat,
-    INLA,
     knitr,
     rmarkdown,
     SpatialEpi

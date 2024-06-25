@@ -2,9 +2,6 @@ context("Predict model")
 
 test_that("Check predict.disag_model function works as expected", {
 
-  skip_if_not_installed('INLA')
-  skip_on_cran()
-
   result <- disag_model(test_data, iterations = 1000,
                         iid = TRUE,
                         field = TRUE,
@@ -96,9 +93,6 @@ test_that("Check predict.disag_model function works as expected", {
 
 test_that("Check predict.disag_model function works with newdata", {
 
-  skip_if_not_installed('INLA')
-  skip_on_cran()
-
   result <- disag_model(test_data, field = FALSE, iid = TRUE, iterations = 100,
                         priors = list(priormean_intercept = 0,
                                       priorsd_intercept = 1,
@@ -143,9 +137,6 @@ test_that("Check predict.disag_model function works with newdata", {
 
 test_that('Check that check_newdata works', {
 
-  skip_if_not_installed('INLA')
-  skip_on_cran()
-
   result <- disag_model(test_data, field = FALSE, iterations = 100)
 
   newdata <- terra::crop(c(r, r2), c(0, 10, 0, 10))
@@ -169,9 +160,6 @@ test_that('Check that check_newdata works', {
 })
 
 test_that('Check that setup_objects works', {
-
-  skip_if_not_installed('INLA')
-  skip_on_cran()
 
   result <- disag_model(test_data, iterations = 100,
                         iid = TRUE,
@@ -216,9 +204,6 @@ test_that('Check that setup_objects works', {
 })
 
 test_that('Check that predict_single_raster works', {
-
-  skip_if_not_installed('INLA')
-  skip_on_cran()
 
   result <- disag_model(test_data, iterations = 100,
                         iid = TRUE,

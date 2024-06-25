@@ -2,8 +2,6 @@ context("Plotting data")
 
 test_that("Check plot_polygon_data function works as expected", {
 
-  skip_on_cran()
-
   p <- plot_polygon_data(spdf, list(id_var = 'area_id', response_var = 'response'))
   expect_error(plot_polygon_data(polys, list(id_var = 'area_id', response_var = 'response')))
   expect_is(p, 'ggplot')
@@ -14,9 +12,6 @@ test_that("Check plot_polygon_data function works as expected", {
 })
 
 test_that("Check plot.disag.data function works as expected", {
-
-  skip_if_not_installed('INLA')
-  skip_on_cran()
 
   test_data2 <- prepare_data(polygon_shapefile = spdf2,
                              covariate_rasters = cov_stack,
@@ -44,9 +39,6 @@ test_that("Check plot.disag.data function works as expected", {
 
 test_that("Check plot.disag_model function works as expected", {
 
-  skip_if_not_installed('INLA')
-  skip_on_cran()
-
   fit_result <- disag_model(test_data, iterations = 10)
 
   fit_result_nofield <- disag_model(test_data, iterations = 10, field = FALSE)
@@ -65,9 +57,6 @@ test_that("Check plot.disag_model function works as expected", {
 })
 
 test_that("Check plot.disag_prediction function works as expected", {
-
-  skip_if_not_installed('INLA')
-  skip_on_cran()
 
   fit_result <- disag_model(test_data, iterations = 1000,
                         iid = TRUE,

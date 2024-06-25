@@ -356,7 +356,9 @@ make_model_object <- function(data,
 
   nu = 1
   # Sort out mesh bits
-  spde <- (INLA::inla.spde2.matern(data$mesh, alpha = nu + 1)$param.inla)[c("M0", "M1", "M2")]
+  spde <- rSPDE::matern.operators(mesh = data$mesh, alpha = nu + 1, compute_higher_order = TRUE)$fem_mesh_matrices
+  spde[[4]] <- NULL
+  names(spde) <- c("M0", "M1", "M2")
   Apix <- fmesher::fm_evaluator(data$mesh, loc = data$coordsForFit)$proj$A
   n_s <- nrow(spde$M0)
 

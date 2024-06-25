@@ -3,9 +3,6 @@ context("Fitting model")
 
 test_that("disag_model produces errors when expected", {
 
-  skip_if_not_installed('INLA')
-  skip_on_cran()
-
   expect_error(disag_model(list()))
   expect_error(disag_model(test_data, iterations = 'iterations'))
   expect_error(disag_model(test_data, priors = list(polygon_sd_men = 0.3, polygon_sd_sd = 0.4)))
@@ -17,9 +14,6 @@ test_that("disag_model produces errors when expected", {
 
 test_that("disag_model behaves as expected", {
 
-  skip_if_not_installed('INLA')
-  skip_on_cran()
-
   result <- disag_model(test_data, iterations = 100, iid = FALSE)
 
   expect_is(result, 'disag_model')
@@ -30,9 +24,6 @@ test_that("disag_model behaves as expected", {
 })
 
 test_that("disag_model with 1 covariate behaves as expected", {
-
-  skip_if_not_installed('INLA')
-  skip_on_cran()
 
   test_data2 <- test_data
   test_data2$covariate_rasters <- test_data2$covariate_rasters[[1]]
@@ -52,9 +43,6 @@ test_that("disag_model with 1 covariate behaves as expected", {
 
 })
 test_that("user defined model setup is working as expected", {
-
-  skip_if_not_installed('INLA')
-  skip_on_cran()
 
   binom_data <- prepare_data(polygon_shapefile = spdf_binom,
                              covariate_rasters = cov_stack,
@@ -96,9 +84,6 @@ test_that("user defined model setup is working as expected", {
 
 test_that("make_model_object behaves as expected", {
 
-  skip_if_not_installed('INLA')
-  skip_on_cran()
-
   result <- make_model_object(test_data)
 
   expect_is(result, 'list')
@@ -107,9 +92,6 @@ test_that("make_model_object behaves as expected", {
 })
 
 test_that("setup_hess_control behaves as expected", {
-
-  skip_if_not_installed('INLA')
-  skip_on_cran()
 
   obj <- make_model_object(test_data)
 

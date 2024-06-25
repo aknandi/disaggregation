@@ -2,8 +2,6 @@ context("Summary functions")
 
 test_that("Check summary.disag_data function works as expected", {
 
-  skip_on_cran()
-
   data_summary <- summary(test_data)
 
   expect_is(data_summary, 'list')
@@ -18,8 +16,6 @@ test_that("Check summary.disag_data function works as expected", {
 
 test_that("Check print.disag_data function works as expected", {
 
-  skip_on_cran()
-
   print_output <- print(test_data)
 
   expect_is(print_output, 'disag_data')
@@ -28,9 +24,6 @@ test_that("Check print.disag_data function works as expected", {
 })
 
 test_that("Check summary.disag_model function works as expected", {
-
-  skip_if_not_installed('INLA')
-  skip_on_cran()
 
   result <- disag_model(test_data, field = FALSE, iterations = 2)
 
@@ -48,9 +41,6 @@ test_that("Check summary.disag_model function works as expected", {
 
 test_that("Check print.disag_model function works as expected", {
 
-  skip_if_not_installed('INLA')
-  skip_on_cran()
-
   result <- disag_model(test_data, field = FALSE, iterations = 2)
 
   print_output <- print(result)
@@ -61,9 +51,6 @@ test_that("Check print.disag_model function works as expected", {
 })
 
 test_that("Check summary.disag_predictions function works as expected", {
-
-  skip_if_not_installed('INLA')
-  skip_on_cran()
 
   result <- disag_model(test_data, iid = FALSE, iterations = 100,
                         list(priormean_intercept = 0,
@@ -91,9 +78,6 @@ test_that("Check summary.disag_predictions function works as expected", {
 })
 
 test_that("Check print.disag_predictions function works as expected", {
-
-  skip_if_not_installed('INLA')
-  skip_on_cran()
 
   result <- disag_model(test_data, iid = FALSE, iterations = 100,
                         list(priormean_intercept = 0,
