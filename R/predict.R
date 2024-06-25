@@ -4,21 +4,22 @@
 #' predicts mean and uncertainty maps.
 #'
 #' To predict over a different spatial extent to that used in the model,
-#' a SpatRaster covering the region to make predictions over is passed to the argument \emph{newdata}.
+#' a SpatRaster covering the region to make predictions over is passed to the argument \emph{new_data}.
 #' If this is not given predictions are made over the data used in the fit.
 #'
 #' The \emph{predict_iid} logical flag should be set to TRUE if the results of the iid effect from the model are to be used in the prediction.
 #'
-#' For the uncertainty calculations, the number of the realisations and the size of the confidence interval to be calculated
+#' For the uncertainty calculations, the number of the realisations and the size of the credible interval to be calculated
 #' are given by the arguments \emph{N} and \emph{CI} respectively.
 #'
 #' @param object disag_model object returned by disag_model function.
-#' @param newdata If NULL, predictions are made using the data in model_output.
+#' @param new_data If NULL, predictions are made using the data in model_output.
 #'   If this is a raster stack or brick, predictions will be made over this data.
 #' @param predict_iid logical. If TRUE, any polygon iid effect from the model will be used in the prediction. Default FALSE.
 #' @param N Number of realisations. Default: 100.
-#' @param CI Confidence interval to be calculated from the realisations. Default: 0.95.
+#' @param CI Credible interval to be calculated from the realisations. Default: 0.95.
 #' @param ... Further arguments passed to or from other methods.
+#' @param newdata Deprecated.
 #'
 #' @return An object of class \emph{disag_prediction} which consists of a list of two objects:
 #'  \item{mean_prediction }{List of:
@@ -45,11 +46,16 @@
 #' @export
 
 
-predict.disag_model <- function(object, newdata = NULL, predict_iid = FALSE, N = 100, CI = 0.95, ...) {
+predict.disag_model <- function(object, new_data = NULL, predict_iid = FALSE, N = 100, CI = 0.95, newdata = NULL, ...) {
 
-  mean_prediction <- predict_model(object, newdata = newdata, predict_iid)
+  if (!is.null(newdata) && missing(new_data)) {
+    new_data <- newdata
+    message("newdata is deprecated and will be removed in a future version - please use new_data instead")
+  }
 
-  uncertainty_prediction <- predict_uncertainty(object, newdata = newdata, predict_iid, N, CI)
+  mean_prediction <- predict_model(object, new_data = new_data, predict_iid)
+
+  uncertainty_prediction <- predict_uncertainty(object, new_data = new_data, predict_iid, N, CI)
 
   prediction <- list(mean_prediction = mean_prediction,
                      uncertainty_prediction = uncertainty_prediction)
@@ -68,15 +74,16 @@ predict.disag_model <- function(object, newdata = NULL, predict_iid = FALSE, N =
 #' to the linear predictor.
 #'
 #' To predict over a different spatial extent to that used in the model,
-#' a SpatRaster covering the region to make predictions over is passed to the argument \emph{newdata}.
+#' a SpatRaster covering the region to make predictions over is passed to the argument \emph{new_data}.
 #' If this is not given predictions are made over the data used in the fit.
 #'
 #' The \emph{predict_iid} logical flag should be set to TRUE if the results of the iid effect from the model are to be used in the prediction.
 #'
 #' @param model_output disag_model object returned by disag_model function
-#' @param newdata If NULL, predictions are made using the data in model_output.
-#'   If this is a raster stack or brick, predictions will be made over this data. Default NULL.
+#' @param new_data If NULL, predictions are made using the data in model_output.
+#'   If this is a SpatRaster, predictions will be made over this data. Default NULL.
 #' @param predict_iid If TRUE, any polygon iid effect from the model will be used in the prediction. Default FALSE.
+#' @param newdata Deprecated.
 #'
 #' @return The mean prediction, which is a list of:
 #'   \itemize{
@@ -95,9 +102,14 @@ predict.disag_model <- function(object, newdata = NULL, predict_iid = FALSE, N =
 #'
 #' @export
 
-predict_model <- function(model_output, newdata = NULL, predict_iid = FALSE) {
+predict_model <- function(model_output, new_data = NULL, predict_iid = FALSE, newdata = NULL) {
 
-  objects_for_prediction <- setup_objects(model_output, newdata = newdata, predict_iid)
+  if (!is.null(newdata) && missing(new_data)) {
+    new_data <- newdata
+    message("newdata is deprecated and will be removed in a future version - please use new_data instead")
+  }
+
+  objects_for_prediction <- setup_objects(model_output, new_data = new_data, predict_iid)
 
   pars <- model_output$obj$env$last.par.best
   pars <- split(pars, names(pars))
@@ -118,20 +130,21 @@ predict_model <- function(model_output, newdata = NULL, predict_iid = FALSE) {
 #' Function returns a SpatRaster of the realisations as well as the upper and lower credible interval rasters.
 #'
 #' To predict over a different spatial extent to that used in the model,
-#' a SpatRaster covering the region to make predictions over is passed to the argument \emph{newdata}.
+#' a SpatRaster covering the region to make predictions over is passed to the argument \emph{new_data}.
 #' If this is not given predictions are made over the data used in the fit.
 #'
 #' The \emph{predict_iid} logical flag should be set to TRUE if the results of the iid effect from the model are to be used in the prediction.
 #'
-#' The number of the realisations and the size of the confidence interval to be calculated.
+#' The number of the realisations and the size of the credible interval to be calculated.
 #' are given by the arguments \emph{N} and \emph{CI} respectively.
 #'
 #' @param model_output disag_model object returned by disag_model function.
-#' @param newdata If NULL, predictions are made using the data in model_output.
+#' @param new_data If NULL, predictions are made using the data in model_output.
 #'   If this is a raster stack or brick, predictions will be made over this data. Default NULL.
 #' @param predict_iid If TRUE, any polygon iid effect from the model will be used in the prediction. Default FALSE.
 #' @param N number of realisations. Default: 100.
-#' @param CI confidence interval. Default: 0.95.
+#' @param CI credible interval. Default: 0.95.
+#' @param newdata Deprecated.
 #'
 #' @return The uncertainty prediction, which is a list of:
 #'   \itemize{
@@ -148,9 +161,14 @@ predict_model <- function(model_output, newdata = NULL, predict_iid = FALSE) {
 #'
 #' @export
 
-predict_uncertainty <- function(model_output, newdata = NULL, predict_iid = FALSE, N = 100, CI = 0.95) {
+predict_uncertainty <- function(model_output, new_data = NULL, predict_iid = FALSE, N = 100, CI = 0.95, newdata = NULL) {
 
-  objects_for_prediction <- setup_objects(model_output, newdata = newdata, predict_iid)
+  if (!is.null(newdata) && missing(new_data)) {
+    new_data <- newdata
+    message("newdata is deprecated and will be removed in a future version - please use new_data instead")
+  }
+
+  objects_for_prediction <- setup_objects(model_output, new_data = new_data, predict_iid)
 
   parameters <- model_output$obj$env$last.par.best
 
@@ -218,34 +236,34 @@ getCoords <- function(data) {
 }
 
 # Helper to check and sort out new raster data.
-check_newdata <- function(newdata, model_output){
-  if(is.null(newdata)) return(NULL)
-  if(!is.null(newdata)){
-    if(!(inherits(newdata, c('SpatRaster')))){
-      stop('newdata should be NULL or a SpatRaster')
+check_new_data <- function(new_data, model_output){
+  if(is.null(new_data)) return(NULL)
+  if(!is.null(new_data)){
+    if(!(inherits(new_data, c('SpatRaster')))){
+      stop('new_data should be NULL or a SpatRaster')
     }
-    if(!all(names(model_output$data$covariate_rasters) %in% names(newdata))){
-      stop('All covariates used to fit the model must be in newdata')
+    if(!all(names(model_output$data$covariate_rasters) %in% names(new_data))){
+      stop('All covariates used to fit the model must be in new_data')
     }
     # Take just the covariates we need and in the right order
-    newdata <- newdata[[names(model_output$data$covariate_rasters)]]
+    new_data <- new_data[[names(model_output$data$covariate_rasters)]]
   }
-  return(newdata)
+  return(new_data)
 }
 
 # Function to setup covariates, field and iid objects for prediction
-setup_objects <- function(model_output, newdata = NULL, predict_iid = FALSE) {
+setup_objects <- function(model_output, new_data = NULL, predict_iid = FALSE) {
 
-  newdata <- check_newdata(newdata, model_output)
+  new_data <- check_new_data(new_data, model_output)
 
   # Pull out original data
   data <- model_output$data
 
   # Decide which covariates to predict over
-  if(is.null(newdata)){
+  if(is.null(new_data)){
     covariates <- data$covariate_rasters
   } else {
-    covariates <- newdata
+    covariates <- new_data
   }
 
   data$covariate_rasters <- covariates
@@ -256,7 +274,7 @@ setup_objects <- function(model_output, newdata = NULL, predict_iid = FALSE) {
   }
 
   if(model_output$model_setup$field) {
-    if(is.null(newdata)) {
+    if(is.null(new_data)) {
       coords <- data$coordsForPrediction
     } else {
       coords <- getCoords(data)
