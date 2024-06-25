@@ -30,7 +30,7 @@ test_that("Check prepare_data function with sample size works as expected", {
   result <- prepare_data(polygon_shapefile = spdf_binom,
                          covariate_rasters = cov_stack,
                          sample_size_var = 'sample_size',
-                         makeMesh = FALSE)
+                         make_mesh = FALSE)
 
   expect_is(result, 'disag_data')
   expect_equal(length(result), 10)
@@ -60,15 +60,15 @@ test_that("Check prepare_data function deals with NAs as expected", {
   aggregation_raster_na <- r
   aggregation_raster_na[c(1:10)] <- NA
 
-  expect_error(prepare_data(polygon_shapefile = spdf_na, covariate_rasters = cov_stack, makeMesh = FALSE))
-  expect_error(prepare_data(polygon_shapefile = spdf, covariate_rasters = cov_stack_na, makeMesh = FALSE))
-  expect_error(prepare_data(polygon_shapefile = spdf, covariate_rasters = cov_stack, aggregation_raster = aggregation_raster_na, makeMesh = FALSE))
+  expect_error(prepare_data(polygon_shapefile = spdf_na, covariate_rasters = cov_stack, make_mesh = FALSE))
+  expect_error(prepare_data(polygon_shapefile = spdf, covariate_rasters = cov_stack_na, make_mesh = FALSE))
+  expect_error(prepare_data(polygon_shapefile = spdf, covariate_rasters = cov_stack, aggregation_raster = aggregation_raster_na, make_mesh = FALSE))
 
   result <- prepare_data(polygon_shapefile = spdf_na,
                          covariate_rasters = cov_stack_na,
                          aggregation_raster = aggregation_raster_na,
-                         na.action = TRUE,
-                         makeMesh = FALSE)
+                         na_action = TRUE,
+                         make_mesh = FALSE)
 
   expect_is(result, 'disag_data')
   expect_equal(length(result), 10)

@@ -32,9 +32,12 @@
 #' @param id_var Name of column in sf object with the polygon id.
 #' @param response_var Name of column in sf object with the response data.
 #' @param sample_size_var For survey data, name of column in sf object (if it exists) with the sample size data.
-#' @param mesh.args list of parameters that control the mesh structure with the same names as used by INLA.
-#' @param na.action logical. If TRUE, NAs in response will be removed, covariate NAs will be given the median value, aggregation NAs will be set to zero. Default FALSE (NAs in response or covariate data within the polygons will give errors).
-#' @param makeMesh logical. If TRUE, build INLA mesh, takes some time. Default TRUE.
+#' @param mesh_args list of parameters that control the mesh structure with the same names as used by INLA.
+#' @param na_action logical. If TRUE, NAs in response will be removed, covariate NAs will be given the median value, aggregation NAs will be set to zero. Default FALSE (NAs in response or covariate data within the polygons will give errors).
+#' @param make_mesh logical. If TRUE, build INLA mesh, takes some time. Default TRUE.
+#' @param mesh.args Deprecated.
+#' @param na.action Deprecated.
+#' @param makeMesh Deprecated.
 #' @param ncores Deprecated.
 #'
 #' @return A list is returned of class \code{disag_data}.
@@ -91,13 +94,35 @@ prepare_data <- function(polygon_shapefile,
                          id_var = 'area_id',
                          response_var = 'response',
                          sample_size_var = NULL,
+                         mesh_args = NULL,
+                         na_action = FALSE,
+                         make_mesh = TRUE,
                          mesh.args = NULL,
-                         na.action = FALSE,
-                         makeMesh = TRUE,
+                         na.action = NULL,
+                         makeMesh = NULL,
                          ncores = NULL) {
 
-    if (!missing("ncores"))
-      warning("The ncores argument has been deprecated")
+  # Deal with deprecated parameters
+
+  if (!is.null(na.action) && missing(na_action)) {
+    na_action <- na.action
+    message("na.action is deprecated and will be removed in a future version - please use na_action instead")
+  }
+
+  # Handle mesh.args / mesh_args
+  if (!is.null(mesh.args) && missing(mesh_args)) {
+    mesh_args <- mesh.args
+    message("mesh.args is deprecated and will be removed in a future version - please use mesh_args instead")
+  }
+
+  # Handle makeMesh / make_mesh
+  if (!is.null(makeMesh) && missing(make_mesh)) {
+    make_mesh <- makeMesh
+    message("makeMesh is deprecated and will be removed in a future version - please use make_mesh instead")
+  }
+
+  if (!missing("ncores"))
+    warning("ncores is deprecated and will be removed in a future version")
 
   stopifnot(inherits(polygon_shapefile, 'sf'))
   stopifnot(inherits(covariate_rasters, 'SpatRaster'))
