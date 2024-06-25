@@ -4,14 +4,16 @@
 \alias{build_mesh}
 \title{Build mesh for disaggregaton model}
 \usage{
-build_mesh(shapes, mesh.args = NULL)
+build_mesh(shapes, mesh_args = NULL)
 }
 \arguments{
 \item{shapes}{sf covering the region under investigation.}
 
-\item{mesh.args}{list of parameters that control the mesh structure. \emph{convex}, \emph{concave} and \emph{resolution},
+\item{mesh_args}{list of parameters that control the mesh structure. \emph{convex}, \emph{concave} and \emph{resolution},
 to control the boundary of the inner mesh, and \emph{max.edge}, \emph{cut} and \emph{offset}, to control the  mesh itself,
 with the parameters having the same meaning as in the INLA functions \emph{inla.convex.hull} and \emph{inla.mesh.2d}.}
+
+\item{mesh.args}{Deprecated.}
 }
 \value{
 An inla.mesh object

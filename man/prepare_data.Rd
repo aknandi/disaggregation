@@ -11,9 +11,12 @@ prepare_data(
   id_var = "area_id",
   response_var = "response",
   sample_size_var = NULL,
+  mesh_args = NULL,
+  na_action = FALSE,
+  make_mesh = TRUE,
   mesh.args = NULL,
-  na.action = FALSE,
-  makeMesh = TRUE,
+  na.action = NULL,
+  makeMesh = NULL,
   ncores = NULL
 )
 }
@@ -30,11 +33,17 @@ prepare_data(
 
 \item{sample_size_var}{For survey data, name of column in sf object (if it exists) with the sample size data.}
 
-\item{mesh.args}{list of parameters that control the mesh structure with the same names as used by INLA.}
+\item{mesh_args}{list of parameters that control the mesh structure with the same names as used by INLA.}
 
-\item{na.action}{logical. If TRUE, NAs in response will be removed, covariate NAs will be given the median value, aggregation NAs will be set to zero. Default FALSE (NAs in response or covariate data within the polygons will give errors).}
+\item{na_action}{logical. If TRUE, NAs in response will be removed, covariate NAs will be given the median value, aggregation NAs will be set to zero. Default FALSE (NAs in response or covariate data within the polygons will give errors).}
 
-\item{makeMesh}{logical. If TRUE, build INLA mesh, takes some time. Default TRUE.}
+\item{make_mesh}{logical. If TRUE, build INLA mesh, takes some time. Default TRUE.}
+
+\item{mesh.args}{Deprecated.}
+
+\item{na.action}{Deprecated.}
+
+\item{makeMesh}{Deprecated.}
 
 \item{ncores}{Deprecated.}
 }

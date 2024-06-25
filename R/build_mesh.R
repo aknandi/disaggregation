@@ -14,9 +14,10 @@
 #' pars <- list(convex = -0.01, concave = -0.5, resolution = 300, max.edge = c(3.0, 8),  cut = 0.4, offset = c(1, 15)).
 #'
 #' @param shapes sf covering the region under investigation.
-#' @param mesh.args list of parameters that control the mesh structure. \emph{convex}, \emph{concave} and \emph{resolution},
+#' @param mesh_args list of parameters that control the mesh structure. \emph{convex}, \emph{concave} and \emph{resolution},
 #' to control the boundary of the inner mesh, and \emph{max.edge}, \emph{cut} and \emph{offset}, to control the  mesh itself,
 #' with the parameters having the same meaning as in the INLA functions \emph{inla.convex.hull} and \emph{inla.mesh.2d}.
+#' @param mesh.args Deprecated.
 #'
 #' @return An inla.mesh object
 #'
@@ -43,10 +44,15 @@
 #'
 #' @export
 
-build_mesh <- function(shapes, mesh.args = NULL) {
+build_mesh <- function(shapes, mesh_args = NULL) {
+
+  if (!is.null(mesh.args) && missing(mesh_args)) {
+    mesh_args <- mesh.args
+    message("mesh.args is deprecated and will be removed in a future version - please use mesh_args instead")
+  }
 
   stopifnot(inherits(shapes, 'sf'))
-  if(!is.null(mesh.args)) stopifnot(inherits(mesh.args, 'list'))
+  if(!is.null(mesh_args)) stopifnot(inherits(mesh_args, 'list'))
 
   limits <- sf::st_bbox(shapes)
   hypotenuse <- sqrt((limits$xmax - limits$xmin)^2 + (limits$ymax - limits$ymin)^2)
@@ -61,7 +67,7 @@ build_mesh <- function(shapes, mesh.args = NULL) {
                offset = c(hypotenuse / 10, hypotenuse / 10))
 
 
-  pars[names(mesh.args)] <- mesh.args
+  pars[names(mesh_args)] <- mesh_args
 
   outline <- sf::st_sf(sf::st_union(sf::st_convex_hull(shapes)))
 

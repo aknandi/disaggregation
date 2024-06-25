@@ -114,11 +114,11 @@ data_for_model <- prepare_data(polygon_shapefile = df,
                                aggregation_raster = pop_raster,
                                response_var = 'cases',
                                id_var = 'censustract.FIPS',
-                               mesh.args = list(cut = 0.01,
+                               mesh_args = list(cut = 0.01,
                                                 offset = c(0.1, 0.5),
                                                 max.edge = c(0.1, 0.2),
                                                 resolution = 250),
-                               na.action = TRUE)
+                               na_action = TRUE)
 ```
 
 ```{r, fig.show='hold'}

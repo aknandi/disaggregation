@@ -109,13 +109,11 @@ prepare_data <- function(polygon_shapefile,
     message("na.action is deprecated and will be removed in a future version - please use na_action instead")
   }
 
-  # Handle mesh.args / mesh_args
   if (!is.null(mesh.args) && missing(mesh_args)) {
     mesh_args <- mesh.args
     message("mesh.args is deprecated and will be removed in a future version - please use mesh_args instead")
   }
 
-  # Handle makeMesh / make_mesh
   if (!is.null(makeMesh) && missing(make_mesh)) {
     make_mesh <- makeMesh
     message("makeMesh is deprecated and will be removed in a future version - please use make_mesh instead")
@@ -129,12 +127,12 @@ prepare_data <- function(polygon_shapefile,
   if(!is.null(aggregation_raster)) stopifnot(inherits(aggregation_raster, 'SpatRaster'))
   stopifnot(inherits(id_var, 'character'))
   stopifnot(inherits(response_var, 'character'))
-  if(!is.null(mesh.args)) stopifnot(inherits(mesh.args, 'list'))
+  if(!is.null(mesh_args)) stopifnot(inherits(mesh_args, 'list'))
 
   # Check for NAs in response data
   na_rows <- is.na(polygon_shapefile[, response_var, drop = TRUE])
   if(sum(na_rows) != 0) {
-    if(na.action) {
+    if(na_action) {
       polygon_shapefile <- polygon_shapefile[!na_rows, ]
     } else {
       stop('There are NAs in the response data. Please deal with these, or set na.action = TRUE')
@@ -175,20 +173,20 @@ prepare_data <- function(polygon_shapefile,
 
   # Check for NAs in population data
   if(sum(is.na(aggregation_pixels)) != 0) {
-    if(na.action) {
+    if(na_action) {
       aggregation_pixels[is.na(aggregation_pixels)] <- 0
     } else {
-      stop('There are NAs in the aggregation rasters within polygons. Please deal with these, or set na.action = TRUE')
+      stop('There are NAs in the aggregation rasters within polygons. Please deal with these, or set na_action = TRUE')
     }
   }
 
   # Check for NAs in covariate data
   if(sum(is.na(covariate_data)) != 0) {
-    if(na.action) {
+    if(na_action) {
       cov_filter <- !(names(covariate_data) %in% c(id_var,'cell'))
       covariate_data[ , cov_filter] <- sapply(covariate_data[ , cov_filter], function(x) { x[is.na(x)] <- stats::median(x, na.rm = T); return(x) })
     } else {
-      stop('There are NAs in the covariate rasters within polygons. Please deal with these, or set na.action = TRUE')
+      stop('There are NAs in the covariate rasters within polygons. Please deal with these, or set na_action = TRUE')
     }
   }
 
@@ -198,8 +196,8 @@ prepare_data <- function(polygon_shapefile,
 
   startendindex <- getStartendindex(covariate_data, polygon_data, id_var = id_var)
 
-  if(makeMesh) {
-      mesh <- build_mesh(polygon_shapefile, mesh.args)
+  if(make_mesh) {
+      mesh <- build_mesh(polygon_shapefile, mesh_args)
     } else {
     mesh <- NULL
     message("A mesh is not being built. You will not be able to run a spatial model without a mesh.")
