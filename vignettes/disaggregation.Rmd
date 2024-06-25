@@ -33,7 +33,7 @@ or from github using
 devtools::install_github("aknandi/disaggregation")
 ```
 
-The key functions are `prepare_data`, `fit_model` and `predict`. The `prepare_data` function takes the aggregated data and covariate data to be used in the model and produces an object to be use by `fit_model`. This functions runs the disaggregation model and the out can be passed to `predict` to produce fine-scale predicted maps of the response variable. 
+The key functions are `prepare_data`, `disag_model` and `predict`. The `prepare_data` function takes the aggregated data and covariate data to be used in the model and produces an object to be use by `disag_model`. This functions runs the disaggregation model and the out can be passed to `predict` to produce fine-scale predicted maps of the response variable. 
 
 To use the disaggregation `prepare_data` function, you must have the aggregated data as a `sf` object and a `SpatRaster` of the covariate data to be used in the model.
 

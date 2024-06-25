@@ -63,7 +63,7 @@ The list  of class \code{disag_data} contains:
 }
 \description{
 \emph{prepare_data} function is used to extract all the data required for fitting a disaggregation model.
-Designed to be used in the \emph{disaggregation::fit_model} function.
+Designed to be used in the \emph{disaggregation::disag_model} function.
 }
 \details{
 Takes a sf object with the response data and a SpatRaster of covariates.

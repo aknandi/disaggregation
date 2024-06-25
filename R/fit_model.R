@@ -1,6 +1,6 @@
 #' Fit the disaggregation model
 #'
-#' \emph{fit_model} function takes a \emph{disag_data} object created by
+#' \emph{disag_model} function takes a \emph{disag_data} object created by
 #' \code{\link{prepare_data}} and performs a Bayesian disaggregation fit.
 #'
 #' \strong{The model definition}
@@ -66,7 +66,7 @@
 #'  \item{data }{The \emph{disag_data} object used as an input to the model.}
 #'  \item{model_setup }{A list of information on the model setup. Likelihood function (\emph{family}), link function(\emph{link}), logical: whether a field was used (\emph{field}) and logical: whether an iid effect was used (\emph{iid}).}
 #'
-#' @name fit_model
+#' @name disag_model
 #' @references Nanda et al. (2023) disaggregation: An R Package for Bayesian
 #' Spatial Disaggregation Modeling. <doi:10.18637/jss.v106.i11>
 #'
@@ -105,42 +105,10 @@
 #' test_data <- prepare_data(polygon_shapefile = spdf,
 #'                           covariate_rasters = cov_stack)
 #'
-#'  result <- fit_model(test_data, iterations = 2)
+#'  result <- disag_model(test_data, iterations = 2)
 #'  }
 #'
 #' @export
-
-fit_model <- function(data,
-                      priors = NULL,
-                      family = 'gaussian',
-                      link = 'identity',
-                      iterations = 100,
-                      field = TRUE,
-                      iid = TRUE,
-                      hess_control_parscale = NULL,
-                      hess_control_ndeps = 1e-4,
-                      silent = TRUE) {
-
-  .Deprecated(new = 'disag_model', msg = "'fit_model' will be removed in the next version. Please use 'disag_model' instead")
-
-  model_output <- disag_model(data,
-                              priors = priors,
-                              family = family,
-                              link = link,
-                              iterations = iterations,
-                              field = field,
-                              iid = iid,
-                              hess_control_parscale = hess_control_parscale,
-                              hess_control_ndeps = hess_control_ndeps,
-                              silent = silent)
-
-  return(model_output)
-
-
-}
-
-#' @export
-#' @rdname fit_model
 
 disag_model <- function(data,
                         priors = NULL,

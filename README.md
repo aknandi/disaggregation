@@ -61,7 +61,7 @@ data_for_model <- prepare_data(shps, covariate_stack,
 
 ## Model fitting
 
-Function fit_model takes data structure returned by prepare_data and fits a TMB disaggregation model. Here you can specify priors, likelihood function, link function and whether to include a field or iid effect (default includes both)
+Function disag_model takes data structure returned by prepare_data and fits a TMB disaggregation model. Here you can specify priors, likelihood function, link function and whether to include a field or iid effect (default includes both)
 
 ```R
 model_result <- disag_model(data_for_model, 
@@ -87,7 +87,7 @@ model_result <- disag_model(data_for_model,
 
 ### Predict model
 
-Function predict takes data structure returned by fit_model to predict model results and uncertainty.
+Function predict takes data structure returned by disag_model to predict model results and uncertainty.
 
 ```R
 prediction <- predict(model_result)
