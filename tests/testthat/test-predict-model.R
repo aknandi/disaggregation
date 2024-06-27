@@ -91,7 +91,7 @@ test_that("Check predict.disag_model function works as expected", {
 
 
 
-test_that("Check predict.disag_model function works with newdata", {
+test_that("Check predict.disag_model function works with new data", {
 
   result <- disag_model(test_data, field = FALSE, iid = TRUE, iterations = 100,
                         priors = list(priormean_intercept = 0,
@@ -105,10 +105,10 @@ test_that("Check predict.disag_model function works with newdata", {
                                       prior_iideffect_sd_max = 0.0001,
                                       prior_iideffect_sd_prob = 0.01))
 
-  newdata <- terra::crop(c(r, r2), c(0, 10, 0, 10))
-  names(newdata) <- c('layer1', 'layer2')
+  new_data <- terra::crop(c(r, r2), c(0, 10, 0, 10))
+  names(new_data) <- c('layer1', 'layer2')
   pred1 <- predict(result)
-  pred2 <- predict(result, newdata, predict_iid = TRUE, N = 5)
+  pred2 <- predict(result, new_data, predict_iid = TRUE, N = 5)
 
   expect_is(pred2, 'disag_prediction')
   expect_equal(length(pred2), 2)
@@ -135,26 +135,26 @@ test_that("Check predict.disag_model function works with newdata", {
 
 })
 
-test_that('Check that check_newdata works', {
+test_that('Check that check_new_data works', {
 
   result <- disag_model(test_data, field = FALSE, iterations = 100)
 
-  newdata <- terra::crop(c(r, r2), c(0, 10, 0, 10))
-  names(newdata) <- c('layer1', 'layer2')
+  new_data <- terra::crop(c(r, r2), c(0, 10, 0, 10))
+  names(new_data) <- c('layer1', 'layer2')
 
-  nd1 <- check_newdata(newdata, result)
+  nd1 <- check_new_data(new_data, result)
   expect_is(nd1, 'SpatRaster')
 
-  nn <- newdata[[1]]
+  nn <- new_data[[1]]
   names(nn) <- 'extra_unneeded'
-  newdata2 <- c(newdata, nn)
-  expect_error(check_newdata(newdata2, result), NA)
+  new_data2 <- c(new_data, nn)
+  expect_error(check_new_data(new_data2, result), NA)
 
-  newdata3 <- newdata[[1]]
-  expect_error(check_newdata(newdata3, result), 'All covariates')
+  new_data3 <- new_data[[1]]
+  expect_error(check_new_data(new_data3, result), 'All covariates')
 
-  newdata4 <- result$data$covariate_data
-  expect_error(check_newdata(newdata4, result), 'newdata should be NULL or')
+  new_data4 <- result$data$covariate_data
+  expect_error(check_new_data(new_data4, result), 'new_data should be NULL or')
 
 
 })
@@ -183,9 +183,9 @@ test_that('Check that setup_objects works', {
   expect_is(objects$field_objects, 'list')
   expect_true(is.null(objects$iid_objects))
 
-  newdata <- terra::crop(c(r, r2), c(0, 180, -90, 90))
-  names(newdata) <- c('layer1', 'layer2')
-  objects2 <- setup_objects(result, newdata)
+  new_data <- terra::crop(c(r, r2), c(0, 180, -90, 90))
+  names(new_data) <- c('layer1', 'layer2')
+  objects2 <- setup_objects(result, new_data)
 
   expect_is(objects2, 'list')
   expect_equal(length(objects2), 3)
