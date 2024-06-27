@@ -25,7 +25,7 @@ test_that("Check print.disag_data function works as expected", {
 
 test_that("Check summary.disag_model function works as expected", {
 
-  result <- disag_model(test_data, field = FALSE, iterations = 2)
+  result <- disag_model(test_data, iid = FALSE, iterations = 100)
 
   model_summary <- summary(result)
 
@@ -41,7 +41,7 @@ test_that("Check summary.disag_model function works as expected", {
 
 test_that("Check print.disag_model function works as expected", {
 
-  result <- disag_model(test_data, field = FALSE, iterations = 2)
+  result <- disag_model(test_data, iid = FALSE, iterations = 100)
 
   print_output <- print(result)
 
@@ -52,17 +52,7 @@ test_that("Check print.disag_model function works as expected", {
 
 test_that("Check summary.disag_predictions function works as expected", {
 
-  result <- disag_model(test_data, iid = FALSE, iterations = 100,
-                        list(priormean_intercept = 0,
-                             priorsd_intercept = 0.1,
-                             priormean_slope = 0.0,
-                             priorsd_slope = 0.1,
-                             prior_rho_min = 5,
-                             prior_rho_prob = 0.01,
-                             prior_sigma_max = 0.1,
-                             prior_sigma_prob = 0.01,
-                             prior_iideffect_sd_max = 0.00001,
-                             prior_iideffect_sd_prob = 0.01))
+  result <- disag_model(test_data, iid = FALSE, iterations = 100)
 
   pred <- predict(result)
 
@@ -79,17 +69,7 @@ test_that("Check summary.disag_predictions function works as expected", {
 
 test_that("Check print.disag_predictions function works as expected", {
 
-  result <- disag_model(test_data, iid = FALSE, iterations = 100,
-                        list(priormean_intercept = 0,
-                             priorsd_intercept = 0.1,
-                             priormean_slope = 0.0,
-                             priorsd_slope = 0.1,
-                             prior_rho_min = 5,
-                             prior_rho_prob = 0.01,
-                             prior_sigma_max = 0.1,
-                             prior_sigma_prob = 0.01,
-                             prior_iideffect_sd_max = 0.0001,
-                             prior_iideffect_sd_prob = 0.01))
+  result <- disag_model(test_data, iid = FALSE, iterations = 100)
 
   pred <- predict(result)
 
