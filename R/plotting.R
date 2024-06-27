@@ -122,7 +122,7 @@ plot.disag_model <- function(x, ...){
     geom_errorbar(posteriors, mapping = aes(x = .data$parameter, ymin = mean - sd,
                                             ymax = mean + sd),
                   width = 0.2, color = "blue") +
-    geom_point(posteriors, mapping = aes(x = parameter, y = mean)) +
+    geom_point(posteriors, mapping = aes(x = .data$parameter, y = mean)) +
     facet_wrap( ~ type , scales = 'free') +
     coord_flip() +
     ggtitle("Parameters (excluding random effects)")
