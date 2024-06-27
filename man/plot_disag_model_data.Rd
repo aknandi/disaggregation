@@ -11,9 +11,9 @@ plot_disag_model_data(x)
 }
 \value{
 A list that contains:
-\item{posteriors} A data.frame of posteriors
-\item{data} A data.frame of observed and predicted data
-\item{title} The title of the observed vs. predicted plot
+ \item{posteriors}{A data.frame of posteriors}
+ \item{data}{A data.frame of observed and predicted data}
+ \item{title}{The title of the observed vs. predicted plot}
 }
 \description{
 Convert results of the model ready for plotting

@@ -48,9 +48,9 @@ plot.disag_data <- function(x, which = c(1,2,3), ...) {
 #' @param x Object of class \emph{disag_model} to be plotted.
 #'
 #' @return A list that contains:
-#' \item{posteriors} A data.frame of posteriors
-#' \item{data} A data.frame of observed and predicted data
-#' \item{title} The title of the observed vs. predicted plot
+#'  \item{posteriors}{A data.frame of posteriors}
+#'  \item{data}{A data.frame of observed and predicted data}
+#'  \item{title}{The title of the observed vs. predicted plot}
 #'
 #' @export
 plot_disag_model_data <- function(x){
@@ -105,6 +105,7 @@ plot_disag_model_data <- function(x){
 #' @return A list of two ggplot plots: results of the fixed effects and an in-sample observed vs predicted plot
 #'
 #' @import ggplot2
+#' @importFrom rlang .data
 #' @method plot disag_model
 #'
 #' @export
@@ -118,7 +119,7 @@ plot.disag_model <- function(x, ...){
   title <- x$title
 
   fixedeffects <- ggplot() +
-    geom_errorbar(posteriors, mapping = aes(x = parameter, ymin = mean - sd,
+    geom_errorbar(posteriors, mapping = aes(x = .data$parameter, ymin = mean - sd,
                                             ymax = mean + sd),
                   width = 0.2, color = "blue") +
     geom_point(posteriors, mapping = aes(x = parameter, y = mean)) +
@@ -126,7 +127,7 @@ plot.disag_model <- function(x, ...){
     coord_flip() +
     ggtitle("Parameters (excluding random effects)")
 
-  obspred <- ggplot(data, aes(x = obs, y = pred)) +
+  obspred <- ggplot(data, aes(x = .data$obs, y = .data$pred)) +
     geom_point() +
     geom_abline(intercept = 0, slope = 1, color = 'blue') +
     ggtitle(title)
