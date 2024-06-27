@@ -2,22 +2,6 @@ context("Predict model")
 
 test_that("Check predict.disag_model function works as expected", {
 
-  result <- disag_model(test_data, iterations = 1000,
-                        iid = TRUE,
-                        field = TRUE,
-                        family = 'poisson',
-                        link = 'log',
-                        priors = list(priormean_intercept = 0,
-                                      priorsd_intercept = 0.1,
-                                      priormean_slope = 0.0,
-                                      priorsd_slope = 0.1,
-                                      prior_rho_min = 5,
-                                      prior_rho_prob = 0.01,
-                                      prior_sigma_max = 0.1,
-                                      prior_sigma_prob = 0.01,
-                                      prior_iideffect_sd_max = 0.0001,
-                                      prior_iideffect_sd_prob = 0.01))
-
   pred2 <- predict(result)
 
   expect_is(pred2, 'disag_prediction')
@@ -64,9 +48,9 @@ test_that("Check predict.disag_model function works as expected", {
 
   # For a model with no field or iid
 
-  result <- disag_model(test_data, iterations = 100, field = FALSE, iid = FALSE)
+  result2 <- disag_model(test_data, iterations = 100, field = FALSE, iid = FALSE)
 
-  pred2 <- predict(result)
+  pred2 <- predict(result2)
 
   expect_is(pred2, 'disag_prediction')
   expect_equal(length(pred2), 2)
@@ -93,18 +77,6 @@ test_that("Check predict.disag_model function works as expected", {
 
 test_that("Check predict.disag_model function works with new data", {
 
-  result <- disag_model(test_data, field = FALSE, iid = TRUE, iterations = 100,
-                        priors = list(priormean_intercept = 0,
-                                      priorsd_intercept = 1,
-                                      priormean_slope = 0.0,
-                                      priorsd_slope = 0.4,
-                                      prior_rho_min = 1,
-                                      prior_rho_prob = 0.01,
-                                      prior_sigma_max = 0.1,
-                                      prior_sigma_prob = 0.01,
-                                      prior_iideffect_sd_max = 0.0001,
-                                      prior_iideffect_sd_prob = 0.01))
-
   new_data <- terra::crop(c(r, r2), c(0, 10, 0, 10))
   names(new_data) <- c('layer1', 'layer2')
   pred1 <- predict(result)
@@ -118,7 +90,7 @@ test_that("Check predict.disag_model function works with new data", {
   expect_equal(length(pred2$mean_prediction), 4)
   expect_equal(names(pred2$mean_prediction), c('prediction', 'field', 'iid', 'covariates'))
   expect_is(pred2$mean_prediction$prediction, 'SpatRaster')
-  expect_true(is.null(pred2$mean_prediction$field))
+  expect_true(!is.null(pred2$mean_prediction$field))
   expect_is(pred2$mean_prediction$iid, 'SpatRaster')
   expect_is(pred2$mean_prediction$covariates, 'SpatRaster')
 
@@ -136,8 +108,6 @@ test_that("Check predict.disag_model function works with new data", {
 })
 
 test_that('Check that check_new_data works', {
-
-  result <- disag_model(test_data, field = FALSE, iterations = 100)
 
   new_data <- terra::crop(c(r, r2), c(0, 10, 0, 10))
   names(new_data) <- c('layer1', 'layer2')
@@ -160,20 +130,6 @@ test_that('Check that check_new_data works', {
 })
 
 test_that('Check that setup_objects works', {
-
-  result <- disag_model(test_data, iterations = 100,
-                        iid = TRUE,
-                        field = TRUE,
-                        priors = list(priormean_intercept = 0,
-                                      priorsd_intercept = 1,
-                                      priormean_slope = 0.0,
-                                      priorsd_slope = 0.4,
-                                      prior_rho_min = 1,
-                                      prior_rho_prob = 0.01,
-                                      prior_sigma_max = 0.1,
-                                      prior_sigma_prob = 0.01,
-                                      prior_iideffect_sd_max = 0.01,
-                                      prior_iideffect_sd_prob = 0.01))
 
   objects <- setup_objects(result)
 
@@ -204,20 +160,6 @@ test_that('Check that setup_objects works', {
 })
 
 test_that('Check that predict_single_raster works', {
-
-  result <- disag_model(test_data, iterations = 100,
-                        iid = TRUE,
-                        field = TRUE,
-                        priors = list(priormean_intercept = 0,
-                                      priorsd_intercept = 1,
-                                      priormean_slope = 0.0,
-                                      priorsd_slope = 0.4,
-                                      prior_rho_min = 1,
-                                      prior_rho_prob = 0.01,
-                                      prior_sigma_max = 0.1,
-                                      prior_sigma_prob = 0.01,
-                                      prior_iideffect_sd_max = 0.01,
-                                      prior_iideffect_sd_prob = 0.01))
 
   objects <- setup_objects(result)
 

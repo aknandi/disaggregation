@@ -25,8 +25,6 @@ test_that("Check print.disag_data function works as expected", {
 
 test_that("Check summary.disag_model function works as expected", {
 
-  result <- disag_model(test_data, iid = FALSE, iterations = 100)
-
   model_summary <- summary(result)
 
   expect_is(model_summary, 'list')
@@ -41,8 +39,6 @@ test_that("Check summary.disag_model function works as expected", {
 
 test_that("Check print.disag_model function works as expected", {
 
-  result <- disag_model(test_data, iid = FALSE, iterations = 100)
-
   print_output <- print(result)
 
   expect_is(print_output, 'disag_model')
@@ -51,8 +47,6 @@ test_that("Check print.disag_model function works as expected", {
 })
 
 test_that("Check summary.disag_predictions function works as expected", {
-
-  result <- disag_model(test_data, iid = FALSE, iterations = 100)
 
   pred <- predict(result)
 
@@ -68,8 +62,6 @@ test_that("Check summary.disag_predictions function works as expected", {
 })
 
 test_that("Check print.disag_predictions function works as expected", {
-
-  result <- disag_model(test_data, iid = FALSE, iterations = 100)
 
   pred <- predict(result)
 

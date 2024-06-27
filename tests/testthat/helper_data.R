@@ -35,3 +35,10 @@ names(cov_stack) <- c('layer1', 'layer2')
 
 test_data <- prepare_data(polygon_shapefile = spdf,
                           covariate_rasters = cov_stack)
+
+result <- disag_model(test_data,
+                      field = TRUE,
+                      iid = TRUE,
+                      iterations = 100,
+                      family = "poisson",
+                      link = "log")

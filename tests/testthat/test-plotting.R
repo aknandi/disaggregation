@@ -39,11 +39,9 @@ test_that("Check plot.disag.data function works as expected", {
 
 test_that("Check plot.disag_model function works as expected", {
 
-  fit_result <- disag_model(test_data, iterations = 10)
+  fit_result_nofield <- disag_model(test_data, iterations = 100, field = FALSE, family = "poisson", link = "log")
 
-  fit_result_nofield <- disag_model(test_data, iterations = 10, field = FALSE)
-
-  p1 <- plot(fit_result)
+  p1 <- plot(result)
 
   p2 <- plot(fit_result_nofield)
 
@@ -58,22 +56,7 @@ test_that("Check plot.disag_model function works as expected", {
 
 test_that("Check plot.disag_prediction function works as expected", {
 
-  fit_result <- disag_model(test_data, iterations = 1000,
-                        iid = TRUE,
-                        field = TRUE,
-                        family = 'poisson',
-                        link = 'log',
-                        priors = list(priormean_intercept = 0,
-                                      priorsd_intercept = 0.1,
-                                      priormean_slope = 0.0,
-                                      priorsd_slope = 0.1,
-                                      prior_rho_min = 5,
-                                      prior_rho_prob = 0.01,
-                                      prior_sigma_max = 0.1,
-                                      prior_sigma_prob = 0.01,
-                                      prior_iideffect_sd_max = 0.0001,
-                                      prior_iideffect_sd_prob = 0.01))
-  pred <- predict(fit_result)
+  pred <- predict(result)
   p <- plot(pred)
 
   expect_is(p, 'gg')
