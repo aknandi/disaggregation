@@ -2,7 +2,7 @@
 % Please edit documentation in R/extract.R
 \name{getPolygonData}
 \alias{getPolygonData}
-\title{Extract polygon id and response data into a data.frame from a SpatialPolygonsDataFrame}
+\title{Extract polygon id and response data into a data.frame from a sf object}
 \usage{
 getPolygonData(
   shape,
@@ -12,37 +12,38 @@ getPolygonData(
 )
 }
 \arguments{
-\item{shape}{A SpatialPolygons object containing response data.}
+\item{shape}{A sf object containing response data.}
 
 \item{id_var}{Name of column in shape object with the polygon id. Default 'area_id'.}
 
 \item{response_var}{Name of column in shape object with the response data. Default 'response'.}
 
-\item{sample_size_var}{For survey data, name of column in SpatialPolygonDataFrame object (if it exists) with the sample size data. Default NULL.}
+\item{sample_size_var}{For survey data, name of column in sf object (if it exists) with the sample size data. Default NULL.}
 }
 \value{
-A data.frame with a row for each polygon in the SpatialPolygonDataFrame and columns: area_id, response and N, containing the id of the
-polygon, the values of the response for that polygon, and the sample size respectively. If the data is not survey data (the sample size does 
+A data.frame with a row for each polygon in the sf object and columns: area_id, response and N, containing the id of the
+polygon, the values of the response for that polygon, and the sample size respectively. If the data is not survey data (the sample size does
 not exist), this column will contain NAs.
 }
 \description{
-Returns a data.frame with a row for each polygon in the SpatialPolygonDataFrame and columns: area_id, response and N, containing the id of the
-polygon, the values of the response for that polygon, and the sample size respectively. If the data is not survey data (the sample size does 
+Returns a data.frame with a row for each polygon in the sf object and columns: area_id, response and N, containing the id of the
+polygon, the values of the response for that polygon, and the sample size respectively. If the data is not survey data (the sample size does
 not exist), this column will contain NAs.
 }
 \examples{
 {
- polygons <- list()
- for(i in 1:100) {
-   row <- ceiling(i/10)
-   col <- ifelse(i \%\% 10 != 0, i \%\% 10, 10)
-   xmin = 2*(col - 1); xmax = 2*col; ymin = 2*(row - 1); ymax = 2*row
-   polygons[[i]] <- rbind(c(xmin, ymax), c(xmax,ymax), c(xmax, ymin), c(xmin,ymin))
- }
+polygons <- list()
+for(i in 1:100) {
+  row <- ceiling(i/10)
+  col <- ifelse(i \%\% 10 != 0, i \%\% 10, 10)
+  xmin = 2*(col - 1); xmax = 2*col; ymin = 2*(row - 1); ymax = 2*row
+  polygons[[i]] <- list(cbind(c(xmin, xmax, xmax, xmin, xmin),
+                              c(ymax, ymax, ymin, ymin, ymax)))
+}
 
- polys <- do.call(raster::spPolygons, polygons)
- response_df <- data.frame(area_id = 1:100, response = runif(100, min = 0, max = 10))
- spdf <- sp::SpatialPolygonsDataFrame(polys, response_df)
+polys <- lapply(polygons,sf::st_polygon)
+response_df <- data.frame(area_id = 1:100, response = runif(100, min = 0, max = 10))
+spdf <- sf::st_sf(response_df, geometry = polys)
 
  getPolygonData(spdf, id_var = 'area_id', response_var = 'response')
 }
