@@ -118,14 +118,14 @@ summary.disag_data <- function(object, ...) {
   n_polygons <- nrow(object$polygon_shapefile)
   n_covariates <- raster::nlayers(object$covariate_rasters)
   
-  cat(paste("They data contains", n_polygons, "polygons and", nrow(object$covariate_data), "pixels\n"))
+  cat(paste("The data contains", n_polygons, "polygons and", nrow(object$covariate_data), "pixels\n"))
   
   cat(paste("The largest polygon contains", max(table(object$covariate_data[ , object$shapefile_names$id_var])), "pixels", 
             "and the smallest polygon contains", min(table(object$covariate_data[ , object$shapefile_names$id_var])), "pixels\n"))
   
   cat(paste("There are", n_covariates, "covariates\n"))
   
-  covariate_summary <- summary(object$covariate_data[ , names(object$covariate_rasters)])
+  covariate_summary <- summary(object$covariate_rasters)
   
   cat("\nCovariate summary:\n")
   print(covariate_summary)
