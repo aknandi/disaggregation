@@ -51,6 +51,12 @@ jobs:
           brew install proj@9
           brew install gdal
 
+      - name: Install System Dependencies on Ubuntu
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libproj-dev gdal-bin
+
       - uses: r-lib/actions/setup-r-dependencies@v2
         with:
           dependencies: '"hard"'
