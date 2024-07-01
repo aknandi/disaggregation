@@ -211,7 +211,7 @@ Type objective_function<Type>::operator()()
     } else if(link == 2){
       // Don't need to do anything, i.e. pixel_pred = pixel_pred;
     } else {
-      error("Link function not implemented.");
+      perror("Link function not implemented.");
     }
 
     // Aggregate to polygon prediction
@@ -242,7 +242,7 @@ Type objective_function<Type>::operator()()
       nll -= dpois(polygon_response_data[polygon], pred_polygoncases, true);
       reportnll[polygon] = -dpois(polygon_response_data[polygon], pred_polygoncases, true);
     } else {
-      error("Likelihood not implemented.");
+      perror("Likelihood not implemented.");
     }
 
   }
