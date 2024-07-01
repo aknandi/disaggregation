@@ -148,9 +148,6 @@ disag_model <- function(data,
   # Calc uncertainty using the fixed hessian from above.
   sd_out <- TMB::sdreport(obj, getJointPrecision = TRUE, hessian.fixed = hess)
 
-
-  sd_out <- TMB::sdreport(obj, getJointPrecision = TRUE)
-
   # Rename parameters to match layers
   # Need to change in sd_out as well
   # names(opt$par)[names(opt$par) == 'slope'] <- names(data$covariate_rasters)
