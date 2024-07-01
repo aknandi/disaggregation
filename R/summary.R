@@ -116,7 +116,7 @@ print.disag_model <- function(x, ...){
 summary.disag_data <- function(object, ...) {
 
   n_polygons <- nrow(object$polygon_shapefile)
-  n_covariates <- terra::nlyr(object$covariate_rasters)
+  n_covariates <- as.integer(terra::nlyr(object$covariate_rasters))
 
   cat(paste("The data contains", n_polygons, "polygons and", nrow(object$covariate_data), "pixels\n"))
 
