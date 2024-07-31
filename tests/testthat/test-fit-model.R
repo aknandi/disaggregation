@@ -20,6 +20,10 @@ test_that("disag_model behaves as expected", {
   expect_equal(length(result), 5)
   expect_equal(length(result$sd_out$par.fixed), terra::nlyr(test_data$covariate_rasters) + 4)
   expect_equal(unique(names(result$sd_out$par.random)), c("iideffect", "nodemean"))
+  expect_true(all(c("layer1", "layer2") %in% names(result$sd_out$par.fixed)))
+  expect_false(any(names(result$sd_out$par.fixed) == "slope"))
+  expect_true(all(c("layer1", "layer2") %in% names(result$opt$par)))
+  expect_false(any(names(result$opt$par) == "slope"))
 
 })
 
@@ -29,17 +33,18 @@ test_that("disag_model with 1 covariate behaves as expected", {
   test_data2$covariate_rasters <- test_data2$covariate_rasters[[1]]
   test_data2$covariate_data <- test_data2$covariate_data[, 1:3]
 
-  result <- disag_model(test_data2, iterations = 100, iid = FALSE)
+  result <- disag_model(test_data2, iterations = 100, iid = FALSE, family = 'poisson', link = 'log')
 
   expect_is(result, 'disag_model')
   expect_equal(length(result), 5)
 
   # Should be intercept, 1 slope, tau gaussian, and 2 for space. None for iid anymore.
-  expect_equal(length(result$sd_out$par.fixed), terra::nlyr(test_data$covariate_rasters) + 3)
+  expect_equal(length(result$sd_out$par.fixed), terra::nlyr(test_data2$covariate_rasters) + 3)
   expect_equal(unique(names(result$sd_out$par.random)), c("nodemean"))
 
-  # Confirm only two covariates were fitted.
-  expect_equal(sum(names(result$opt$par) == 'slope'), 1)
+  # Confirm only one covariate was fitted.
+  expect_equal(sum(names(result$opt$par) == "layer1"), 1)
+  expect_false(any(names(result$opt$par) == "layer2"))
 
 })
 test_that("user defined model setup is working as expected", {
