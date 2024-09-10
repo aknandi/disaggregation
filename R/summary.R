@@ -18,7 +18,10 @@ summary.disag_model <- function(object, ...) {
 
   pred <- obs <- NULL
 
-  model_params <- summary(object$sd_out, select = 'fixed')
+  sd_out <- object$sd_out
+  names(sd_out$par.fixed)[names(sd_out$par.fixed) == "slope"] <- names(object$data$covariate_rasters)
+
+  model_params <- summary(sd_out, select = 'fixed')
 
   report <- object$obj$report()
   nll <- report$nll

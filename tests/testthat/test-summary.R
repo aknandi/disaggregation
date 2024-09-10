@@ -30,6 +30,8 @@ test_that("Check summary.disag_model function works as expected", {
   expect_is(model_summary, 'list')
   expect_equal(length(model_summary), 3)
   expect_equal(names(model_summary), c('model_params', 'nll', 'metrics'))
+  expect_true(c("layer1" %in% rownames(model_summary$model_params)))
+  expect_true(c("layer2" %in% rownames(model_summary$model_params)))
   expect_is(model_summary$model_params, 'matrix')
   expect_is(model_summary$nll, 'numeric')
   expect_is(model_summary$metrics, 'data.frame')
