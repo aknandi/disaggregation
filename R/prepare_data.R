@@ -141,6 +141,16 @@ prepare_data <- function(polygon_shapefile,
 
   polygon_data <- getPolygonData(polygon_shapefile, id_var, response_var, sample_size_var)
 
+  # Check for non-numeric covariate values
+  cv_df <- terra::as.data.frame(covariate_rasters, xy = FALSE)
+  cv_classes <- unlist(lapply(cv_df, class))
+  cv_check <- all(as.vector(cv_classes) == "numeric")
+  if (!cv_check){
+    non_numeric <- which(cv_classes != "numeric")
+    for (raster in non_numeric){
+      warning(paste0("The values of ", names(covariate_rasters)[raster], " are not numeric"))
+    }
+  }
 
   # Save raster layer names so we can reassign it to make sure names don't change.
   cov_names <- names(covariate_rasters)

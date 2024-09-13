@@ -137,3 +137,15 @@ test_that("Check as.disag_data function works as expected", {
 
 })
 
+test_that("Check prepare_data warns about non-numeric covariates", {
+  r3 <- terra::rast(ncol=n_pixels_per_side, nrow=n_pixels_per_side)
+  terra::ext(r3) <- terra::ext(spdf)
+  r3[] <- sapply(1:terra::ncell(r), function(x) as.integer(x))
+
+  cov_stack <- c(r, r2, r3)
+  names(cov_stack) <- c('layer1', 'layer2', 'layer3')
+
+  expect_warning(prepare_data(polygon_shapefile = spdf, covariate_rasters = cov_stack),
+                 "The values of layer3 are not numeric")
+
+})
