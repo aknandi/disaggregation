@@ -85,7 +85,15 @@ plot_disag_model_data <- function(x){
     title <- 'In sample performance: incidence rate'
   }
 
-  data <- data.frame(obs = observed_data, pred = predicted_data)
+  if (x$model_setup$iid){
+    pars <- x$obj$env$last.par.best
+    iid_poly <- pars[names(pars) == "iideffect"]
+    pred_no_iid <- predicted_data  / exp(iid_poly)
+    data <- data.frame(obs = observed_data, pred = predicted_data, pred_no_iid = pred_no_iid)
+  } else {
+    data <- data.frame(obs = observed_data, pred = predicted_data)
+  }
+
 
   return(list(posteriors = posteriors,
               data = data,
@@ -110,13 +118,13 @@ plot_disag_model_data <- function(x){
 #'
 #' @export
 
-plot.disag_model <- function(x, ...){
+plot.disag_model <- function(x, include_iid = FALSE, ...){
 
-  x <- plot_disag_model_data(x)
+  mod_data <- plot_disag_model_data(x)
 
-  posteriors <- x$posteriors
-  data <- x$data
-  title <- x$title
+  posteriors <- mod_data$posteriors
+  data <- mod_data$data
+  title <- mod_data$title
 
   fixedeffects <- ggplot() +
     geom_errorbar(posteriors, mapping = aes(x = .data$parameter, ymin = mean - sd,
@@ -127,10 +135,25 @@ plot.disag_model <- function(x, ...){
     coord_flip() +
     ggtitle("Parameters (excluding random effects)")
 
-  obspred <- ggplot(data, aes(x = .data$obs, y = .data$pred)) +
-    geom_point() +
-    geom_abline(intercept = 0, slope = 1, color = 'blue') +
-    ggtitle(title)
+  if (x$model_setup$iid){
+    obspred <- ggplot(data, aes(x = .data$obs, y = .data$pred_no_iid, color = "Without IID")) +
+      geom_point() +
+      geom_abline(intercept = 0, slope = 1, color = 'blue') +
+      ggtitle(title) +
+      labs(color = NULL) +
+      theme(legend.position = c(0, 1),
+            legend.justification = c(0, 1))
+    if (include_iid){
+      obspred <- obspred +
+        geom_point(data = data, aes(x = .data$obs, y = .data$pred, color = "With IID")) +
+        scale_color_manual(values = c("Without IID" = "black", "With IID" = "red"))
+    }
+  } else {
+    obspred <- ggplot(data, aes(x = .data$obs, y = .data$pred)) +
+      geom_point() +
+      geom_abline(intercept = 0, slope = 1, color = 'blue') +
+      ggtitle(title)
+  }
 
   plots <- list(fixedeffects, obspred)
   print(cowplot::plot_grid(plotlist = plots))
