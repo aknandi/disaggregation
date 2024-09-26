@@ -108,6 +108,8 @@ plot_disag_model_data <- function(x){
 #' Produces two plots: results of the fixed effects and in-sample observed vs predicted plot.
 #'
 #' @param x Object of class \emph{disag_model} to be plotted.
+#' @param include_iid logical. Whether or not to include predictions that include the
+#' IID effect.
 #' @param ... Further arguments to \emph{plot} function.
 #'
 #' @return A list of two ggplot plots: results of the fixed effects and an in-sample observed vs predicted plot
@@ -139,11 +141,13 @@ plot.disag_model <- function(x, include_iid = FALSE, ...){
     obspred <- ggplot(data, aes(x = .data$obs, y = .data$pred_no_iid, color = "Without IID")) +
       geom_point() +
       geom_abline(intercept = 0, slope = 1, color = 'blue') +
+      scale_color_manual(values = c("Without IID" = "black")) +
       ggtitle(title) +
       labs(color = NULL) +
       theme(legend.position = c(0, 1),
             legend.justification = c(0, 1))
     if (include_iid){
+      obspred$scales$scales <- list()
       obspred <- obspred +
         geom_point(data = data, aes(x = .data$obs, y = .data$pred, color = "With IID")) +
         scale_color_manual(values = c("Without IID" = "black", "With IID" = "red"))
