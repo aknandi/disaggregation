@@ -115,7 +115,6 @@ plot_disag_model_data <- function(x){
 #' @return A list of two ggplot plots: results of the fixed effects and an in-sample observed vs predicted plot
 #'
 #' @import ggplot2
-#' @importFrom rlang .data
 #' @method plot disag_model
 #'
 #' @export
@@ -129,7 +128,7 @@ plot.disag_model <- function(x, include_iid = FALSE, ...){
   title <- mod_data$title
 
   fixedeffects <- ggplot() +
-    geom_errorbar(posteriors, mapping = aes(x = .data$parameter, ymin = mean - sd,
+    geom_errorbar(posteriors, mapping = aes(x = parameter, ymin = mean - sd,
                                             ymax = mean + sd),
                   width = 0.2, color = "blue") +
     geom_point(posteriors, mapping = aes(x = .data$parameter, y = mean)) +
@@ -138,22 +137,22 @@ plot.disag_model <- function(x, include_iid = FALSE, ...){
     ggtitle("Parameters (excluding random effects)")
 
   if (x$model_setup$iid){
-    obspred <- ggplot(data, aes(x = .data$obs, y = .data$pred_no_iid, color = "Without IID")) +
+    obspred <- ggplot(data, aes(x = obs, y = pred_no_iid, color = "Without IID")) +
       geom_point() +
       geom_abline(intercept = 0, slope = 1, color = 'blue') +
       scale_color_manual(values = c("Without IID" = "black")) +
       ggtitle(title) +
       labs(color = NULL) +
-      theme(legend.position = c(0, 1),
+      theme(legend.position.inside = c(0, 1),
             legend.justification = c(0, 1))
     if (include_iid){
       obspred$scales$scales <- list()
       obspred <- obspred +
-        geom_point(data = data, aes(x = .data$obs, y = .data$pred, color = "With IID")) +
+        geom_point(data, aes(x = obs, y = pred, color = "With IID")) +
         scale_color_manual(values = c("Without IID" = "black", "With IID" = "red"))
     }
   } else {
-    obspred <- ggplot(data, aes(x = .data$obs, y = .data$pred)) +
+    obspred <- ggplot(data, aes(x = obs, y = pred)) +
       geom_point() +
       geom_abline(intercept = 0, slope = 1, color = 'blue') +
       ggtitle(title)
