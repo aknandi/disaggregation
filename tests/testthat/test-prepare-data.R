@@ -60,9 +60,13 @@ test_that("Check prepare_data function deals with NAs as expected", {
   aggregation_raster_na <- r
   aggregation_raster_na[c(1:10)] <- NA
 
+  aggregation_raster_zero <- r
+  aggregation_raster_zero[c(1:2, 21:22)] <- 0
+
   expect_error(prepare_data(polygon_shapefile = spdf_na, covariate_rasters = cov_stack, make_mesh = FALSE))
   expect_error(prepare_data(polygon_shapefile = spdf, covariate_rasters = cov_stack_na, make_mesh = FALSE))
   expect_error(prepare_data(polygon_shapefile = spdf, covariate_rasters = cov_stack, aggregation_raster = aggregation_raster_na, make_mesh = FALSE))
+  expect_error(prepare_data(polygon_shapefile = spdf, covariate_rasters = cov_stack, aggregation_raster = aggregation_raster_zero, make_mesh = FALSE))
 
   result <- prepare_data(polygon_shapefile = spdf_na,
                          covariate_rasters = cov_stack_na,
@@ -89,6 +93,14 @@ test_that("Check prepare_data function deals with NAs as expected", {
   expect_equal(sum(is.na(result$covariate_data)), 0)
   expect_equal(sum(is.na(result$aggregation_pixels)), 0)
   expect_equal(nrow(result$polygon_shapefile), nrow(spdf_na) - 1)
+
+  result <- prepare_data(polygon_shapefile = spdf_na,
+                         covariate_rasters = cov_stack_na,
+                         aggregation_raster = aggregation_raster_zero,
+                         na_action = TRUE,
+                         make_mesh = FALSE)
+
+  expect_equal(nrow(result$polygon_shapefile), nrow(spdf_na) - 2)
 })
 
 

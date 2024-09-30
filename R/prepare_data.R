@@ -139,6 +139,31 @@ prepare_data <- function(polygon_shapefile,
     }
   }
 
+  # If no aggregation raster is given, use a 'unity' raster
+  if(is.null(aggregation_raster)) {
+    aggregation_raster <- covariate_rasters[[1]]
+    terra::values(aggregation_raster) <- rep(1, terra::ncell(aggregation_raster))
+  }
+  names(aggregation_raster) <- 'aggregation_raster'
+
+  # Check for polygons with zero aggregation
+  aggregation_sum <- terra::extract(aggregation_raster, polygon_shapefile, cells = TRUE, na.rm = TRUE, ID = TRUE, fun = "sum")
+  zero_aggregation <- aggregation_sum[aggregation_sum[, 2] == 0,]
+  if (nrow(zero_aggregation) > 0){
+    zero_polygons <- polygon_shapefile[zero_aggregation$ID,]
+    if (na_action){
+      for (p in zero_polygons[[id_var]]){
+        message(paste0(p, " has zero aggregation values and has been removed from the response data"))
+      }
+      polygon_shapefile <- polygon_shapefile[-zero_aggregation$ID,]
+    } else {
+      for (p in zero_polygons[[id_var]]){
+        message(paste0(p, " has zero aggregation values"))
+      }
+      stop("Please remove the polygons from the response data or set na.action = TRUE")
+    }
+  }
+
   polygon_data <- getPolygonData(polygon_shapefile, id_var, response_var, sample_size_var)
 
   # Check for non-numeric covariate values
@@ -154,14 +179,6 @@ prepare_data <- function(polygon_shapefile,
 
   # Save raster layer names so we can reassign it to make sure names don't change.
   cov_names <- names(covariate_rasters)
-
-  # If no aggregation raster is given, use a 'unity' raster
-  if(is.null(aggregation_raster)) {
-    aggregation_raster <- covariate_rasters[[1]]
-    terra::values(aggregation_raster) <- rep(1, terra::ncell(aggregation_raster))
-  }
-  names(aggregation_raster) <- 'aggregation_raster'
-
 
   covariate_rasters <- c(covariate_rasters, aggregation_raster)
   covariate_data <- terra::extract(covariate_rasters, terra::vect(polygon_shapefile), cells=TRUE, na.rm=TRUE, ID=TRUE)
