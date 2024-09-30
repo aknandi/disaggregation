@@ -20,7 +20,19 @@ disag_model(
 \arguments{
 \item{data}{disag_data object returned by \code{\link{prepare_data}} function that contains all the necessary objects for the model fitting}
 
-\item{priors}{list of prior values}
+\item{priors}{list of prior values:
+\itemize{
+\item \code{priormean_intercept}
+\item \code{priorsd_intercept}
+\item \code{priormean_slope}
+\item \code{priorsd_slope}
+\item \code{prior_rho_min}
+\item \code{prior_rho_prob}
+\item \code{prior_sigma_max}
+\item \code{prior_sigma_prob}
+\item \code{prior_iideffect_sd_max}
+\item \code{prior_iideffect_sd_prob}
+ }}
 
 \item{family}{likelihood function: \emph{gaussian}, \emph{binomial} or \emph{poisson}}
 
