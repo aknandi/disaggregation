@@ -7,16 +7,17 @@
 #' and having a small region outside with a coarser mesh to avoid edge effects.
 #'
 #' Six mesh parameters can be specified as arguments: \emph{convex}, \emph{concave} and \emph{resolution},
-#' to control the boundary of the inner mesh, and \emph{max.edge}, \emph{cut} and \emph{offset}, to control the  mesh itself,
-#' with the names meaning the same as used by INLA functions \emph{inla.convex.hull} and \emph{inla.mesh.2d}.
+#' to control the boundary of the inner mesh, and \emph{max.edge}, \emph{cutoff} and \emph{offset}, to control the  mesh itself,
+#' with the names meaning the same as used by the fmesher functions \emph{fm_nonconvex_hull_inla} and \emph{fm_mesh_2d}.
 #'
 #' Defaults are:
-#' pars <- list(convex = -0.01, concave = -0.5, resolution = 300, max.edge = c(3.0, 8),  cut = 0.4, offset = c(1, 15)).
+#' pars <- list(convex = -0.01, concave = -0.5, resolution = 300, max.edge = c(3.0, 8), cutoff = 0.4, offset = c(1, 15)).
 #'
 #' @param shapes sf covering the region under investigation.
 #' @param mesh_args list of parameters that control the mesh structure. \emph{convex}, \emph{concave} and \emph{resolution},
-#' to control the boundary of the inner mesh, and \emph{max.edge}, \emph{cut} and \emph{offset}, to control the  mesh itself,
+#' to control the boundary of the inner mesh, and \emph{max.edge}, \emph{cutoff} and \emph{offset}, to control the  mesh itself,
 #' with the parameters having the same meaning as in the INLA functions \emph{inla.convex.hull} and \emph{inla.mesh.2d}.
+#' \emph{cut} has been deprecated - use \emph{cutoff} instead.
 #' @param mesh.args Deprecated.
 #'
 #' @return An inla.mesh object
@@ -58,14 +59,17 @@ build_mesh <- function(shapes, mesh_args = NULL, mesh.args = NULL) {
   hypotenuse <- sqrt((limits$xmax - limits$xmin)^2 + (limits$ymax - limits$ymin)^2)
   maxedge <- hypotenuse/10
 
+  if (!(is.null(mesh_args)) && ("cut" %in% names(mesh_args))){
+    mesh_args$cutoff <- mesh_args$cut
+    message("cut is deprecated and will be removed in a future version - please use cutoff instead")
+  }
 
   pars <- list(convex = -0.01,
                concave = -0.5,
                resolution = 300,
                max.edge = c(maxedge, maxedge * 2),
-               cut = 0.1,
+               cutoff = 0.1,
                offset = c(hypotenuse / 10, hypotenuse / 10))
-
 
   pars[names(mesh_args)] <- mesh_args
 
@@ -81,7 +85,7 @@ build_mesh <- function(shapes, mesh_args = NULL, mesh.args = NULL) {
   mesh <- fmesher::fm_mesh_2d(
     boundary = outline.hull,
     max.edge = pars$max.edge,
-    cut = pars$cut,
+    cutoff = pars$cutoff,
     offset = pars$offset)
 
 
