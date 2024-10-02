@@ -144,13 +144,13 @@ plot.disag_model <- function(x, include_iid = FALSE, ...){
       geom_abline(intercept = 0, slope = 1, color = 'blue') +
       scale_color_manual(values = c("Without IID" = "black")) +
       ggtitle(title) +
-      labs(color = NULL) +
+      labs(x = "Observed", y = "Predicted", color = NULL) +
       theme(legend.position.inside = c(0, 1),
             legend.justification = c(0, 1))
     if (include_iid){
       obspred$scales$scales <- list()
       obspred <- obspred +
-        geom_point(data, aes(x = obs, y = pred, color = "With IID")) +
+        geom_point(data = data, aes(x = obs, y = pred, color = "With IID")) +
         scale_color_manual(values = c("Without IID" = "black", "With IID" = "red"))
     }
   } else {

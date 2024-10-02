@@ -45,12 +45,16 @@ test_that("Check plot.disag_model function works as expected", {
 
   p2 <- plot(fit_result_nofield)
 
+  p3 <- plot(result, include_iid = TRUE)
+
   expect_is(p1, 'list')
   expect_equal(length(p1), 2)
 
   expect_is(p2, 'list')
   expect_equal(length(p2), 2)
 
+  expect_is(p3, 'list')
+  expect_equal(length(p3), 2)
 
 })
 
