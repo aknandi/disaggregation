@@ -4,19 +4,29 @@
 \alias{predict.disag_model}
 \title{Predict mean and uncertainty from the disaggregation model result}
 \usage{
-\method{predict}{disag_model}(object, newdata = NULL, predict_iid = FALSE, N = 100, CI = 0.95, ...)
+\method{predict}{disag_model}(
+  object,
+  new_data = NULL,
+  predict_iid = FALSE,
+  N = 100,
+  CI = 0.95,
+  newdata = NULL,
+  ...
+)
 }
 \arguments{
 \item{object}{disag_model object returned by disag_model function.}
 
-\item{newdata}{If NULL, predictions are made using the data in model_output.
+\item{new_data}{If NULL, predictions are made using the data in model_output.
 If this is a raster stack or brick, predictions will be made over this data.}
 
 \item{predict_iid}{logical. If TRUE, any polygon iid effect from the model will be used in the prediction. Default FALSE.}
 
 \item{N}{Number of realisations. Default: 100.}
 
-\item{CI}{Confidence interval to be calculated from the realisations. Default: 0.95.}
+\item{CI}{Credible interval to be calculated from the realisations. Default: 0.95.}
+
+\item{newdata}{Deprecated.}
 
 \item{...}{Further arguments passed to or from other methods.}
 }
@@ -41,12 +51,12 @@ predicts mean and uncertainty maps.
 }
 \details{
 To predict over a different spatial extent to that used in the model,
-a SpatRaster covering the region to make predictions over is passed to the argument \emph{newdata}.
+a SpatRaster covering the region to make predictions over is passed to the argument \emph{new_data}.
 If this is not given predictions are made over the data used in the fit.
 
 The \emph{predict_iid} logical flag should be set to TRUE if the results of the iid effect from the model are to be used in the prediction.
 
-For the uncertainty calculations, the number of the realisations and the size of the confidence interval to be calculated
+For the uncertainty calculations, the number of the realisations and the size of the credible interval to be calculated
 are given by the arguments \emph{N} and \emph{CI} respectively.
 }
 \examples{

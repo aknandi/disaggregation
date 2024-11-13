@@ -42,24 +42,18 @@ plot.disag_data <- function(x, which = c(1,2,3), ...) {
   return(invisible(plots))
 }
 
-#' Plot results of fitted model
-#'
-#' Plotting function for class \emph{disag_model} (the result of the disaggregation fitting).
-#'
-#' Produces two plots: results of the fixed effects and in-sample observed vs predicted plot.
+
+#' Convert results of the model ready for plotting
 #'
 #' @param x Object of class \emph{disag_model} to be plotted.
-#' @param ... Further arguments to \emph{plot} function.
 #'
-#' @return A list of two ggplot plots: results of the fixed effects and an in-sample observed vs predicted plot
-#'
-#' @import ggplot2
-#' @method plot disag_model
+#' @return A list that contains:
+#'  \item{posteriors}{A data.frame of posteriors}
+#'  \item{data}{A data.frame of observed and predicted data}
+#'  \item{title}{The title of the observed vs. predicted plot}
 #'
 #' @export
-
-
-plot.disag_model <- function(x, ...){
+plot_disag_model_data <- function(x){
 
   parameter <- sd <- obs <- pred <- NULL
   posteriors <- as.data.frame(summary(x$sd_out, select = 'fixed'))
@@ -73,15 +67,6 @@ plot.disag_model <- function(x, ...){
   if(lengths_match){
     posteriors$parameter[grepl('slope', posteriors$parameter)] <- names(x$data$covariate_rasters)
   }
-
-  fixedeffects <- ggplot() +
-    geom_errorbar(posteriors, mapping = aes(x = parameter, ymin = mean - sd,
-                                            ymax = mean + sd),
-                  width = 0.2, color = "blue") +
-    geom_point(posteriors, mapping = aes(x = parameter, y = mean)) +
-    facet_wrap( ~ type , scales = 'free') +
-    coord_flip() +
-    ggtitle("Parameters (excluding random effects)")
 
   report <- x$obj$report()
 
@@ -100,12 +85,80 @@ plot.disag_model <- function(x, ...){
     title <- 'In sample performance: incidence rate'
   }
 
-  data <- data.frame(obs = observed_data, pred = predicted_data)
+  if (x$model_setup$iid){
+    pars <- x$obj$env$last.par.best
+    iid_poly <- pars[names(pars) == "iideffect"]
+    pred_no_iid <- predicted_data  / exp(iid_poly)
+    data <- data.frame(obs = observed_data, pred = predicted_data, pred_no_iid = pred_no_iid)
+  } else {
+    data <- data.frame(obs = observed_data, pred = predicted_data)
+  }
 
-  obspred <- ggplot(data, aes(x = obs, y = pred)) +
-    geom_point() +
-    geom_abline(intercept = 0, slope = 1, color = 'blue') +
-    ggtitle(title)
+
+  return(list(posteriors = posteriors,
+              data = data,
+              title = title))
+
+}
+
+#' Plot results of fitted model
+#'
+#' Plotting function for class \emph{disag_model} (the result of the disaggregation fitting).
+#'
+#' Produces two plots: results of the fixed effects and in-sample observed vs predicted plot.
+#'
+#' @param x Object of class \emph{disag_model} to be plotted.
+#' @param include_iid logical. Whether or not to include predictions that include the
+#' IID effect.
+#' @param ... Further arguments to \emph{plot} function.
+#'
+#' @return A list of two ggplot plots: results of the fixed effects and an in-sample observed vs predicted plot
+#'
+#' @import ggplot2
+#' @method plot disag_model
+#'
+#' @export
+
+plot.disag_model <- function(x, include_iid = FALSE, ...){
+
+  mod_data <- plot_disag_model_data(x)
+
+  parameter <- obs <- pred <- pred_no_iid <- NULL
+
+  posteriors <- mod_data$posteriors
+  data <- mod_data$data
+  title <- mod_data$title
+
+  fixedeffects <- ggplot() +
+    geom_errorbar(posteriors, mapping = aes(x = parameter, ymin = mean - sd,
+                                            ymax = mean + sd),
+                  width = 0.2, color = "blue") +
+    geom_point(posteriors, mapping = aes(x = parameter, y = mean)) +
+    facet_wrap( ~ type , scales = 'free') +
+    coord_flip() +
+    ggtitle("Parameters (excluding random effects)")
+
+  if (x$model_setup$iid){
+    obspred <- ggplot(data, aes(x = obs, y = pred_no_iid, color = "Without IID")) +
+      geom_point() +
+      geom_abline(intercept = 0, slope = 1, color = 'blue') +
+      scale_color_manual(values = c("Without IID" = "black")) +
+      ggtitle(title) +
+      labs(x = "Observed", y = "Predicted", color = NULL) +
+      theme(legend.position.inside = c(0, 1),
+            legend.justification = c(0, 1))
+    if (include_iid){
+      obspred$scales$scales <- list()
+      obspred <- obspred +
+        geom_point(data = data, aes(x = obs, y = pred, color = "With IID")) +
+        scale_color_manual(values = c("Without IID" = "black", "With IID" = "red"))
+    }
+  } else {
+    obspred <- ggplot(data, aes(x = obs, y = pred)) +
+      geom_point() +
+      geom_abline(intercept = 0, slope = 1, color = 'blue') +
+      ggtitle(title)
+  }
 
   plots <- list(fixedeffects, obspred)
   print(cowplot::plot_grid(plotlist = plots))
@@ -156,8 +209,8 @@ plot_polygon_data <- function(polygon_shapefile, names) {
 
   # Rename the response variable for plotting
   shp <- polygon_shapefile
-  shp <- dplyr::rename(shp, 'response' = names$response_var)
-  shp <- dplyr::rename(shp, 'area_id' = names$id_var)
+  names(shp)[names(shp) == names$id_var] <- 'area_id'
+  names(shp)[names(shp) == names$response_var] <- 'response'
 
   area_id <- long <- lat <- group <- response <- NULL
   stopifnot(inherits(shp, 'sf'))

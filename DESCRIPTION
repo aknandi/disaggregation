@@ -1,7 +1,7 @@
 Package: disaggregation
 Type: Package
 Title: Disaggregation Modelling
-Version: 0.3.0
+Version: 0.4.0
 Authors@R: c(
     person("Anita", "Nandi", email = "anita.k.nandi@gmail.com", role = "aut", comment = c(ORCID = "0000-0002-5087-2494")),
     person("Tim", "Lucas", email =  "timcdlucas@gmail.com", role = c("aut", "cre"), comment = c(ORCID = "0000-0003-4694-8107")),
@@ -17,7 +17,7 @@ Description: Fits disaggregation regression models using 'TMB' ('Template Model
 License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
-RoxygenNote: 7.2.3
+RoxygenNote: 7.3.2
 Imports: 
     splancs,
     Matrix,
@@ -26,16 +26,15 @@ Imports:
     dplyr,
     ggplot2,
     cowplot,
+    rSPDE,
     sparseMVN,
     fmesher,
     tidyterra,
     terra,
     sf,
     utils
-Additional_repositories: https://inla.r-inla-download.org/R/stable
 Suggests: 
     testthat,
-    INLA,
     knitr,
     rmarkdown,
     SpatialEpi

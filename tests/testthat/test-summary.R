@@ -2,8 +2,6 @@ context("Summary functions")
 
 test_that("Check summary.disag_data function works as expected", {
 
-  skip_on_cran()
-
   data_summary <- summary(test_data)
 
   expect_is(data_summary, 'list')
@@ -18,8 +16,6 @@ test_that("Check summary.disag_data function works as expected", {
 
 test_that("Check print.disag_data function works as expected", {
 
-  skip_on_cran()
-
   print_output <- print(test_data)
 
   expect_is(print_output, 'disag_data')
@@ -29,16 +25,13 @@ test_that("Check print.disag_data function works as expected", {
 
 test_that("Check summary.disag_model function works as expected", {
 
-  skip_if_not_installed('INLA')
-  skip_on_cran()
-
-  result <- disag_model(test_data, field = FALSE, iterations = 2)
-
   model_summary <- summary(result)
 
   expect_is(model_summary, 'list')
   expect_equal(length(model_summary), 3)
   expect_equal(names(model_summary), c('model_params', 'nll', 'metrics'))
+  expect_true(c("layer1" %in% rownames(model_summary$model_params)))
+  expect_true(c("layer2" %in% rownames(model_summary$model_params)))
   expect_is(model_summary$model_params, 'matrix')
   expect_is(model_summary$nll, 'numeric')
   expect_is(model_summary$metrics, 'data.frame')
@@ -48,11 +41,6 @@ test_that("Check summary.disag_model function works as expected", {
 
 test_that("Check print.disag_model function works as expected", {
 
-  skip_if_not_installed('INLA')
-  skip_on_cran()
-
-  result <- disag_model(test_data, field = FALSE, iterations = 2)
-
   print_output <- print(result)
 
   expect_is(print_output, 'disag_model')
@@ -61,21 +49,6 @@ test_that("Check print.disag_model function works as expected", {
 })
 
 test_that("Check summary.disag_predictions function works as expected", {
-
-  skip_if_not_installed('INLA')
-  skip_on_cran()
-
-  result <- disag_model(test_data, iid = FALSE, iterations = 100,
-                        list(priormean_intercept = 0,
-                             priorsd_intercept = 0.1,
-                             priormean_slope = 0.0,
-                             priorsd_slope = 0.1,
-                             prior_rho_min = 5,
-                             prior_rho_prob = 0.01,
-                             prior_sigma_max = 0.1,
-                             prior_sigma_prob = 0.01,
-                             prior_iideffect_sd_max = 0.00001,
-                             prior_iideffect_sd_prob = 0.01))
 
   pred <- predict(result)
 
@@ -91,21 +64,6 @@ test_that("Check summary.disag_predictions function works as expected", {
 })
 
 test_that("Check print.disag_predictions function works as expected", {
-
-  skip_if_not_installed('INLA')
-  skip_on_cran()
-
-  result <- disag_model(test_data, iid = FALSE, iterations = 100,
-                        list(priormean_intercept = 0,
-                             priorsd_intercept = 0.1,
-                             priormean_slope = 0.0,
-                             priorsd_slope = 0.1,
-                             prior_rho_min = 5,
-                             prior_rho_prob = 0.01,
-                             prior_sigma_max = 0.1,
-                             prior_sigma_prob = 0.01,
-                             prior_iideffect_sd_max = 0.0001,
-                             prior_iideffect_sd_prob = 0.01))
 
   pred <- predict(result)
 

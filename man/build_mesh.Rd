@@ -4,14 +4,17 @@
 \alias{build_mesh}
 \title{Build mesh for disaggregaton model}
 \usage{
-build_mesh(shapes, mesh.args = NULL)
+build_mesh(shapes, mesh_args = NULL, mesh.args = NULL)
 }
 \arguments{
 \item{shapes}{sf covering the region under investigation.}
 
-\item{mesh.args}{list of parameters that control the mesh structure. \emph{convex}, \emph{concave} and \emph{resolution},
-to control the boundary of the inner mesh, and \emph{max.edge}, \emph{cut} and \emph{offset}, to control the  mesh itself,
-with the parameters having the same meaning as in the INLA functions \emph{inla.convex.hull} and \emph{inla.mesh.2d}.}
+\item{mesh_args}{list of parameters that control the mesh structure. \emph{convex}, \emph{concave} and \emph{resolution},
+to control the boundary of the inner mesh, and \emph{max.edge}, \emph{cutoff} and \emph{offset}, to control the  mesh itself,
+with the parameters having the same meaning as in the INLA functions \emph{inla.convex.hull} and \emph{inla.mesh.2d}.
+\emph{cut} has been deprecated - use \emph{cutoff} instead.}
+
+\item{mesh.args}{Deprecated.}
 }
 \value{
 An inla.mesh object
@@ -25,11 +28,11 @@ and a coarser mesh outside. This speeds up computation time by only having a ver
 and having a small region outside with a coarser mesh to avoid edge effects.
 
 Six mesh parameters can be specified as arguments: \emph{convex}, \emph{concave} and \emph{resolution},
-to control the boundary of the inner mesh, and \emph{max.edge}, \emph{cut} and \emph{offset}, to control the  mesh itself,
-with the names meaning the same as used by INLA functions \emph{inla.convex.hull} and \emph{inla.mesh.2d}.
+to control the boundary of the inner mesh, and \emph{max.edge}, \emph{cutoff} and \emph{offset}, to control the  mesh itself,
+with the names meaning the same as used by the fmesher functions \emph{fm_nonconvex_hull_inla} and \emph{fm_mesh_2d}.
 
 Defaults are:
-pars <- list(convex = -0.01, concave = -0.5, resolution = 300, max.edge = c(3.0, 8),  cut = 0.4, offset = c(1, 15)).
+pars <- list(convex = -0.01, concave = -0.5, resolution = 300, max.edge = c(3.0, 8), cutoff = 0.4, offset = c(1, 15)).
 }
 \examples{
 \dontrun{

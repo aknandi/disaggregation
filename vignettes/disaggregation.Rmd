@@ -19,10 +19,6 @@ knitr::opts_chunk$set(
 )
 ```
 
-```{r, echo = FALSE, eval = TRUE}
-isINLA <- requireNamespace('INLA', quietly = TRUE)
-```
-
 The **disaggregation** package contains functions to run Bayesian disaggregation models. Aggregated response data over large heterogeneous regions can be used alongside fine-scale covariate information to predict fine-scale response across the region. The github page for this package can be found [here](https://github.com/aknandi/disaggregation).
 
 Install **disaggregation** using:
@@ -37,7 +33,7 @@ or from github using
 devtools::install_github("aknandi/disaggregation")
 ```
 
-The key functions are `prepare_data`, `fit_model` and `predict`. The `prepare_data` function takes the aggregated data and covariate data to be used in the model and produces an object to be use by `fit_model`. This functions runs the disaggregation model and the out can be passed to `predict` to produce fine-scale predicted maps of the response variable. 
+The key functions are `prepare_data`, `disag_model` and `predict`. The `prepare_data` function takes the aggregated data and covariate data to be used in the model and produces an object to be use by `disag_model`. This functions runs the disaggregation model and the out can be passed to `predict` to produce fine-scale predicted maps of the response variable. 
 
 To use the disaggregation `prepare_data` function, you must have the aggregated data as a `sf` object and a `SpatRaster` of the covariate data to be used in the model.
 
@@ -112,20 +108,20 @@ Now we have setup the data we can use the `prepare_data` function to create the 
 
 The user can also control the parameters of the mesh that is used to create the spatial field. The mesh is created by finding a tight boundary around the polygon data, and creating a fine mesh within the boundary and a coarser mesh outside. This speeds up computation time by only having a very fine mesh within the area of interest and having a small region outside with a coarser mesh to avoid edge effects. The mesh parameters: `concave`, `convex` and `resolution` refer to the parameters used to create the mesh boundary using the [fm_nonconvex_hull_inla function](https://rdrr.io/cran/fmesher/man/fm_nonconvex_hull_inla.html), while the mesh parameters `max.edge`, `cut` and `offset` refer to the parameters used to create the mesh using the [fm_mesh_2d function](https://rdrr.io/cran/fmesher/man/fm_mesh_2d.html).
 
-```{r, fig.show='hold', eval= isINLA}
+```{r, fig.show='hold'}
 data_for_model <- prepare_data(polygon_shapefile = df,
                                covariate_rasters = cov_stack,
                                aggregation_raster = pop_raster,
                                response_var = 'cases',
                                id_var = 'censustract.FIPS',
-                               mesh.args = list(cut = 0.01,
+                               mesh_args = list(cutoff = 0.01,
                                                 offset = c(0.1, 0.5),
                                                 max.edge = c(0.1, 0.2),
                                                 resolution = 250),
-                               na.action = TRUE)
+                               na_action = TRUE)
 ```
 
-```{r, fig.show='hold', eval= isINLA}
+```{r, fig.show='hold'}
 plot(data_for_model)
 ```
 
@@ -164,7 +160,7 @@ $dpois(y_j, cases_j)$
 By default the model contains a spatial field and a polygon iid effect. These can be turned off in the `disag_model` function, using `field = FALSE` or `iid = FALSE`.
 
 
-```{r, fig.show='hold', eval=isINLA}
+```{r, fig.show='hold'}
 model_result <- disag_model(data_for_model,
                             iterations = 1000,
                             family = 'poisson',
@@ -181,14 +177,14 @@ model_result <- disag_model(data_for_model,
                                           prior_iideffect_sd_prob = 0.01))
 ```
 
-```{r, fig.show='hold', eval=isINLA}
+```{r, fig.show='hold'}
 plot(model_result)
 ```
 
 Now we have the results from the model of the fitted parameters, we can predict Leukemia incidence rate at fine-scale (the scale of the covariate data) across New York. The `predict` function takes the model result and predicts both the mean raster surface and predicts and summarises `N` parameter draws, where `N` is set by the user (default 100). The uncertainty is summarised via the confidence interval set by the user (default 95% CI).
 
 
-```{r, fig.show='hold', eval=isINLA}
+```{r, fig.show='hold'}
 preds <- predict(model_result, 
                  N = 100, 
                  CI = 0.95)

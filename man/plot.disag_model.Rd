@@ -4,10 +4,13 @@
 \alias{plot.disag_model}
 \title{Plot results of fitted model}
 \usage{
-\method{plot}{disag_model}(x, ...)
+\method{plot}{disag_model}(x, include_iid = FALSE, ...)
 }
 \arguments{
 \item{x}{Object of class \emph{disag_model} to be plotted.}
+
+\item{include_iid}{logical. Whether or not to include predictions that include the
+IID effect.}
 
 \item{...}{Further arguments to \emph{plot} function.}
 }

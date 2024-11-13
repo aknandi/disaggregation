@@ -3,7 +3,7 @@
 on:
   push:
     branches:
-      'build' 
+      'build'
   pull_request:
     branches:
       - master
@@ -40,7 +40,6 @@ jobs:
           r-version: ${{ matrix.config.r }}
           http-user-agent: ${{ matrix.config.http-user-agent }}
           use-public-rspm: true
-          extra-repositories: "https://inla.r-inla-download.org/R/testing"
 
       - name: Install system dependencies on MacOS (X11, gdal)
         if: runner.os == 'macOS'
@@ -54,6 +53,7 @@ jobs:
         if: runner.os == 'Linux'
         run: |
           sudo apt-get update -y && sudo apt-get install -y libglu1-mesa-dev
+          sudo apt-get install -y libproj-dev gdal-bin
 
       - uses: r-lib/actions/setup-r-dependencies@v2
         with:

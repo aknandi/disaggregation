@@ -34,34 +34,34 @@ data_for_model <- prepare_data(polygon_shapefile = shps,
 ### Input data
 
 * A SpatRaster of covariate rasters to be used in the model (covariate_rasters)
-* A  sf (polygon_shapefile) containing at least two columns: one with the id for the polygons (id_var) and one with the response count data (response_var); for binomial data, i.e survey data, it can also contain a sample size column (sample_size_var).
+* A sf (polygon_shapefile) containing at least two columns: one with the id for the polygons (id_var) and one with the response count data (response_var); for binomial data, i.e survey data, it can also contain a sample size column (sample_size_var).
 * (Optional) SpatRaster used to aggregate the pixel level predictions (aggregation_raster) to polygon level (usually population). If this is not supplied a uniform raster will be used
 
 ### Controlling the mesh
 
-The argument mesh.args in prepare_data allows you to supply a list of INLA mesh parameter to control the mesh used for the spatial field
+The argument mesh_args in prepare_data allows you to supply a list of INLA mesh parameters to control the mesh used for the spatial field
 
 ```R
 data_for_model <- prepare_data(shps, covariate_stack, 
-                               mesh.args = list(max.edge = c(0.2, 8), 
-                                                cut = 0.05, 
+                               mesh_args = list(max.edge = c(0.2, 8), 
+                                                cutoff = 0.05, 
                                                 offset = c(1, 0.7)))
 
 ```
 
 ### Dealing with NAs
 
-There is an na.action flag that is automatically off. If there are any NAs in your response or covariate data within the polygons the prepare_data method will fail. We advise you to sort out the NAs in your data yourself, however, if you want the function to automatically deal with NAs you can set na.action = TRUE. This will remove any polygons that have NAs as a response, set any aggregation pixels with NA to zero and set covariate NAs pixels to the median value for the that covariate.
+There is an na_action flag that is automatically off. If there are any NAs in your response or covariate data within the polygons the prepare_data method will fail. We advise you to sort out the NAs in your data yourself, however, if you want the function to automatically deal with NAs you can set na_action = TRUE. This will remove any polygons that have NAs as a response or a population of zero, set any aggregation pixels with NA to zero and set covariate NAs pixels to the median value for the that covariate.
 
 ```R
 data_for_model <- prepare_data(shps, covariate_stack, 
                                aggregation_raster = population_raster,
-                               na.action = TRUE)
+                               na_action = TRUE)
 ```
 
 ## Model fitting
 
-Function fit_model takes data structure returned by prepare_data and fits a TMB disaggregation model. Here you can specify priors, likelihood function, link function and whether to include a field or iid effect (default includes both)
+Function disag_model takes the data structure returned by prepare_data and fits a TMB disaggregation model. Here you can specify priors, likelihood function, link function and whether to include a field or iid effect (default includes both).
 
 ```R
 model_result <- disag_model(data_for_model, 
@@ -87,7 +87,7 @@ model_result <- disag_model(data_for_model,
 
 ### Predict model
 
-Function predict takes data structure returned by fit_model to predict model results and uncertainty.
+Function predict takes data structure returned by disag_model to predict model results and uncertainty.
 
 ```R
 prediction <- predict(model_result)

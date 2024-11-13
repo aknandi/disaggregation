@@ -1,6 +1,6 @@
 #' Fit the disaggregation model
 #'
-#' \emph{fit_model} function takes a \emph{disag_data} object created by
+#' \emph{disag_model} function takes a \emph{disag_data} object created by
 #' \code{\link{prepare_data}} and performs a Bayesian disaggregation fit.
 #'
 #' \strong{The model definition}
@@ -43,7 +43,19 @@
 #'
 #'
 #' @param data disag_data object returned by \code{\link{prepare_data}} function that contains all the necessary objects for the model fitting
-#' @param priors list of prior values
+#' @param priors list of prior values:
+#' \itemize{
+#' \item \code{priormean_intercept}
+#' \item \code{priorsd_intercept}
+#' \item \code{priormean_slope}
+#' \item \code{priorsd_slope}
+#' \item \code{prior_rho_min}
+#' \item \code{prior_rho_prob}
+#' \item \code{prior_sigma_max}
+#' \item \code{prior_sigma_prob}
+#' \item \code{prior_iideffect_sd_max}
+#' \item \code{prior_iideffect_sd_prob}
+#'  }
 #' @param family likelihood function: \emph{gaussian}, \emph{binomial} or \emph{poisson}
 #' @param link link function: \emph{logit}, \emph{log} or \emph{identity}
 #' @param iterations number of iterations to run the optimisation for
@@ -66,7 +78,7 @@
 #'  \item{data }{The \emph{disag_data} object used as an input to the model.}
 #'  \item{model_setup }{A list of information on the model setup. Likelihood function (\emph{family}), link function(\emph{link}), logical: whether a field was used (\emph{field}) and logical: whether an iid effect was used (\emph{iid}).}
 #'
-#' @name fit_model
+#' @name disag_model
 #' @references Nanda et al. (2023) disaggregation: An R Package for Bayesian
 #' Spatial Disaggregation Modeling. <doi:10.18637/jss.v106.i11>
 #'
@@ -105,42 +117,10 @@
 #' test_data <- prepare_data(polygon_shapefile = spdf,
 #'                           covariate_rasters = cov_stack)
 #'
-#'  result <- fit_model(test_data, iterations = 2)
+#'  result <- disag_model(test_data, iterations = 2)
 #'  }
 #'
 #' @export
-
-fit_model <- function(data,
-                      priors = NULL,
-                      family = 'gaussian',
-                      link = 'identity',
-                      iterations = 100,
-                      field = TRUE,
-                      iid = TRUE,
-                      hess_control_parscale = NULL,
-                      hess_control_ndeps = 1e-4,
-                      silent = TRUE) {
-
-  .Deprecated(new = 'disag_model', msg = "'fit_model' will be removed in the next version. Please use 'disag_model' instead")
-
-  model_output <- disag_model(data,
-                              priors = priors,
-                              family = family,
-                              link = link,
-                              iterations = iterations,
-                              field = field,
-                              iid = iid,
-                              hess_control_parscale = hess_control_parscale,
-                              hess_control_ndeps = hess_control_ndeps,
-                              silent = silent)
-
-  return(model_output)
-
-
-}
-
-#' @export
-#' @rdname fit_model
 
 disag_model <- function(data,
                         priors = NULL,
@@ -180,12 +160,9 @@ disag_model <- function(data,
   # Calc uncertainty using the fixed hessian from above.
   sd_out <- TMB::sdreport(obj, getJointPrecision = TRUE, hessian.fixed = hess)
 
-
-  sd_out <- TMB::sdreport(obj, getJointPrecision = TRUE)
-
   # Rename parameters to match layers
-  # Need to change in sd_out as well
-  # names(opt$par)[names(opt$par) == 'slope'] <- names(data$covariate_rasters)
+  names(sd_out$par.fixed)[names(sd_out$par.fixed) == "slope"] <- names(data$covariate_rasters)
+  names(opt$par)[names(opt$par) == "slope"] <- names(data$covariate_rasters)
 
   model_output <- list(obj = obj,
                        opt = opt,
@@ -356,8 +333,10 @@ make_model_object <- function(data,
 
   nu = 1
   # Sort out mesh bits
-  spde <- (INLA::inla.spde2.matern(data$mesh, alpha = nu + 1)$param.inla)[c("M0", "M1", "M2")]
-  Apix <- fmesher::fm_evaluator(data$mesh, loc = data$coordsForFit)$proj$A
+  spde <- rSPDE::matern.operators(mesh = data$mesh, alpha = nu + 1, compute_higher_order = TRUE)$fem_mesh_matrices
+  spde[[4]] <- NULL
+  names(spde) <- c("M0", "M1", "M2")
+  Apix <- fmesher::fm_evaluator(data$mesh, loc = data$coords_for_fit)$proj$A
   n_s <- nrow(spde$M0)
 
   cov_matrix <- as.matrix(data$covariate_data[, (names(data$covariate_data) %in% names(data$covariate_rasters))])
@@ -423,7 +402,7 @@ make_model_object <- function(data,
                      aggregation_values = data$aggregation_pixels,
                      Apixel = Apix,
                      spde = spde,
-                     startendindex = data$startendindex,
+                     start_end_index = data$start_end_index,
                      polygon_response_data = data$polygon_data$response,
                      response_sample_size = data$polygon_data$N,
                      family = family_id,

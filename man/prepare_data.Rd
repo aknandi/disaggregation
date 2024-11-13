@@ -11,9 +11,12 @@ prepare_data(
   id_var = "area_id",
   response_var = "response",
   sample_size_var = NULL,
+  mesh_args = NULL,
+  na_action = FALSE,
+  make_mesh = TRUE,
   mesh.args = NULL,
-  na.action = FALSE,
-  makeMesh = TRUE,
+  na.action = NULL,
+  makeMesh = NULL,
   ncores = NULL
 )
 }
@@ -30,11 +33,17 @@ prepare_data(
 
 \item{sample_size_var}{For survey data, name of column in sf object (if it exists) with the sample size data.}
 
-\item{mesh.args}{list of parameters that control the mesh structure with the same names as used by INLA.}
+\item{mesh_args}{list of parameters that control the mesh structure with the same names as used by INLA.}
 
-\item{na.action}{logical. If TRUE, NAs in response will be removed, covariate NAs will be given the median value, aggregation NAs will be set to zero. Default FALSE (NAs in response or covariate data within the polygons will give errors).}
+\item{na_action}{logical. If TRUE, NAs in response will be removed, covariate NAs will be given the median value, aggregation NAs will be set to zero. Default FALSE (NAs in response or covariate data within the polygons will give errors).}
 
-\item{makeMesh}{logical. If TRUE, build INLA mesh, takes some time. Default TRUE.}
+\item{make_mesh}{logical. If TRUE, build INLA mesh, takes some time. Default TRUE.}
+
+\item{mesh.args}{Deprecated.}
+
+\item{na.action}{Deprecated.}
+
+\item{makeMesh}{Deprecated.}
 
 \item{ncores}{Deprecated.}
 }
@@ -47,14 +56,14 @@ The list  of class \code{disag_data} contains:
  \item{polygon_data }{A data frame with columns of \emph{area_id}, \emph{response} and \emph{N} (sample size: all NAs unless using binomial data). Each row represents a polygon.}
  \item{covariate_data }{A data frame with columns of \emph{area_id}, \emph{cell_id} and one for each covariate in \emph{covariate_rasters}. Each row represents a pixel in a polygon.}
  \item{aggregation_pixels }{An array with the value of the aggregation raster for each pixel in the same order as the rows of \emph{covariate_data}.}
- \item{coordsForFit }{A matrix with two columns of x, y coordinates of pixels within the polygons. Used to make the spatial field.}
- \item{coordsForPrediction }{A matrix with two columns of x, y coordinates of pixels in the whole Raster. Used to make predictions.}
- \item{startendindex }{A matrix with two columns containing the start and end index of the pixels within each polygon.}
+ \item{coords_for_fit }{A matrix with two columns of x, y coordinates of pixels within the polygons. Used to make the spatial field.}
+ \item{coords_for_prediction }{A matrix with two columns of x, y coordinates of pixels in the whole Raster. Used to make predictions.}
+ \item{start_end_index }{A matrix with two columns containing the start and end index of the pixels within each polygon.}
  \item{mesh }{A INLA mesh to be used for the spatial field of the disaggregation model.}
 }
 \description{
 \emph{prepare_data} function is used to extract all the data required for fitting a disaggregation model.
-Designed to be used in the \emph{disaggregation::fit_model} function.
+Designed to be used in the \emph{disaggregation::disag_model} function.
 }
 \details{
 Takes a sf object with the response data and a SpatRaster of covariates.
