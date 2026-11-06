@@ -125,7 +125,7 @@ Type objective_function<Type>::operator()()
     // Likelihood of hyperparameter of polygon iid random effect.
     // From https://projecteuclid.org/euclid.ss/1491465621 (Eqn 3.3)
     Type lambda = -log(prior_iideffect_sd_prob) / prior_iideffect_sd_max;
-    Type log_pcdensity_iid = log(lambda / 2) - (3/2)*iideffect_log_tau - lambda * pow(iideffect_tau, -1/2);
+    Type log_pcdensity_iid = log(lambda / 2) - (3.0/2.0)*iideffect_log_tau - lambda * pow(iideffect_tau, -1.0/2.0);
     // log(iideffect_sd) from the Jacobian
     nll -= log_pcdensity_iid + iideffect_log_tau;
 
@@ -138,8 +138,9 @@ Type objective_function<Type>::operator()()
   // Likelihood from the gaussian prior.
   // log(prec) ~ loggamma
   // prec ~ gamma
+  // Note: TMB's dgamma is parameterised by shape and scale (not rate), so pass 1 / rate.
   if(family == 0) {
-    nll -= dgamma(tau_gaussian, prior_gamma_shape, prior_gamma_rate, true);
+    nll -= dgamma(tau_gaussian, prior_gamma_shape, 1.0 / prior_gamma_rate, true);
   }
 
   if(field) {
